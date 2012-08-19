@@ -1,32 +1,14 @@
-<?php # Sat, 18 Aug 2012 00:29:40 +0200
+<?php # Sat, 18 Aug 2012 10:52:57 +0200
 
 $users = array (
 	'users' => 
 	array (
 		'value' => 
 		array (
-			'ab12d' => 
+			'eURSc' => 
 			array (
-				'id' => 'ab12d',
-				'user_name' => 'user',
-				'real_name' => 'Benutzer  User',
-				'password' => '1a1dc91c907325c69271ddf0c944bc72',
-				'email' => 'a@b.c',
-				'role' => 'admin',
-			),
-			'mko98' => 
-			array (
-				'id' => 'mko98',
-				'user_name' => 'benutzer',
-				'real_name' => 'Mein Name',
-				'password' => '1a1dc91c907325c69271ddf0c944bc72',
-				'email' => 'abc@def.gh',
-				'role' => 'user',
-			),
-			'WZQGg' => 
-			array (
-				'id' => 'WZQGg',
-				'user_name' => 'pepp',
+				'id' => 'eURSc',
+				'user_name' => 'pepp_4',
 				'real_name' => 'Pat.Bass',
 				'password' => '123',
 				'email' => 'abc@def.gh',
@@ -41,55 +23,28 @@ $users = array (
 				'email' => 'abc@def.gh',
 				'role' => 'user',
 			),
-			'yX5xp' => 
+			'mko98' => 
 			array (
-				'id' => 'yX5xp',
-				'user_name' => 'pepp_2',
-				'real_name' => 'Pat.Bass',
-				'password' => '123',
+				'id' => 'mko98',
+				'user_name' => 'benutzer',
+				'real_name' => 'Mein Name',
+				'password' => '1a1dc91c907325c69271ddf0c944bc72',
 				'email' => 'abc@def.gh',
 				'role' => 'user',
 			),
-			'TW8rf' => 
+			'ab12d' => 
 			array (
-				'id' => 'TW8rf',
-				'user_name' => 'pepper_2',
-				'real_name' => 'Pat.Bass',
-				'password' => '123',
-				'email' => 'abc@def.gh',
-				'role' => 'user',
+				'id' => 'ab12d',
+				'user_name' => 'user',
+				'real_name' => 'Benutzer  User',
+				'password' => '1a1dc91c907325c69271ddf0c944bc72',
+				'email' => 'a@b.c',
+				'role' => 'admin',
 			),
 			'LU9Au' => 
 			array (
 				'id' => 'LU9Au',
 				'user_name' => 'pepp_3',
-				'real_name' => 'Pat.Bass',
-				'password' => '123',
-				'email' => 'abc@def.gh',
-				'role' => 'user',
-			),
-			'DTLLc' => 
-			array (
-				'id' => 'DTLLc',
-				'user_name' => 'pepper_3',
-				'real_name' => 'Pat.Bass',
-				'password' => '123',
-				'email' => 'abc@def.gh',
-				'role' => 'user',
-			),
-			'twjIJ' => 
-			array (
-				'id' => 'twjIJ',
-				'user_name' => 'pepp_4',
-				'real_name' => 'Pat.Bass',
-				'password' => '123',
-				'email' => 'abc@def.gh',
-				'role' => 'user',
-			),
-			'wlIVx' => 
-			array (
-				'id' => 'wlIVx',
-				'user_name' => 'pepper_4',
 				'real_name' => 'Pat.Bass',
 				'password' => '123',
 				'email' => 'abc@def.gh',
@@ -143,69 +98,49 @@ $users = array (
 		array (
 			'id' => 
 			array (
-				'ab12d' => 'ab12d',
-				'mko98' => 'mko98',
-				'WZQGg' => 'WZQGg',
+				'eURSc' => 'eURSc',
 				'CioR2' => 'CioR2',
-				'yX5xp' => 'yX5xp',
-				'TW8rf' => 'TW8rf',
+				'mko98' => 'mko98',
+				'ab12d' => 'ab12d',
 				'LU9Au' => 'LU9Au',
-				'DTLLc' => 'DTLLc',
-				'twjIJ' => 'twjIJ',
-				'wlIVx' => 'wlIVx',
 			),
 			'user_name' => 
 			array (
-				'user' => 'ab12d',
-				'benutzer' => 'mko98',
-				'pepp' => 'WZQGg',
+				'pepp_4' => 'eURSc',
 				'pepper' => 'CioR2',
-				'pepp_2' => 'yX5xp',
-				'pepper_2' => 'TW8rf',
+				'benutzer' => 'mko98',
+				'user' => 'ab12d',
 				'pepp_3' => 'LU9Au',
-				'pepper_3' => 'DTLLc',
-				'pepp_4' => 'twjIJ',
-				'pepper_4' => 'wlIVx',
 			),
 		),
 		'list' => 
 		array (
 			'email' => 
 			array (
+				'abc@def.gh' => 
+				array (
+					0 => 'eURSc',
+					1 => 'CioR2',
+					2 => 'mko98',
+					3 => 'LU9Au',
+				),
 				'a@b.c' => 
 				array (
 					0 => 'ab12d',
 				),
-				'abc@def.gh' => 
-				array (
-					0 => 'mko98',
-					1 => 'WZQGg',
-					2 => 'CioR2',
-					3 => 'yX5xp',
-					4 => 'TW8rf',
-					5 => 'LU9Au',
-					6 => 'DTLLc',
-					7 => 'twjIJ',
-					8 => 'wlIVx',
-				),
 			),
 			'role' => 
 			array (
+				'user' => 
+				array (
+					0 => 'eURSc',
+					1 => 'CioR2',
+					2 => 'mko98',
+					3 => 'LU9Au',
+				),
 				'admin' => 
 				array (
 					0 => 'ab12d',
-				),
-				'user' => 
-				array (
-					0 => 'mko98',
-					1 => 'WZQGg',
-					2 => 'CioR2',
-					3 => 'yX5xp',
-					4 => 'TW8rf',
-					5 => 'LU9Au',
-					6 => 'DTLLc',
-					7 => 'twjIJ',
-					8 => 'wlIVx',
 				),
 			),
 		),

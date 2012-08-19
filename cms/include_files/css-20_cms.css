@@ -1,9 +1,21 @@
 /* default styles for CMS */
 body { background-color:#ddd; padding:100px; text-shadow:#fff 1px 1px 1px; }
 div#dialog { display:none; }
-form div { width:300px; position:relative; text-align:right; margin-bottom:3px; }
-form div label { position:absolute; right:172px; top:3px; }
+.even { background-color:#ccc; }
+.odd { background-color:#bbb; }
+fieldset { width:508px; margin:3px 0px 3px -1px; padding-bottom:6px; border: 1px solid #333; border-radius:10px; }
+legend { border:1px solid #333; border-radius:5px; padding:1px 5px; margin-left:20px; }
+form div { width:500px; position:relative; text-align:right; margin-bottom:3px; padding:2px; border-radius:5px; }
+form div.idx_group { width:auto; margin:0px; padding:0px; border-radius:0px; }
+form div label { position:absolute; right:186px; top:7px; }
+form div.form_row span.ui-icon-info { position:absolute; right:-1px; top:-1px; display:none; }
+form div.form_row:hover span.ui-icon-info { display:block; }
+form div.idx_group .idx_nav { display:none; background-color:#333; position:absolute; margin:0px; padding:0px; left:0px; top:-30px; /*width:150px;*/ height:30px; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom-left-radius:0px; border-bottom-right-radius:0px; }
+.idx_nav li { margin:2px; position:relative; padding:4px 0; cursor:pointer; float:left; list-style:none; }
+.idx_nav span.ui-icon { width:16px; float:left; margin:0 4px; }
+/*form div.idx_group:hover .idx_nav { display:block; }*/
 input, textarea, select  { border:1px solid #666; width:150px; border-radius:6px; padding:6px; background-color:#eee; outline-width:0px; color:#333; text-shadow:#ccc 1px 1px 1px; background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;}
+form div input, form div textarea, form div select { margin-right:14px; }
 select { width:164px; }
 textarea { height:100px; }
 input[type=checkbox] { width:auto; }

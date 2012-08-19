@@ -15,6 +15,10 @@ if($_COOKIE['sess'] && $_GET['do'] === 'check_login' && $_POST['user'] && $_POST
 	$login_checked = check_login($_POST['user'], $_POST['md5_pass'], 'md5');
 	$return['status'] = $login_checked['status'];
 	$return['msg'] = lecho($login_checked['txt'], $admin_lang);
+	if($login_checked['txt_2'])
+	{
+		$return['msg'] .= "\n" . $login_checked['txt_2'];
+	}
 	echo json_encode($return);
 }
 if($_POST)

@@ -52,17 +52,20 @@ $admin_content .= '<noscript>'.lecho('admin_enable_javascript', $admin_lang).'</
 	array('var'=>'users', 'index'=>'[user_name==user]', 'key'=>'role', 'value'=>'user'),
 	));*/
 /*merge_config('users', array(
+	array('var'=>'users', 'sort_order'=>array('_new_1','CioR2','mko98','ab12d','LU9Au')),
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'email', 'value'=>'abc@def.gh'),
-	array('var'=>'users', 'index'=>'_new_2', 'key'=>'user_name', 'value'=>'pepper_4'),
+	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'user_name', 'value'=>'pepper_4'),
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'user_name', 'value'=>'pepp_4'),
-	array('var'=>'users', 'index'=>'_new_2', 'key'=>'email', 'value'=>'abc@def.gh'),
+	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'email', 'value'=>'abc@def.gh'),
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'role', 'value'=>'user'),
-	array('var'=>'users', 'index'=>'_new_2', 'key'=>'real_name', 'value'=>'Pat.Bass'),
+	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'real_name', 'value'=>'Pat.Bass'),
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'real_name', 'value'=>'Pat.Bass'),
-	array('var'=>'users', 'index'=>'_new_2', 'key'=>'role', 'value'=>'user'),
+	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'role', 'value'=>'user'),
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'password', 'value'=>'123'),
-	array('var'=>'users', 'index'=>'_new_2', 'key'=>'password', 'value'=>'123'),
+	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'password', 'value'=>'123'),
 	));*/
+#$admin_content .= edit_config('cms'); # array('test','page_def_lang_prior_browser_accept')
+#$admin_content .= edit_config('users'); # array('test','page_def_lang_prior_browser_accept')
 if($_COOKIE['sess'])
 {
 	#check_session();
@@ -114,7 +117,7 @@ if($_COOKIE['sess'])
 if(false === $user)
 {
 	setcookie('sess', md5($_SERVER['HTTP_HOST'].microtime(true)));
-	$admin_content .= '<form action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
+	$admin_content .= '<form class="login" action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
 	$admin_content .= '<div><label for="in_user">User:</label> <input id="in_user" type="text" name="user" /></div>';
 	$admin_content .= '<div><label for="in_pass">Pass:</label> <input id="in_pass" type="password" name="pass" /></div>';
 	#$admin_content .= '<div><label for="in_select">Select:</label> <select id="in_select" name="select" size="1"><option>erster</option><option>zweiter und erster</option></select></div>';

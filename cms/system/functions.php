@@ -1,82 +1,184 @@
 <?php
 
+function edit_config($file, $vars=array())
+{
+	global $$file, $admin_lang;
+	$file_name = 'cms/config/'.$file.'.php';
+	$out = '';
+	require_once($file_name);
+	if(0 === count($vars))
+	{
+		$vars = array_keys($$file);
+	}
+	$out .= '<form class="config">'."\n";
+	foreach($$file as $k => $v)
+	{
+		if(in_array($k, $vars))
+		{
+			#var_dump($v);
+			if('array' == $v['type'])
+			{
+				$out .= '<fieldset class="sortable"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
+				$even_odd = 'odd';
+				foreach($v['value'] as $idx_k => $idx_v)
+				{
+					$even_odd = ($even_odd=='odd')? 'even' : 'odd';
+					$out .= '<div id="'.$k.'|'.$idx_k.'" class="idx_group '.$even_odd.'">';
+					foreach($v['model'] as $mod_k => $mod_v)
+					{
+						if('id' != $mod_k)
+						{
+							$mod_v['value'] = $idx_v[$mod_k];
+							$out .= gen_config_field($mod_v, array('file'=>$file,'val'=>$k,'index'=>$idx_k,'key'=>$mod_k));
+						}
+					}
+					#$out .= '<div class="idx_nav ui-widget ui-state-default"><a href="#" class="ui-icon ui-icon-arrowthick-1-n ui-state-default ui-corner-all sort_up"></a><a href="#" class="sort_down">down</a></div></div>';
+					$out .= '<ul class="idx_nav ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-n"></span></li></ul></div>';
+				}
+				$out .= '</fieldset>'."\n";
+			}
+			else 
+			{
+				#$out .= '<fieldset><legend>'.lecho('legend_'.$k, $admin_lang).'</legend>'."\n";
+				$out .= gen_config_field($v, array('file'=>$file,'val'=>$k));
+				#$out .= '</fieldset>'."\n";
+			}
+		}
+	}
+	$out .= '</form>'."\n";
+	#echo $out;
+	#die();
+	return $out;
+}
+function gen_config_field($v, $k)
+{
+	global $admin_lang;
+	$fid = "${k['file']}[${k['val']}]";
+	$label = 'config_'.$k['val'];
+	if(isset($k['index']) && isset($k['key']))
+	{
+		$fid .= "[${k['index']}][${k['key']}]";
+		$label .= '_'.$k['key'];
+		#var_dump($v);
+	}
+	$out = '<div class="form_row"><label class="main" for="'.$fid.'">'.lecho($label, $admin_lang).'</label>';
+	switch($v['type'])
+	{
+		case 'select_one':
+			$out .= '<select name="'.$fid.'" id="'.$fid.'">';
+			foreach($v['options'] as $ok => $ov)
+			{
+				$sel = ($ov == $v['value'])? ' selected="selected"' : '';
+				$out .= '<option'.$sel.'>'.htmlspecialchars($ov).'</option>';
+			}
+			$out .= '</select>';
+			break;
+		case 'select_more':
+			foreach($v['options'] as $ok => $ov)
+			{
+				$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
+				$out .= '<div><input type="checkbox" name="'.$fid.'['.$ok.']" id="'.$fid.'['.$ok.']"'.$sel.' /><label for="'.$fid.'['.$ok.']">'.htmlspecialchars($ov).'</label></div>';
+			}
+			break;
+		case 'password':
+			$out .= '<input type="password" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			break;
+		case 'email':
+			$out .= '<input type="text" class="email" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			break;
+		case 'text':
+		default:
+			$out .= '<input type="text" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+	}
+	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span></div>';
+	return $out;
+}
 function merge_config($file, $values, $mode='replace')
 {
-	global $$file;
+	global $$file, $array_sort_keys_list;
 	$file_name = 'cms/config/'.$file.'.php';
 	require_once($file_name);
 	#$conf_orig = $$file;
 	$conf_chan = $$file;
 	$validate_index = array();
+	$resort_vars = array();
 	foreach($values as $k => $v)
 	{
 		#echo "change ${val_val['value']}<br/>\n";
-		$val_key = $val_val['var'];
-		$var = $val_key;
-		$var = $val_val['var'];
-		$index = $val_val['index'];
-		$key = $val_val['key'];
-		$value = $val_val['value'];
-		if(!'1' == $conf_chan[$v['var']]['model'][$v['key']]['notrim'] && !'1' == $conf_chan[$v['var']]['notrim'])
+		if(isset($v['sort_order']))
 		{
-			$v['value'] = trim($v['value']);
-		}
-		if(!isset($conf_chan[$v['var']]))
-		{
-			die("no key ${v['var']} in $file.");
-		}
-		if($conf_chan[$v['var']]['type'] === 'array' && is_array($v))
-		{
-			if('[' === substr($v['index'], 0, 1) && ']' === substr($v['index'], -1))
-			{
-				$idx = $conf_chan[$v['var']]['index'];
-				$idx = substr($v['index'], 1, -1);
-				$idx = explode('==', $idx, 2);
-				$idx = $conf_chan[$v['var']]['index'][$idx[0]][$idx[1]];
-				$v['index'] = $idx;
-			}
-			if(!isset($conf_chan[$v['var']]['value'][$v['index']]))
-			{
-				if('_new_' == substr($v['index'], 0, 5))
-				{
-					$validate_index[] = array('var' => $v['var'], 'index' => $v['index']);
-				}
-				else 
-				{
-					die("no index ${v['index']} in ${v['var']} in $file.");
-				}
-			}
-			$config_check_types = config_check_types($conf_chan[$v['var']]['model'][$v['key']], $v['value']);
-			if(true === $config_check_types)
-			{
-				if('1' == $conf_chan[$v['var']]['model'][$v['key']]['index'] && isset($conf_chan[$v['var']]['index'][$v['key']][$v['value']]))
-				{
-					die('double index field');
-				}
-				else 
-				{
-					$conf_chan[$v['var']]['value'][$v['index']][$v['key']] = $v['value'];
-					if('1' == $conf_chan[$v['var']]['model'][$v['key']]['index'])
-					{
-						$conf_chan[$v['var']]['index'][$v['key']][$v['value']] = $v['index'];
-					}
-				}
-			}
-			else 
-			{
-				die(var_dump($config_check_types));
-			}
+			#echo '<pre>'.print_r($conf_chan, true)."</pre><br/>\n";
+			$resort_vars[$v['var']] = $v['sort_order'];
+			#die();
 		}
 		else 
 		{
-			$config_check_types = config_check_types($conf_chan[$v['var']], $v['value']);
-			if(true === $config_check_types)
+			if(!'1' == $conf_chan[$v['var']]['model'][$v['key']]['notrim'] && !'1' == $conf_chan[$v['var']]['notrim'])
 			{
-				$conf_chan[$v['var']]['value'] = $v['value'];
+				$v['value'] = trim($v['value']);
+			}
+			if(!isset($conf_chan[$v['var']]))
+			{
+				#die("no key ${v['var']} in $file.");
+				return "no key ${v['var']} in $file.";
+			}
+			if($conf_chan[$v['var']]['type'] === 'array' && is_array($v))
+			{
+				if('[' === substr($v['index'], 0, 1) && ']' === substr($v['index'], -1))
+				{
+					$idx = $conf_chan[$v['var']]['index'];
+					$idx = substr($v['index'], 1, -1);
+					$idx = explode('==', $idx, 2);
+					$idx = $conf_chan[$v['var']]['index'][$idx[0]][$idx[1]];
+					$v['index'] = $idx;
+				}
+				if(!isset($conf_chan[$v['var']]['value'][$v['index']]))
+				{
+					if('_new_' == substr($v['index'], 0, 5))
+					{
+						$validate_index[] = array('var' => $v['var'], 'index' => $v['index']);
+					}
+					else 
+					{
+						#die("no index ${v['index']} in ${v['var']} in $file.");
+						return "no index ${v['index']} in ${v['var']} in $file.";
+					}
+				}
+				$config_check_types = config_check_types($conf_chan[$v['var']]['model'][$v['key']], $v['value']);
+				if(true === $config_check_types)
+				{
+					if('1' == $conf_chan[$v['var']]['model'][$v['key']]['index'] && isset($conf_chan[$v['var']]['index'][$v['key']][$v['value']]))
+					{
+						#die('double index field');
+						return 'double index field';
+					}
+					else 
+					{
+						$conf_chan[$v['var']]['value'][$v['index']][$v['key']] = $v['value'];
+						if('1' == $conf_chan[$v['var']]['model'][$v['key']]['index'])
+						{
+							$conf_chan[$v['var']]['index'][$v['key']][$v['value']] = $v['index'];
+						}
+					}
+				}
+				else 
+				{
+					#die(var_dump($config_check_types));
+					return print_r($config_check_types, true);
+				}
 			}
 			else 
 			{
-				die(var_dump($config_check_types));
+				$config_check_types = config_check_types($conf_chan[$v['var']], $v['value']);
+				if(true === $config_check_types)
+				{
+					$conf_chan[$v['var']]['value'] = $v['value'];
+				}
+				else 
+				{
+					#die(var_dump($config_check_types));
+					return print_r($config_check_types, true);
+				}
 			}
 		}
 	}
@@ -100,13 +202,28 @@ function merge_config($file, $values, $mode='replace')
 				}
 				if( ( '1' == $mod_v['must'] || '1' == $mod_v['index'] ) && '' === $conf_chan[$v['var']]['value'][$v['index']][$mod_k])
 				{
-					die("$mod_k of ${v['var']} can not be empty.");
+					#die("$mod_k of ${v['var']} can not be empty.");
+					return "$mod_k of ${v['var']} can not be empty.";
 				}
 			}
 			$conf_chan[$v['var']]['value'][$new_index] = $conf_chan[$v['var']]['value'][$v['index']];
 			unset($conf_chan[$v['var']]['value'][$v['index']]);
+			if(is_array($resort_vars[$v['var']]) && in_array($v['index'], $resort_vars[$v['var']]))
+			{
+				$resort_key = array_search($v['index'], $resort_vars[$v['var']]);
+				$resort_vars[$v['var']][$resort_key] = $new_index;
+			}
 		}
 		#die(var_dump($validate_index));
+		if(0 < count($resort_vars))
+		{
+			#var_dump($resort_vars);
+			foreach($resort_vars as $k => $v)
+			{
+				$array_sort_keys_list = $v;
+				uksort($conf_chan[$k]['value'], 'array_sort_keys');
+			}
+		}
 	}
 	$conf_chan = config_reindex($conf_chan);
 	#echo "chang_conf: <br/>\n";
@@ -270,6 +387,7 @@ function write_config($file, $value)
 		die("${file_name} not writeable or present.\n");
 	}
 	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
+	chmod($file_name, 0666);
 	$$file = $value;
 }
 function check_email_address($email)
@@ -339,6 +457,33 @@ function check_login($user, $pass, $p_type='plain')
 	{
 		$msg = array('status'=>false, 'txt'=>'check_login_wrong_user');
 	}
+	if(false === $msg['status'])
+	{
+		global $bad_logins;
+		require_once('cms/config/bad_logins.php');
+		/*foreach($bad_logins['login']['value'] as $k => $v)
+		{
+		
+		}*/
+		$ip_key = $bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']];
+		$send_data = array();
+		if(!$ip_key)
+		{
+			$ip_key = '_new_1';
+			$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']);
+		}
+		$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'last_try', 'value'=>date('r'));
+		$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'count', 'value'=>(intval($bad_logins['login']['value'][$ip_key]['count'])+1));
+		$merge = merge_config('bad_logins', $send_data);/* array(
+			array('var'=>'login', 'index'=>$ip_key, 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']),
+			array('var'=>'login', 'index'=>$ip_key, 'key'=>'last_try', 'value'=>time()),
+			array('var'=>'login', 'index'=>$ip_key, 'key'=>'count', 'value'=>1),
+			));*/ # strtotime
+		if(true !== $merge)
+		{
+			$msg['txt_2'] = $ip_key . ' : ' . $merge;
+		}
+	}
 	return $msg;
 }
 function get_user_data($user)
@@ -353,11 +498,12 @@ function get_user_data($user)
 }
 function lecho($t, $l, $m='cms')
 {
+	#global $lang;
 	if($m == 'cms')
 	{
 		if(is_file('cms/lang/'.$l.'.php'))
 		{
-			include_once('cms/lang/'.$l.'.php');
+			require('cms/lang/'.$l.'.php');
 			if(isset($lang[$t]))
 			{
 				return $lang[$t];
@@ -365,7 +511,7 @@ function lecho($t, $l, $m='cms')
 		}
 		if(is_file('cms/lang/en.php'))
 		{
-			include_once('cms/lang/en.php');
+			require('cms/lang/en.php');
 			if(isset($lang[$t]))
 			{
 				return $lang[$t];

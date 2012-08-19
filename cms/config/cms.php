@@ -14,6 +14,13 @@ $cms = array(
 		'type'=>'text',
 		'match'=>'^[a-z]+$',
 	),
+	'test_multi'=>array(
+		'value'=>array('b','c'),
+		'type'=>'select_more',
+		'options' =>array(
+			'a','b','c'
+		)
+	),
 	'avail_page_lang' => array(
 		'value' => array(
 			'abcd1' => array(
