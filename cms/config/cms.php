@@ -17,9 +17,15 @@ $cms = array(
 	'test_multi'=>array(
 		'value'=>array('a','c'),
 		'type'=>'select_more',
+		'must'=>'1',
 		'options' =>array(
 			'a','bbbbbbbbbbbbbbbbbbbbbbbbb','c','dddddddddddd'
 		)
+	),
+	'test_mail' => array(
+		'value' => 'abc@def.gh',
+		'type'=>'email',
+		'must'=>1,
 	),
 	'avail_page_lang' => array(
 		'value' => array(
@@ -30,6 +36,10 @@ $cms = array(
 			'xyz2z' => array(
 				'lang' => 'en',
 				'lang_name' => 'english',
+			),
+			'mno9r' => array(
+				'lang' => 'es',
+				'lang_name' => 'español',
 			),
 		),
 		'type' => 'array',

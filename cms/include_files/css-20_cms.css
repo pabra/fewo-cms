@@ -13,7 +13,13 @@ form div.form_row span.ui-icon-info { position:absolute; right:-1px; top:-1px; d
 form div.form_row:hover span.ui-icon-info { display:block; }
 form div.form_row span.ui-icon-arrowreturnthick-1-s { position:absolute; right:-1px; bottom:-1px; cursor:pointer; display:none; }
 form div.form_row.changed span.ui-icon-arrowreturnthick-1-s, form div.form_row.mismatch span.ui-icon-arrowreturnthick-1-s { display:block; }
-form div.idx_group .idx_nav { display:none; background-color:#333; position:absolute; margin:0px; padding:0px; left:0px; top:-30px; /*width:150px;*/ height:30px; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom-left-radius:0px; border-bottom-right-radius:0px; }
+form div.idx_group .idx_nav { display:none; background-color:inherit; position:absolute; margin:0px; padding:0px; /*width:150px;*/ height:30px; border-top-left-radius:5px; border-top-right-radius:5px; border-bottom-left-radius:0px; border-bottom-right-radius:0px; }
+form div.idx_group .idx_nav.move_free { left:0px; top:-30px; }
+form div.idx_group .idx_nav.move_free span { cursor:move !important; }
+form div.idx_group .idx_nav.move_down { left:30px; top:-30px; }
+form div.idx_group .idx_nav.move_up { left:60px; top:-30px; }
+form div.idx_group .idx_nav.insert_new { left:90px; top:-30px; }
+form div.idx_group .idx_nav.delete { left:120px; top:-30px; }
 form .changed { background-color:#080; border-color:#080 !important; background-color:rgba(0, 128, 0, 0.05); }
 form .mismatch { background-color:#800; border-color:#800 !important; background-color:rgba(128, 0, 0, 0.05); }
 .idx_nav li { margin:2px; position:relative; padding:4px 0; cursor:pointer; float:left; list-style:none; }

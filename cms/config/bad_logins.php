@@ -1,16 +1,10 @@
-<?php # Tue, 21 Aug 2012 01:29:08 +0200
+<?php # Tue, 21 Aug 2012 09:22:38 +0200
 
 $bad_logins = array (
 	'login' => 
 	array (
 		'value' => 
 		array (
-			'H12dh' => 
-			array (
-				'ip' => '127.0.0.1',
-				'count' => '1',
-				'last_try' => 'Tue, 21 Aug 2012 01:29:08 +0200',
-			),
 		),
 		'type' => 'array',
 		'model' => 
@@ -33,7 +27,6 @@ $bad_logins = array (
 		array (
 			'ip' => 
 			array (
-				'127.0.0.1' => 'H12dh',
 			),
 		),
 	),

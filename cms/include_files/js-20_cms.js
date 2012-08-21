@@ -7,16 +7,48 @@
 		console.log( Array.prototype.slice.call(arguments) );
 	}
 };*/
-
+Object.size = function(obj){
+	var size = 0, key;
+	for(key in obj){
+		if (obj.hasOwnProperty(key)) size++;
+	}
+	return size;
+};
 function clog(l){
 	if('undefined' !== typeof(console)){
 		console.log(l);
 	}
 }
 
-function test(given_var){
-	var own_var = 1;
-	return ' '+own_var+' '+given_var+' ';
+function check_email_address(email)
+{
+	'use strict';
+	var email_array, local_array, domain_array, i;
+	// First, we check that there's one @ symbol, and that the lengths are right
+	if(!email.match(/^[^@]{1,64}@[^@]{1,255}$/)){
+		// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
+		return false;
+	}
+	// Split it into sections to make life easier
+	email_array = email.split('@');
+	local_array = email_array[0].split('.');
+	for(i=0; i<local_array.length; i++){
+		if(!local_array[i].match(/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/)){
+			return false;
+		}
+	}
+	if(!email_array[1].match(/^\[?[0-9\.]+\]?$/)){ // Check if domain is IP. If not, it should be valid domain name
+		domain_array = email_array[1].split('.');
+		if(domain_array.length < 2){
+			return false; // Not enough parts to domain
+		}
+		for(i=0; i<domain_array.length; i++){
+			if(!domain_array[i].match(/^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$/)){
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 $(function(){

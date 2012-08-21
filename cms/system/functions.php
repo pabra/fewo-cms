@@ -11,6 +11,7 @@ function edit_config($file, $vars=array())
 		$vars = array_keys($$file);
 	}
 	$out .= '<form class="config" action="javascript:void(0)">'."\n";
+	#$out .= '<input type="text" class="hidden no_parent changed" name="form_file_name" value="'.$file.'"/>'."\n";
 	foreach($$file as $k => $v)
 	{
 		if(in_array($k, $vars))
@@ -20,10 +21,16 @@ function edit_config($file, $vars=array())
 			{
 				$out .= '<fieldset class="sortable"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
 				$even_odd = 'odd';
+				$idx_keys = array_keys($v['value']);
+				$idx_keys = implode(':', $idx_keys);
+				$idx_name = 'sort_order:'.$file.':'.$k;
+				$idx_name_del = 'delete_index:'.$file.':'.$k;
+				$out .= '<input type="text" class="hidden no_parent sort_order" name="'.$idx_name.'" id="'.$idx_name.'" value="'.$idx_keys.'" />'."\n";
+				$out .= '<input type="text" class="hidden no_parent delete_index" name="'.$idx_name_del.'" id="'.$idx_name_del.'" value="" />'."\n";
 				foreach($v['value'] as $idx_k => $idx_v)
 				{
 					$even_odd = ($even_odd=='odd')? 'even' : 'odd';
-					$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">';
+					$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">'."\n";
 					foreach($v['model'] as $mod_k => $mod_v)
 					{
 						if('id' != $mod_k)
@@ -33,7 +40,12 @@ function edit_config($file, $vars=array())
 						}
 					}
 					#$out .= '<div class="idx_nav ui-widget ui-state-default"><a href="#" class="ui-icon ui-icon-arrowthick-1-n ui-state-default ui-corner-all sort_up"></a><a href="#" class="sort_down">down</a></div></div>';
-					$out .= '<ul class="idx_nav ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-n"></span></li></ul></div>';
+					$out .= '<ul class="idx_nav move_free ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrow-4"></span></li></ul>'."\n";
+					$out .= '<ul class="idx_nav move_down ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-s"></span></li></ul>'."\n";
+					$out .= '<ul class="idx_nav move_up ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-n"></span></li></ul>'."\n";
+					$out .= '<ul class="idx_nav insert_new ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-plus"></span></li></ul>'."\n";
+					$out .= '<ul class="idx_nav delete ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-trash"></span></li></ul>'."\n";
+					$out .= '</div>'."\n";
 				}
 				$out .= '</fieldset>'."\n";
 			}
@@ -45,7 +57,7 @@ function edit_config($file, $vars=array())
 			}
 		}
 	}
-	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div></form>'."\n";
+	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div>'."\n".'</form>'."\n";
 	#echo $out;
 	#die();
 	return $out;
@@ -61,7 +73,7 @@ function gen_config_field($v, $k)
 		$label .= '_'.$k['key'];
 		#var_dump($v);
 	}
-	$out = '<div class="form_row '.$v['type'].'"><label class="main" for="'.$fid.'">'.lecho($label, $admin_lang).'</label>';
+	$out = '<div class="form_row '.$v['type'].'">'."\n".'<label class="main" for="'.$fid.'">'.lecho($label, $admin_lang).'</label>'."\n";
 	$class = '';
 	$class .= ($v['must'])? ' must' : '';
 	$class .= ($v['match'])? ' match match_'.rawurlencode($v['match']) : '';
@@ -70,32 +82,35 @@ function gen_config_field($v, $k)
 	switch($v['type'])
 	{
 		case 'select_one':
-			$out .= '<select name="'.$fid.'" id="'.$fid.'">';
+			$out .= '<select name="'.$fid.'" id="'.$fid.'">'."\n";
 			foreach($v['options'] as $ok => $ov)
 			{
 				$sel = ($ov == $v['value'])? ' selected="selected"' : '';
-				$out .= '<option'.$sel.'>'.htmlspecialchars($ov).'</option>';
+				$out .= '<option value="'.$ok.'"'.$sel.'>'.htmlspecialchars($ov).'</option>'."\n";
 			}
-			$out .= '</select>';
+			$out .= '</select>'."\n";
 			break;
 		case 'select_more':
+			$val = '';
 			foreach($v['options'] as $ok => $ov)
 			{
 				$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
-				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' /><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($ov).'</label></div>';
+				$val .= ($sel)? ':'.$ok : '';
+				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' value="'.$ok.'"/><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($ov).'</label></div>'."\n";
 			}
+			$out .= '<input type="text" class="hidden select_more_value'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.substr($val, 1).'" />'."\n";
 			break;
 		case 'password':
-			$out .= '<input type="password" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="password" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 			break;
 		case 'email':
-			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 			break;
 		case 'text':
 		default:
-			$out .= '<input type="text" class="'.$class.'" '.$match.' name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="text" class="'.$class.'" '.$match.' name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 	}
-	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'"></span></div>';
+	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'"></span>'."\n".'</div>'."\n";
 	return $out;
 }
 function merge_config($file, $values, $mode='replace')
