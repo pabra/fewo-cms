@@ -13,6 +13,10 @@ if($_COOKIE['sess'] && $_GET['do'] === 'check_login' && $_POST['user'] && $_POST
 	$return['status'] = 200;
 	$return['msg'] = 'You asked for '+var_export($_POST['user'], true);
 	$login_checked = check_login($_POST['user'], $_POST['md5_pass'], 'md5');
+	if(true === $login_checked['status'])
+	{
+		$session_register = session_my_register();
+	}
 	$return['status'] = $login_checked['status'];
 	$return['msg'] = lecho($login_checked['txt'], $admin_lang);
 	if($login_checked['txt_2'])

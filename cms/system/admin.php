@@ -17,6 +17,7 @@ $admin_header = <<< EOT
 		<script type="text/javascript" src="?javascript_admin_js"></script>
 	</head>
 	<body>
+	<div id="admin_head_bar"></div>
 EOT;
 
 $admin_footer = <<< EOT
@@ -74,19 +75,25 @@ if($_COOKIE['sess'])
 		$login_checked = check_login($_POST['user'], $_POST['pass']);
 		if(true === $login_checked['status'])
 		{
-			$admin_content .= "get user data<br/>\n";
-			$login_user_data = get_user_data($_POST['user']);
-			if(count($login_user_data) && isset($login_user_data['role']))
+			$session_register = session_my_register();
+#			$admin_content .= "get user data<br/>\n";
+#			$login_user_data = get_user_data($_POST['user']);
+#			if(count($login_user_data) && isset($login_user_data['role']))
+#			{
+#				unset($login_user_data['password']);
+#				$session_data = $login_user_data;
+#				$session_data['sess'] = $_COOKIE['sess'];
+#				$session_data['time'] = time();
+#				$session_data['ip'] = $_SERVER['REMOTE_ADDR'];
+#				$session_data['ua'] = var_export($_SERVER['HTTP_USER_AGENT'], true);
+#				#write_config('sessions', )
+#			}
+#			$admin_content .= print_r($session_data, true)."<br/>\n";
+			if(isset($_POST['req_page']) && 'admin&' == substr($_POST['req_page'], 0, 6))
 			{
-				unset($login_user_data['password']);
-				$session_data = $login_user_data;
-				$session_data['sess'] = $_COOKIE['sess'];
-				$session_data['time'] = time();
-				$session_data['ip'] = $_SERVER['REMOTE_ADDR'];
-				$session_data['ua'] = var_export($_SERVER['HTTP_USER_AGENT'], true);
-				#write_config('sessions', )
+				header('Location: ?'.$_POST['req_page']);
+				die();
 			}
-			$admin_content .= print_r($session_data, true)."<br/>\n";
 		}
 		$admin_content .= lecho($login_checked['txt'], $admin_lang);
 		/*require_once('cms/config/users.php');
@@ -110,24 +117,32 @@ if($_COOKIE['sess'])
 	}
 	else 
 	{
-		$admin_content .= 'check_session()'."\n";
+		/*$admin_content .=*/ check_session();
 	}
-	setcookie('sess', '', 1);
+	if(!isset($sess_data['role']))
+	{
+		setcookie('sess', '', 1);
+		$admin_content .= 'cookie cleared'."<br/>\n";
+	}
 }
-if(false === $user)
+if(!isset($sess_data['role']))
 {
 	setcookie('sess', md5($_SERVER['HTTP_HOST'].microtime(true)));
 	$admin_content .= '<form class="login" action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
-	$admin_content .= '<div><label for="in_user">User:</label> <input id="in_user" type="text" name="user" /></div>';
-	$admin_content .= '<div><label for="in_pass">Pass:</label> <input id="in_pass" type="password" name="pass" /></div>';
+	$admin_content .= '<div class="form_row"><label for="in_user" class="main">'.lecho('admin_field_user', $admin_lang).':</label> <input id="in_user" type="text" name="user" /></div>';
+	$admin_content .= '<div class="form_row"><label for="in_pass" class="main">'.lecho('admin_field_pass', $admin_lang).':</label> <input id="in_pass" type="password" name="pass" /></div>';
 	#$admin_content .= '<div><label for="in_select">Select:</label> <select id="in_select" name="select" size="1"><option>erster</option><option>zweiter und erster</option></select></div>';
 	#$admin_content .= '<div><label for="in_text">Text:</label> <textarea id="in_text" name="pass" /></textarea></div>';
 	#$admin_content .= '<div><label for="in_check">Check:</label> <input id="in_check" type="checkbox" name="check" /></div>';
 	$admin_content .= '<input type="hidden" name="req_page" value="'.htmlspecialchars($_SERVER['QUERY_STRING']).'" />';
-	$admin_content .= '<div><input type="submit"/></div></form>'."\n";
+	$admin_content .= '<div class="form_row"><input type="submit" value="'.lecho('button_submit', $admin_lang).'" /></div></form>'."\n";
 }
 else 
 {
+	$admin_content .= "You are someone<br/>\n";
+	$admin_content .= '<script type="text/javascript">var admin_keep_alive = '.$sessions['keep_alive']['value'].';</script>'."\n";
+	#$admin_content .= print_r($sess_data, true)."<br/>\n";
+	$admin_content .= edit_config('cms');
 }
 
 $page_out = $admin_header . $admin_content . $admin_footer;

@@ -15,10 +15,10 @@ $cms = array(
 		'match'=>'^[a-z]+$',
 	),
 	'test_multi'=>array(
-		'value'=>array('b','c'),
+		'value'=>array('a','c'),
 		'type'=>'select_more',
 		'options' =>array(
-			'a','b','c'
+			'a','bbbbbbbbbbbbbbbbbbbbbbbbb','c','dddddddddddd'
 		)
 	),
 	'avail_page_lang' => array(

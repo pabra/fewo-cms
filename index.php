@@ -131,7 +131,7 @@ if(true === $use_cache)
 	{
 		die('Kann Cache-Datei nicht anlegen.');
 	}
-	chmod($cache_file, 0666);
+	@chmod($cache_file, 0666);
 	header('Last-Modified: ' . date('r', filemtime($cache_file)));
 	if(true === $gzip_cache){
 		$page_out_gz = gzencode($page_out);
@@ -140,7 +140,7 @@ if(true === $use_cache)
 		{
 			die('Kann gzip Cache-Datei nicht anlegen.');
 		}
-		chmod($cache_file_gzip, 0666);
+		@chmod($cache_file_gzip, 0666);
 		if(true === $browser_gzip)
 		{
 			header('Content-Encoding: gzip');

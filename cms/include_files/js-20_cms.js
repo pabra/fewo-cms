@@ -1,5 +1,19 @@
 // JS for CMS
 
+/*window.log = function(){
+	log.history = log.history || [];   // store logs to an array for reference
+	log.history.push(arguments);
+	if(this.console){
+		console.log( Array.prototype.slice.call(arguments) );
+	}
+};*/
+
+function clog(l){
+	if('undefined' !== typeof(console)){
+		console.log(l);
+	}
+}
+
 function test(given_var){
 	var own_var = 1;
 	return ' '+own_var+' '+given_var+' ';

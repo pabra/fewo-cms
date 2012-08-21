@@ -10,7 +10,7 @@ function edit_config($file, $vars=array())
 	{
 		$vars = array_keys($$file);
 	}
-	$out .= '<form class="config">'."\n";
+	$out .= '<form class="config" action="javascript:void(0)">'."\n";
 	foreach($$file as $k => $v)
 	{
 		if(in_array($k, $vars))
@@ -23,7 +23,7 @@ function edit_config($file, $vars=array())
 				foreach($v['value'] as $idx_k => $idx_v)
 				{
 					$even_odd = ($even_odd=='odd')? 'even' : 'odd';
-					$out .= '<div id="'.$k.'|'.$idx_k.'" class="idx_group '.$even_odd.'">';
+					$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">';
 					foreach($v['model'] as $mod_k => $mod_v)
 					{
 						if('id' != $mod_k)
@@ -45,7 +45,7 @@ function edit_config($file, $vars=array())
 			}
 		}
 	}
-	$out .= '</form>'."\n";
+	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div></form>'."\n";
 	#echo $out;
 	#die();
 	return $out;
@@ -53,15 +53,20 @@ function edit_config($file, $vars=array())
 function gen_config_field($v, $k)
 {
 	global $admin_lang;
-	$fid = "${k['file']}[${k['val']}]";
+	$fid = "${k['file']}:${k['val']}";
 	$label = 'config_'.$k['val'];
 	if(isset($k['index']) && isset($k['key']))
 	{
-		$fid .= "[${k['index']}][${k['key']}]";
+		$fid .= ":${k['index']}:${k['key']}";
 		$label .= '_'.$k['key'];
 		#var_dump($v);
 	}
-	$out = '<div class="form_row"><label class="main" for="'.$fid.'">'.lecho($label, $admin_lang).'</label>';
+	$out = '<div class="form_row '.$v['type'].'"><label class="main" for="'.$fid.'">'.lecho($label, $admin_lang).'</label>';
+	$class = '';
+	$class .= ($v['must'])? ' must' : '';
+	$class .= ($v['match'])? ' match match_'.rawurlencode($v['match']) : '';
+	$class .= ($v['notrim'])? ' notrim' : '';
+	#$match = ($v['match'])? ' match="'.htmlspecialchars($v['match']).'"' : '';
 	switch($v['type'])
 	{
 		case 'select_one':
@@ -77,20 +82,20 @@ function gen_config_field($v, $k)
 			foreach($v['options'] as $ok => $ov)
 			{
 				$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
-				$out .= '<div><input type="checkbox" name="'.$fid.'['.$ok.']" id="'.$fid.'['.$ok.']"'.$sel.' /><label for="'.$fid.'['.$ok.']">'.htmlspecialchars($ov).'</label></div>';
+				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' /><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($ov).'</label></div>';
 			}
 			break;
 		case 'password':
-			$out .= '<input type="password" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="password" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
 			break;
 		case 'email':
-			$out .= '<input type="text" class="email" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
 			break;
 		case 'text':
 		default:
-			$out .= '<input type="text" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
+			$out .= '<input type="text" class="'.$class.'" '.$match.' name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />';
 	}
-	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span></div>';
+	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'"></span></div>';
 	return $out;
 }
 function merge_config($file, $values, $mode='replace')
@@ -111,11 +116,30 @@ function merge_config($file, $values, $mode='replace')
 			$resort_vars[$v['var']] = $v['sort_order'];
 			#die();
 		}
+		elseif($v['delete'] && 'array' == $conf_chan[$v['var']]['type'])
+		{
+			if(intval($conf_chan[$v['var']]['keep']) <= count($conf_chan[$v['var']]['value']) -1)
+			{
+				if('[' === substr($v['index'], 0, 1) && ']' === substr($v['index'], -1))
+				{
+					$idx = $conf_chan[$v['var']]['index'];
+					$idx = substr($v['index'], 1, -1);
+					$idx = explode('==', $idx, 2);
+					$idx = $conf_chan[$v['var']]['index'][$idx[0]][$idx[1]];
+					$v['index'] = $idx;
+				}
+				unset($conf_chan[$v['var']]['value'][$v['index']]);
+			}
+		}
 		else 
 		{
 			if(!'1' == $conf_chan[$v['var']]['model'][$v['key']]['notrim'] && !'1' == $conf_chan[$v['var']]['notrim'])
 			{
 				$v['value'] = trim($v['value']);
+			}
+			if('integer' == $conf_chan[$v['var']]['model'][$v['key']]['type'] || 'integer' == $conf_chan[$v['var']]['type'])
+			{
+				$v['value'] = intval($v['value']);
 			}
 			if(!isset($conf_chan[$v['var']]))
 			{
@@ -296,7 +320,7 @@ function config_reindex($config)
 				}
 			}
 		}
-		$array_sort_keys_list = array('value','type','match','model','index','list','must','keep','notrim','options');
+		$array_sort_keys_list = array('value','type','match','must','keep','notrim','model','index','list','options');
 		uksort($config[$k], 'array_sort_keys');
 	}
 	return $config;
@@ -364,22 +388,26 @@ function write_config($file, $value)
 {
 	global $$file;
 	$file_name = 'cms/config/'.$file.'.php';
-	for($i=8; $i>=0; $i--)
+	$no_versions = array('sessions', 'bad_logins', 'cache_files');
+	if(false === in_array($file, $no_versions))
 	{
-		$bak_file_1 = 'cms/config/'.$file.'.'.$i.'.php';
-		$bak_file_2 = 'cms/config/'.$file.'.'.($i+1).'.php';
-		if($i === 8 && is_file($bak_file_2))
+		for($i=8; $i>=0; $i--)
 		{
-			unlink($bak_file_2);
-		}
-		if(0 === $i)
-		{
-			$bak_file_1 = $file_name;
-		}
-		if(is_file($bak_file_1))
-		{
-			#copy($bak_file_1, $bak_file_2);
-			rename($bak_file_1, $bak_file_2);
+			$bak_file_1 = 'cms/config/'.$file.'.'.$i.'.php';
+			$bak_file_2 = 'cms/config/'.$file.'.'.($i+1).'.php';
+			if($i === 8 && is_file($bak_file_2))
+			{
+				unlink($bak_file_2);
+			}
+			if(0 === $i)
+			{
+				$bak_file_1 = $file_name;
+			}
+			if(is_file($bak_file_1))
+			{
+				#copy($bak_file_1, $bak_file_2);
+				rename($bak_file_1, $bak_file_2);
+			}
 		}
 	}
 	if(!is_writable($file_name) && !is_writable('cms/config/'))
@@ -387,7 +415,7 @@ function write_config($file, $value)
 		die("${file_name} not writeable or present.\n");
 	}
 	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
-	chmod($file_name, 0666);
+	@chmod($file_name, 0666);
 	$$file = $value;
 }
 function check_email_address($email)
@@ -425,11 +453,102 @@ function check_email_address($email)
 	}
 	return true;
 }
+function session_my_register()
+{
+	global $sessions, $sess_data;
+	require_once('cms/config/sessions.php');
+	$send_data = array();
+	foreach($sessions['sessions']['value'] as $k => $v)
+	{
+		if(time() - strtotime($v['time']) > 2*$sessions['keep_alive']['value'])
+		{
+			unset($sessions['sessions']['value'][$k]);
+			$send_data[] = array('var'=>'sessions', 'index'=>$k, 'delete'=>$k);
+		}
+	}
+	if(0 < count($send_data))
+	{
+		$sessions = config_reindex($sessions);
+		#merge_config('sessions', $send_data);
+	}
+	$user_data = get_user_data($_POST['user']);
+	unset($user_data['password']);
+	$sess_data = array(
+		'sess' => $_COOKIE['sess'],
+		#'ua' => $_SERVER['HTTP_USER_AGENT'],
+		#'ip' => $_SERVER['REMOTE_ADDR'],
+		#'time' => 
+		'user_name' => $user_data['user_name'],
+		'real_name' => $user_data['real_name'],
+		'role' => $user_data['role'],
+		'email' => $user_data['email'],
+	);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'sess', 'value'=>$_COOKIE['sess']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'ua', 'value'=>$_SERVER['HTTP_USER_AGENT']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'time', 'value'=>date('r'));
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'user_index', 'value'=>$user_data['id']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'user_name', 'value'=>$user_data['user_name']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'real_name', 'value'=>$user_data['real_name']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'email', 'value'=>$user_data['email']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'role', 'value'=>$user_data['role']);
+	#die('now merge session: '.print_r($send_data, true));
+	merge_config('sessions', $send_data);
+}
+function check_session()
+{
+	global $sessions, $sess_data;
+	require_once('cms/config/sessions.php');
+	if(32 != strlen($_COOKIE['sess']))
+	{
+		return false;
+	}
+	$sess_key = $sessions['sessions']['index']['sess'][$_COOKIE['sess']];
+	if(!isset($sessions['sessions']['value'][$sess_key]))
+	{
+		return false;
+	}
+	$sess_data = $sessions['sessions']['value'][$sess_key];
+	if($sessions['keep_alive']['value'] < time() - strtotime($sess_data['time']) || $_SERVER['HTTP_USER_AGENT'] !== $sess_data['ua'] || $_SERVER['REMOTE_ADDR'] != $sess_data['ip'])
+	{
+		merge_config('sessions', array(array('var'=>'sessions', 'index'=>$sess_key, 'delete'=>'1')));
+		$sess_data = array();
+		return false;
+	}
+	merge_config('sessions', array(array('var'=>'sessions', 'index'=>$sess_key, 'key'=>'time', 'value'=>date('r'))));
+	$sess_data = $sessions['sessions']['value'][$sess_key];
+	return true;
+}
 function check_login($user, $pass, $p_type='plain')
 {
-	global $users;
+	global $users, $bad_logins;
 	require_once('cms/config/users.php');
+	require_once('cms/config/bad_logins.php');
 	$msg = array();
+	$merge_delete = array();
+	foreach($bad_logins['login']['value'] as $k => $v)
+	{
+		if(time() - strtotime($v['last_try']) > 3*60*60)
+		{
+			unset($bad_logins['login']['value'][$k]);
+			$merge_delete[] = array('var'=>'login', 'index'=>$k, 'delete' => $k);
+		}
+	}
+	if(0 < count($merge_delete))
+	{
+		$bad_logins = config_reindex($bad_logins);
+		merge_config('bad_logins', $merge_delete);
+	}
+	$ip_key = $bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']];
+	if($ip_key)
+	{
+		$last_try = strtotime($bad_logins['login']['value'][$ip_key]['last_try']);
+		$count = intval($bad_logins['login']['value'][$ip_key]['count']);
+		if($count >= 3 && time()-$last_try < 10*60)
+		{
+			return array('status' => false, 'txt' => 'too_often_bad_login');
+		}
+	}
 	$user_index = false;
 	if(isset($users['users']['index']['user_name'][$_POST['user']]))
 	{
@@ -438,13 +557,13 @@ function check_login($user, $pass, $p_type='plain')
 	elseif(isset($users['users']['list']['email'][$_POST['user']]) && 1 === count($users['users']['list']['email'][$_POST['user']]))
 	{
 		$user_index = $users['users']['list']['email'][$_POST['user']][0];
-		$user_val = $users['users']['value'][$user_index];
+		$_POST['user'] = $users['users']['value'][$user_index]['user_name'];
 	}
 	if(false !== $user_index)
 	{
-		$user_val = $users['users']['value'][$user_index];
+		#$user_val = $users['users']['value'][$user_index];
 		$pass = ($p_type == 'plain')? md5($pass) : $pass;
-		if($pass === $user_val['password'])
+		if($pass === $users['users']['value'][$user_index]['password'])
 		{
 			$msg = array('status'=>true, 'txt'=>'check_login_success');
 		}
@@ -459,30 +578,31 @@ function check_login($user, $pass, $p_type='plain')
 	}
 	if(false === $msg['status'])
 	{
-		global $bad_logins;
-		require_once('cms/config/bad_logins.php');
+		#global $bad_logins;
+		#require_once('cms/config/bad_logins.php');
 		/*foreach($bad_logins['login']['value'] as $k => $v)
 		{
 		
 		}*/
-		$ip_key = $bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']];
+		#$ip_key = $bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']];
 		$send_data = array();
 		if(!$ip_key)
 		{
 			$ip_key = '_new_1';
 			$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']);
+			$count = 0;
+		}
+		else 
+		{
+			$count = intval($bad_logins['login']['value'][$ip_key]['count']);
 		}
 		$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'last_try', 'value'=>date('r'));
-		$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'count', 'value'=>(intval($bad_logins['login']['value'][$ip_key]['count'])+1));
-		$merge = merge_config('bad_logins', $send_data);/* array(
-			array('var'=>'login', 'index'=>$ip_key, 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']),
-			array('var'=>'login', 'index'=>$ip_key, 'key'=>'last_try', 'value'=>time()),
-			array('var'=>'login', 'index'=>$ip_key, 'key'=>'count', 'value'=>1),
-			));*/ # strtotime
-		if(true !== $merge)
-		{
-			$msg['txt_2'] = $ip_key . ' : ' . $merge;
-		}
+		$send_data[] = array('var'=>'login', 'index'=>$ip_key, 'key'=>'count', 'value'=>($count+1));
+		merge_config('bad_logins', $send_data);
+	}
+	if(true === $msg['status'] && isset($bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']]))
+	{
+		merge_config('bad_logins', array(array('var'=>'login', 'index'=>$bad_logins['login']['index']['ip'][$_SERVER['REMOTE_ADDR']], 'delete'=>'1')));
 	}
 	return $msg;
 }

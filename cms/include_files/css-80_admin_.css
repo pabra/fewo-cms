@@ -6,3 +6,7 @@ html.ie7 h1 { background-color:#333; }
 html.ie8 h1 { background-color:#999; }
 html.ie9 h1 { background-color:#999; }
 
+div#admin_head_bar { position:absolute; top:0px; left:0px; right:0px; height:71px; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:bottom; }
+html.ie6 div#admin_head_bar { width:100%; }
+body { background-image:url(cms/include_files/images/bg_lines.gif); background-repeat:repeat; }
+
