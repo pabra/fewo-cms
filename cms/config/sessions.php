@@ -1,4 +1,4 @@
-<?php # Wed, 22 Aug 2012 01:28:54 +0200
+<?php # Thu, 23 Aug 2012 02:06:29 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -10,24 +10,24 @@ $sessions = array (
 	array (
 		'value' => 
 		array (
-			'LaM4e' => 
+			'H4nrE' => 
 			array (
-				'sess' => '42a3385941eb68f3f68a0ecda275fd51',
-				'ua' => 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322)',
-				'ip' => '192.168.1.3',
-				'time' => 'Tue, 21 Aug 2012 21:23:33 +0200',
+				'sess' => 'd5e072da068d61ac351c0cae83348fe9',
+				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
+				'ip' => '127.0.0.1',
+				'time' => 'Wed, 22 Aug 2012 20:56:17 +0200',
 				'user_index' => 'ab12d',
 				'user_name' => 'user',
 				'real_name' => 'Benutzer  User',
 				'email' => 'a@b.c',
 				'role' => 'admin',
 			),
-			'DJuRK' => 
+			'N8LTn' => 
 			array (
-				'sess' => 'a2962561e56b9ec44fd605e33c542eb7',
+				'sess' => 'b4cb8678b2d12a9f241a4ad50b7c643c',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Wed, 22 Aug 2012 01:28:54 +0200',
+				'time' => 'Thu, 23 Aug 2012 02:06:29 +0200',
 				'user_index' => 'ab12d',
 				'user_name' => 'user',
 				'real_name' => 'Benutzer  User',
@@ -80,8 +80,8 @@ $sessions = array (
 		array (
 			'sess' => 
 			array (
-				'42a3385941eb68f3f68a0ecda275fd51' => 'LaM4e',
-				'a2962561e56b9ec44fd605e33c542eb7' => 'DJuRK',
+				'd5e072da068d61ac351c0cae83348fe9' => 'H4nrE',
+				'b4cb8678b2d12a9f241a4ad50b7c643c' => 'N8LTn',
 			),
 		),
 	),

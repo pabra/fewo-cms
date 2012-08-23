@@ -65,8 +65,12 @@ $admin_content .= '<noscript>'.lecho('admin_enable_javascript', $admin_lang).'</
 	array('var'=>'users', 'index'=>'_new_1', 'key'=>'password', 'value'=>'123'),
 	#array('var'=>'users', 'index'=>'_new_2', 'key'=>'password', 'value'=>'123'),
 	));*/
+/*merge_config('cms', array(
+	array('var'=>'avail_page_lang', 'sort_order'=>array("abcd1","mno9r","xyz2z")),
+	));*/
 #$admin_content .= edit_config('cms'); # array('test','page_def_lang_prior_browser_accept')
 #$admin_content .= edit_config('users'); # array('test','page_def_lang_prior_browser_accept')
+#die();
 if($_COOKIE['sess'])
 {
 	#check_session();

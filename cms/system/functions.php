@@ -19,7 +19,8 @@ function edit_config($file, $vars=array())
 			#var_dump($v);
 			if('array' == $v['type'])
 			{
-				$out .= '<fieldset class="sortable"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
+				$keep = (isset($v['keep']))? ' keep keep_'.$v['keep'] : '';
+				$out .= '<fieldset class="sortable'.$keep.'"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
 				$even_odd = 'odd';
 				$idx_keys = array_keys($v['value']);
 				$idx_keys = implode(':', $idx_keys);
@@ -57,7 +58,8 @@ function edit_config($file, $vars=array())
 			}
 		}
 	}
-	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div>'."\n".'</form>'."\n";
+	#$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div>'."\n".'</form>'."\n";
+	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/></div>'."\n".'</form>'."\n";
 	#echo $out;
 	#die();
 	return $out;
@@ -113,7 +115,7 @@ function gen_config_field($v, $k)
 	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'"></span>'."\n".'</div>'."\n";
 	return $out;
 }
-function merge_config($file, $values, $mode='replace')
+function merge_config($file, $values, $select_one_more_value='key')
 {
 	global $$file, $array_sort_keys_list;
 	$file_name = 'cms/config/'.$file.'.php';
@@ -129,7 +131,7 @@ function merge_config($file, $values, $mode='replace')
 		{
 			#echo '<pre>'.print_r($conf_chan, true)."</pre><br/>\n";
 			$resort_vars[$v['var']] = $v['sort_order'];
-			#die();
+			#die(print_r($resort_vars, true));
 		}
 		elseif($v['delete'] && 'array' == $conf_chan[$v['var']]['type'])
 		{
@@ -148,6 +150,11 @@ function merge_config($file, $values, $mode='replace')
 		}
 		else 
 		{
+			if(!isset($conf_chan[$v['var']]))
+			{
+				#die("no key ${v['var']} in $file.");
+				return "no key ${v['var']} in $file.";
+			}
 			if(!'1' == $conf_chan[$v['var']]['model'][$v['key']]['notrim'] && !'1' == $conf_chan[$v['var']]['notrim'])
 			{
 				$v['value'] = trim($v['value']);
@@ -156,10 +163,36 @@ function merge_config($file, $values, $mode='replace')
 			{
 				$v['value'] = intval($v['value']);
 			}
-			if(!isset($conf_chan[$v['var']]))
+			if( ('select_one' == $conf_chan[$v['var']]['model'][$v['key']]['type'] || 'select_one' == $conf_chan[$v['var']]['type']) && $select_one_more_value == 'key')
 			{
-				#die("no key ${v['var']} in $file.");
-				return "no key ${v['var']} in $file.";
+				if('array' == $conf_chan[$v['var']]['type'])
+				{
+					$opts = $conf_chan[$v['var']]['model'][$v['key']]['options'];
+				}
+				else 
+				{
+					$opts = $conf_chan[$v['var']]['options'];
+				}
+				$v['value'] = $opts[$v['value']];
+			}
+			if( ('select_more' == $conf_chan[$v['var']]['model'][$v['key']]['type'] || 'select_more' == $conf_chan[$v['var']]['type']) && $select_one_more_value == 'key')
+			{
+				if('array' == $conf_chan[$v['var']]['type'])
+				{
+					$opts = $conf_chan[$v['var']]['model'][$v['key']]['options'];
+					#$v['value'] = $conf_chan[$v['var']]['model'][$v['key']]['options'][$v['value']];
+				}
+				else 
+				{
+					$opts = $conf_chan[$v['var']]['options'];
+					#$v['value'] = $conf_chan[$v['var']]['options'][$v['value']];
+				}
+				$tmp = explode(':', $v['value']);
+				$v['value'] = array();
+				foreach($tmp as $ok => $ov)
+				{
+					$v['value'][] = $opts[$ov];
+				}
 			}
 			if($conf_chan[$v['var']]['type'] === 'array' && is_array($v))
 			{
@@ -253,16 +286,18 @@ function merge_config($file, $values, $mode='replace')
 				$resort_vars[$v['var']][$resort_key] = $new_index;
 			}
 		}
-		#die(var_dump($validate_index));
-		if(0 < count($resort_vars))
+	}
+	#die(var_dump($validate_index));
+	if(0 < count($resort_vars))
+	{
+		#var_dump($resort_vars);
+		foreach($resort_vars as $k => $v)
 		{
-			#var_dump($resort_vars);
-			foreach($resort_vars as $k => $v)
-			{
-				$array_sort_keys_list = $v;
-				uksort($conf_chan[$k]['value'], 'array_sort_keys');
-			}
+			$array_sort_keys_list = $v;
+			uksort($conf_chan[$k]['value'], 'array_sort_keys');
 		}
+		#die('sorted');
+		
 	}
 	$conf_chan = config_reindex($conf_chan);
 	#echo "chang_conf: <br/>\n";
@@ -363,6 +398,21 @@ function config_check_types($conf_val, $new_val)
 		{
 			return 'conf_err_not_in_options';
 		}
+	}
+	if($conf_val['type'] === 'select_more')
+	{
+		if(!is_array($new_val))
+		{
+			return 'conf_err_not_array';
+		}
+		foreach($new_val as $k => $v)
+		{
+			if(!in_array($v, $conf_val['options']))
+			{
+				return 'conf_err_not_in_options';
+			}
+		}
+		return true;
 	}
 	elseif($conf_val['type'] === 'text')
 	{

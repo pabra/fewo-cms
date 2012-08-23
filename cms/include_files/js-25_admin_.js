@@ -54,87 +54,15 @@ $(function(){
 		//});
 		//$('#progressbar').progressbar({value:35});
 	});
-	$('form.config fieldset.sortable').sortable({
-		items: "div.idx_group",
-		handle: ".move_free",
-		opacity: 0.6,
-		axis:'y',
-		//forcePlaceholderSize: true,
-		//forceHelperSize:true,
-		update:function(ev){
-			idx_group_sorted($(this));
-		},
-		change:function(){
-			$('fieldset.sortable div.idx_group:even').removeClass('odd').addClass('even');
-			$('fieldset.sortable div.idx_group:odd').removeClass('even').addClass('odd');
-		}
-	});
 	//$('fieldset.sortable').disableSelection();
 	//$('fieldset.sortable input').click(function(){ if(false === $(this).is(':focus')){ $(this).focus(); } });
-	$('form.config div.idx_group').mouseenter(function(ev){
-		$(this).find('.idx_nav:not(.move_up):not(.move_down)').show('slide',{direction:'down'},300);
-		if(1 === $(this).prev('.idx_group').length){
-			$(this).find('.idx_nav.move_up').show('slide',{direction:'down'},300);
-		}
-		if(1 === $(this).next('.idx_group').length){
-			$(this).find('.idx_nav.move_down').show('slide',{direction:'down'},300);
-		}
-	}).mouseleave(function(ev){
-		$(this).find('.idx_nav:visible').hide('slide',{direction:'down'},300);
-	});
 	/*$('div.idx_group:not(:first)').mouseenter(function(ev){
 		$(this).find('.idx_nav.move_up').show('slide',{direction:'down'},300);
 	});
 	$('div.idx_group:not(:last)').mouseenter(function(ev){
 		$(this).find('.idx_nav.move_down').show('slide',{direction:'down'},300);
 	});*/
-	$('form.config .idx_nav li').hover(
-		function() { $(this).addClass('ui-state-hover'); }, 
-		function() { $(this).removeClass('ui-state-hover'); }
-	);
-	$('form.config .idx_nav.move_up span').click(function(){
-		$(this).parents('.idx_group').insertBefore($(this).parents('.idx_group').prev('.idx_group'));
-		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
-		idx_group_sorted($(this).parents('fieldset'));
-	});
-	$('form.config .idx_nav.move_down span').click(function(){
-		$(this).parents('.idx_group').insertAfter($(this).parents('.idx_group').next('.idx_group'));
-		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
-		idx_group_sorted($(this).parents('fieldset'));
-	});
-	$('form.config .idx_nav.delete span').click(function(){
-		var input = $(this).parents('fieldset').find('.delete_index'),
-			group = $(this).parents('.idx_group'),
-			index_key = group.prop('id').split(':')[1],
-			fieldset = $(this).parents('fieldset');
-		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
-		idx_group_sorted($(this).parents('fieldset'));
-		if(input.val()){
-			input.val(input.val()+':'+index_key);
-		} else {
-			input.val(index_key);
-		}
-		group.remove();
-		input.change();
-		idx_group_sorted(fieldset);
-	});
-	$('form.config input:not(.notrim)').change(function(){
-		$(this).val($.trim($(this).val()));
-	});
-	$('form.config select').each(function(k, v){
-		$(v).prop({defaultValue: $(v).val()});
-		//clog($(v));
-	});
-	$('form.config .ui-icon-arrowreturnthick-1-s').click(function(){
-		$(this).parents('.form_row').find('input, textarea, select').each(function(k,v){
-			if('checkbox' === $(v).prop('type')){
-				$(v).prop({checked: $(v).prop('defaultChecked')});
-			} else {
-				$(v).val($(v).prop('defaultValue')).change();
-				
-			}
-		});
-	});
+	fieldset_add_listener();
 	$('form.config').submit(function(ev){
 		var send_obj = {}, mis_matched = $('form.config .mismatch');
 		ev.preventDefault();
@@ -156,26 +84,181 @@ $(function(){
 		clog(send_obj.length);
 		if(0 === Object.size(send_obj)){
 			//$('#dialog').attr({title:'nothing to do'}).text('Here is nothing to do.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+			$('#dialog').attr('title', 'nothing changed').html('No changed values to submit.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
 		} else {
 			clog(send_obj);
-			//$.post('ajax.php', send_obj);
+			$.post('ajax.php?do=send_config', send_obj, function(data){
+				clog(data);
+				if(true === data.status){
+					window.location.reload();
+				} else {
+					$('#dialog').attr('title', 'Error').html(data.txt).dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+				}
+			});
 		}
 	});
-	$('form.config').on('reset', function(){
+	/*$('form.config').on('reset', function(ev){
+		ev.preventDefault();
 		clog('reset');
+		return;
 		//var self = $(this);
 		window.setTimeout(function(){
 			$('form.config input, form.config textarea, form.config select').each(function(){
 				//clog($(this));
-				if($(this).hasClass('select_more')){
+				if($(this).hasClass('sort_order') || $(this).hasClass('delete_index')){
 					$(this).change();
 				} else {
 					$(this).change();
 				}
 			});
 		}, 50);
+	});*/
+	if('undefined' !== typeof(admin_keep_alive)){
+		var jetzt = new Date().getTime() / 1000, 
+			admin_keep_alive_off = jetzt + admin_keep_alive ;
+		//jetzt = jetzt.getTime() / 1000;
+		$('#admin_head_bar').append('<div id="keep_alive_timer"></div>');
+		$('#keep_alive_timer').text('0:00');
+		window.setInterval(function(){
+			var jetzt = new Date().getTime() / 1000,
+				rest = admin_keep_alive_off - jetzt,
+				rest_min = Math.floor(rest/60),
+				rest_sec = Math.floor(rest - (rest_min * 60)),
+				show = '';
+			if(rest_sec < 10){
+				rest_sec = '0'+rest_sec;
+			}
+			show = rest_min+':'+rest_sec;
+			if(rest < 0){
+				show = '0:00';
+				if(rest < -5){
+					window.location.reload();
+				}
+			}
+			$('#keep_alive_timer').text(show);
+		}, 500);
+	}
+});
+function fieldset_add_listener(){
+	$('form.config fieldset.sortable').sortable({
+		items: "div.idx_group",
+		handle: ".move_free",
+		opacity: 0.6,
+		axis:'y',
+		//forcePlaceholderSize: true,
+		//forceHelperSize:true,
+		update:function(ev){
+			idx_group_sorted($(this));
+		},
+		change:function(){
+			$('fieldset.sortable div.idx_group:even').removeClass('odd').addClass('even');
+			$('fieldset.sortable div.idx_group:odd').removeClass('even').addClass('odd');
+		}
 	});
-	$('form.config input, form.config textarea, form.config select').change(function(){
+	$('form.config div.idx_group').unbind('mouseenter').mouseenter(function(ev){
+		var fieldset = $(this).parents('fieldset'),
+			keep, count_groups;
+		$(this).find('.idx_nav:not(.move_up):not(.move_down):not(.delete)').show('slide',{direction:'down'},300);
+		if(fieldset.hasClass('keep')){
+			keep = parseInt(fieldset.prop('className').match(/keep_([0-9]+)/)[1], 10);
+			count_groups = fieldset.find('.idx_group').length;
+			//clog(count_groups);
+			if(count_groups > keep){
+				$(this).find('.idx_nav.delete').show('slide',{direction:'down'},300);
+			}
+		}
+		if(1 === $(this).prev('.idx_group').length){
+			$(this).find('.idx_nav.move_up').show('slide',{direction:'down'},300);
+		}
+		if(1 === $(this).next('.idx_group').length){
+			$(this).find('.idx_nav.move_down').show('slide',{direction:'down'},300);
+		}
+	}).unbind('mouseleave').mouseleave(function(ev){
+		$(this).find('.idx_nav:visible').hide('slide',{direction:'down'},300);
+	});
+	$('form.config .idx_nav li').hover(
+		function() { $(this).addClass('ui-state-hover'); }, 
+		function() { $(this).removeClass('ui-state-hover'); }
+	);
+	$('form.config .idx_nav.move_up').unbind('click').click(function(){
+		$(this).parents('.idx_group').insertBefore($(this).parents('.idx_group').prev('.idx_group'));
+		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
+		idx_group_sorted($(this).parents('fieldset'));
+	});
+	$('form.config .idx_nav.move_down').unbind('click').click(function(){
+		$(this).parents('.idx_group').insertAfter($(this).parents('.idx_group').next('.idx_group'));
+		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
+		idx_group_sorted($(this).parents('fieldset'));
+	});
+	$('form.config .idx_nav.delete').unbind('click').click(function(){
+		/*$('#dialog').attr({title:'Delete?'}).html('This will delete that entry<br/>Are you sure?').dialog({modal:true, buttons:{
+			'Delete them': function(){$(this).dialog('close');},
+			Cancel: function(){$(this).dialog('close');}
+		}});*/
+		var input = $(this).parents('fieldset').find('.delete_index'),
+			group = $(this).parents('.idx_group'),
+			index_key = group.prop('id').split(':')[1],
+			fieldset = $(this).parents('fieldset');
+		//$(this).parents('.idx_group').find('.idx_nav:visible').hide('slide',{direction:'down'},300);
+		idx_group_sorted($(this).parents('fieldset'));
+		if('_new_' !== index_key.substr(0,5)){
+			if(input.val()){
+				input.val(input.val()+':'+index_key);
+			} else {
+				input.val(index_key);
+			}
+		}
+		group.remove();
+		input.change();
+		idx_group_sorted(fieldset);
+	});
+	$('form.config .idx_nav.insert_new').unbind('click').click(function(){
+		var master = $(this).parents('.idx_group'),
+			master_index = master.prop('id').match(/([a-zA-Z0-9_]+):([a-zA-Z0-9_]+)/),
+			master_var = master_index[1],
+			clone_index = '',
+			i = 1,
+			clone = master.clone();
+		master_index = master_index[2];
+		do{
+			clone_index = '_new_'+i;
+			i++;
+		}while(0 < $(this).parents('fieldset').find('.idx_group[id="'+master_var+':'+clone_index+'"]').length);
+		clone.attr({id:master_var+':'+clone_index});
+		clone.find('input, textarea, select, label').each(function(){
+			var new_id = $(this).prop('id').replace(':'+master_index+':', ':'+clone_index+':');
+			if('label' === $(this).prop('nodeName').toLowerCase()){
+				$(this).attr({'for': $(this).attr('for').replace(':'+master_index+':', ':'+clone_index+':') });
+			} else {
+				$(this).prop({id:new_id, name:new_id});
+				if('checkbox' !== $(this).prop('type')){
+					$(this).prop({defaultValue:''}).val('');
+				}
+			}
+		});
+		clone.insertAfter(master);
+		fieldset_add_listener();
+		idx_group_sorted($(this).parents('fieldset'));
+		clone.find('input, textarea, select').change();
+		clog(clone);
+	});
+	$('form.config select').each(function(k, v){
+		if('undefined' === typeof($(v).prop('defaultValue'))){
+			$(v).prop({defaultValue: $(v).val()});
+		}
+		//clog($(v));
+	});
+	$('form.config .ui-icon-arrowreturnthick-1-s').unbind('click').click(function(){
+		$(this).parents('.form_row').find('input, textarea, select').each(function(k,v){
+			if('checkbox' === $(v).prop('type')){
+				$(v).prop({checked: $(v).prop('defaultChecked')});
+			} else {
+				$(v).val($(v).prop('defaultValue')).change();
+				
+			}
+		});
+	});
+	$('form.config input, form.config textarea, form.config select').unbind('change').change(function(){
 		var match_regex = '', multi_var = [];
 		clog('val:'+$(this).val()+' - default: '+$(this).prop('defaultValue'));
 		$(this).removeClass('changed');
@@ -207,6 +290,7 @@ $(function(){
 				}
 			});
 			$(this).parents('.form_row').find('input.select_more_value').val(multi_var.join(':')).change();
+			clog(multi_var.join(':'));
 			return;
 		}
 		if($(this).val() !== $(this).prop('defaultValue')){
@@ -217,34 +301,22 @@ $(function(){
 			} else {
 				$(this).parents('.form_row').addClass('changed');
 			}
+		}else if(0 < $(this).attr('name').indexOf(':_new_')){
+			clog('add _new_ changed');
+			if($(this).hasClass('no_parent')){
+				$(this).addClass('changed');
+			} else {
+				$(this).parents('.form_row').addClass('changed');
+			}
 		}
 	});
-	if('undefined' !== typeof(admin_keep_alive)){
-		var jetzt = new Date().getTime() / 1000, 
-			admin_keep_alive_off = jetzt + admin_keep_alive ;
-		//jetzt = jetzt.getTime() / 1000;
-		$('#admin_head_bar').append('<div id="keep_alive_timer"></div>');
-		$('#keep_alive_timer').text('0:00');
-		window.setInterval(function(){
-			var jetzt = new Date().getTime() / 1000,
-				rest = admin_keep_alive_off - jetzt,
-				rest_min = Math.floor(rest/60),
-				rest_sec = Math.floor(rest - (rest_min * 60)),
-				show = '';
-			if(rest_sec < 10){
-				rest_sec = '0'+rest_sec;
-			}
-			show = rest_min+':'+rest_sec;
-			if(rest < 0){
-				show = '0:00';
-				if(rest < -5){
-					window.location.reload();
-				}
-			}
-			$('#keep_alive_timer').text(show);
-		}, 500);
-	}
-});
+	$('form.config input:not(.notrim)').change(function(){
+		var trimmed = $.trim($(this).val());
+		if(trimmed !== $(this).val()){
+			$(this).val(trimmed).change();
+		}
+	});
+}
 function idx_group_sorted(fieldset){
 	/*clog(self);
 	clog(ev);
