@@ -1,6 +1,6 @@
 <?php
 
-function edit_config($file, $vars=array())
+function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $filter="", $nav_opts=array())
 {
 	global $$file, $admin_lang;
 	$file_name = 'cms/config/'.$file.'.php';
@@ -9,6 +9,10 @@ function edit_config($file, $vars=array())
 	if(0 === count($vars))
 	{
 		$vars = array_keys($$file);
+	}
+	if(false !== strpos($filter, '='))
+	{
+		$filter = explode('=', $filter);
 	}
 	$out .= '<form class="config" action="javascript:void(0)">'."\n";
 	#$out .= '<input type="text" class="hidden no_parent changed" name="form_file_name" value="'.$file.'"/>'."\n";
@@ -19,6 +23,10 @@ function edit_config($file, $vars=array())
 			#var_dump($v);
 			if('array' == $v['type'])
 			{
+				if(0 === count($indizes))
+				{
+					$indizes = array_keys($v['value']);
+				}
 				$keep = (isset($v['keep']))? ' keep keep_'.$v['keep'] : '';
 				$out .= '<fieldset class="sortable'.$keep.'"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
 				$even_odd = 'odd';
@@ -28,25 +36,55 @@ function edit_config($file, $vars=array())
 				$idx_name_del = 'delete_index:'.$file.':'.$k;
 				$out .= '<input type="text" class="hidden no_parent sort_order" name="'.$idx_name.'" id="'.$idx_name.'" value="'.$idx_keys.'" />'."\n";
 				$out .= '<input type="text" class="hidden no_parent delete_index" name="'.$idx_name_del.'" id="'.$idx_name_del.'" value="" />'."\n";
-				foreach($v['value'] as $idx_k => $idx_v)
+				if(0 === count($v['value']))
 				{
-					$even_odd = ($even_odd=='odd')? 'even' : 'odd';
-					$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">'."\n";
 					foreach($v['model'] as $mod_k => $mod_v)
 					{
-						if('id' != $mod_k)
+						$v['value']['_new_1'][$mod_k] = '';
+						if('select_more' == $mod_v['type'])
 						{
-							$mod_v['value'] = $idx_v[$mod_k];
-							$out .= gen_config_field($mod_v, array('file'=>$file,'val'=>$k,'index'=>$idx_k,'key'=>$mod_k));
+							$v['value']['_new_1'][$mod_k] = array();
 						}
 					}
-					#$out .= '<div class="idx_nav ui-widget ui-state-default"><a href="#" class="ui-icon ui-icon-arrowthick-1-n ui-state-default ui-corner-all sort_up"></a><a href="#" class="sort_down">down</a></div></div>';
-					$out .= '<ul class="idx_nav move_free ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrow-4"></span></li></ul>'."\n";
-					$out .= '<ul class="idx_nav move_down ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-s"></span></li></ul>'."\n";
-					$out .= '<ul class="idx_nav move_up ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-n"></span></li></ul>'."\n";
-					$out .= '<ul class="idx_nav insert_new ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-plus"></span></li></ul>'."\n";
-					$out .= '<ul class="idx_nav delete ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-trash"></span></li></ul>'."\n";
-					$out .= '</div>'."\n";
+				}
+				foreach($v['value'] as $idx_k => $idx_v)
+				{
+					if(in_array($idx_k, $indizes) && (!is_array($filter) || ($idx_v[$filter[0]] == $filter[1])) )
+					{
+						if(0 === count($keys))
+						{
+							$keys = array_keys($idx_v);
+						}
+						$even_odd = ($even_odd=='odd')? 'even' : 'odd';
+						$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">'."\n";
+						foreach($v['model'] as $mod_k => $mod_v)
+						{
+							if(in_array($mod_k, $keys))
+							{
+								if('id' != $mod_k)
+								{
+									$mod_v['value'] = $idx_v[$mod_k];
+									$out .= gen_config_field($mod_v, array('file'=>$file,'val'=>$k,'index'=>$idx_k,'key'=>$mod_k));
+								}
+							}
+						}
+						#$out .= '<div class="idx_nav ui-widget ui-state-default"><a href="#" class="ui-icon ui-icon-arrowthick-1-n ui-state-default ui-corner-all sort_up"></a><a href="#" class="sort_down">down</a></div></div>';
+						if(!in_array('no_move_free', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
+							$out .= '<ul class="idx_nav move_free ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrow-4"></span></li></ul>'."\n";
+						if(!in_array('no_move_down', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
+							$out .= '<ul class="idx_nav move_down ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-s"></span></li></ul>'."\n";
+						if(!in_array('no_move_up', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
+							$out .= '<ul class="idx_nav move_up ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-arrowthick-1-n"></span></li></ul>'."\n";
+						if(!in_array('no_insert_new', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
+							$out .= '<ul class="idx_nav insert_new ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-plus"></span></li></ul>'."\n";
+						if(!in_array('no_delete', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
+							$out .= '<ul class="idx_nav delete ui-widget ui-helper-clearfix"><li class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-trash"></span></li></ul>'."\n";
+						if(1 === count($v['value']) && '_new_1' == $idx_k)
+						{
+							$out .= '<div class="activate_new_index" title="'.lecho('click_to_activate', $admin_lang).'"></div>'."\n";
+						}
+						$out .= '</div>'."\n";
+					}
 				}
 				$out .= '</fieldset>'."\n";
 			}
@@ -66,7 +104,7 @@ function edit_config($file, $vars=array())
 }
 function gen_config_field($v, $k)
 {
-	global $admin_lang;
+	global $admin_lang, $glob_var;
 	$fid = "${k['file']}:${k['val']}";
 	$label = 'config_'.$k['val'];
 	if(isset($k['index']) && isset($k['key']))
@@ -85,14 +123,62 @@ function gen_config_field($v, $k)
 	{
 		case 'select_one':
 			$out .= '<select name="'.$fid.'" id="'.$fid.'">'."\n";
-			foreach($v['options'] as $ok => $ov)
+			if(isset($v['options']['from_config']))
 			{
-				$sel = ($ov == $v['value'])? ' selected="selected"' : '';
-				$out .= '<option value="'.$ok.'"'.$sel.'>'.htmlspecialchars($ov).'</option>'."\n";
+				$conf_idx = explode(':', $v['options']['from_config']);
+				$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
+				#die(var_dump($conf_opts));
+				unset($filter);
+				if(isset($v['options']['filter']))
+				{
+					$filter = explode('=', $v['options']['filter']);
+					if('$' == substr($filter[1], 0, 1))
+					{
+						$filter[1] = $glob_var[substr($filter[1], 1)];
+					}
+				}
+				$v['options'] = array();
+				if(isset($v['allow_none']))
+				{
+					$v['options'][] = '---';
+				}
+				foreach($conf_opts as $ok => $ov)
+				{
+					if(is_array($filter))
+					{
+						if($ov[$filter[0]] == $filter[1])
+						{
+							$v['options'][] = $ov[$conf_idx[2]];
+						}
+					}
+					else 
+					{
+						$v['options'][] = $ov[$conf_idx[2]];
+					}
+				}
 			}
+			#else 
+			#{
+				foreach($v['options'] as $ok => $ov)
+				{
+					$sel = ($ov == $v['value'])? ' selected="selected"' : '';
+					$out .= '<option value="'.$ok.'"'.$sel.'>'.htmlspecialchars($ov).'</option>'."\n";
+				}
+			#}
 			$out .= '</select>'."\n";
 			break;
 		case 'select_more':
+			if(isset($v['options']['from_config']))
+			{
+				$conf_idx = explode(':', $v['options']['from_config']);
+				$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
+				#die(var_dump($conf_opts));
+				$v['options'] = array();
+				foreach($conf_opts as $ok => $ov)
+				{
+					$v['options'][] = $ov[$conf_idx[2]];
+				}
+			}
 			$val = '';
 			foreach($v['options'] as $ok => $ov)
 			{
@@ -141,7 +227,7 @@ function merge_config($file, $values, $select_one_more_value='key')
 				{
 					$idx = $conf_chan[$v['var']]['index'];
 					$idx = substr($v['index'], 1, -1);
-					$idx = explode('==', $idx, 2);
+					$idx = explode('=', $idx, 2);
 					$idx = $conf_chan[$v['var']]['index'][$idx[0]][$idx[1]];
 					$v['index'] = $idx;
 				}
@@ -165,6 +251,7 @@ function merge_config($file, $values, $select_one_more_value='key')
 			}
 			if( ('select_one' == $conf_chan[$v['var']]['model'][$v['key']]['type'] || 'select_one' == $conf_chan[$v['var']]['type']) && $select_one_more_value == 'key')
 			{
+				#print_r($v[ 'value']);
 				if('array' == $conf_chan[$v['var']]['type'])
 				{
 					$opts = $conf_chan[$v['var']]['model'][$v['key']]['options'];
@@ -173,7 +260,13 @@ function merge_config($file, $values, $select_one_more_value='key')
 				{
 					$opts = $conf_chan[$v['var']]['options'];
 				}
-				$v['value'] = $opts[$v['value']];
+				if(!isset($opts['from_config']))
+				{
+					$v['value'] = $opts[$v['value']];
+				}
+				#print_r($opts);
+				#print_r($v[ 'value']);
+				#die();
 			}
 			if( ('select_more' == $conf_chan[$v['var']]['model'][$v['key']]['type'] || 'select_more' == $conf_chan[$v['var']]['type']) && $select_one_more_value == 'key')
 			{
@@ -189,9 +282,19 @@ function merge_config($file, $values, $select_one_more_value='key')
 				}
 				$tmp = explode(':', $v['value']);
 				$v['value'] = array();
-				foreach($tmp as $ok => $ov)
+				if(!isset($opts['from_config']))
 				{
-					$v['value'][] = $opts[$ov];
+					foreach($tmp as $ok => $ov)
+					{
+						if(isset($opts[$ov]))
+						{
+							$v['value'][] = $opts[$ov];
+						}
+					}
+				}
+				else 
+				{
+					$v['value'] = $tmp;
 				}
 			}
 			if($conf_chan[$v['var']]['type'] === 'array' && is_array($v))
@@ -200,7 +303,7 @@ function merge_config($file, $values, $select_one_more_value='key')
 				{
 					$idx = $conf_chan[$v['var']]['index'];
 					$idx = substr($v['index'], 1, -1);
-					$idx = explode('==', $idx, 2);
+					$idx = explode('=', $idx, 2);
 					$idx = $conf_chan[$v['var']]['index'][$idx[0]][$idx[1]];
 					$v['index'] = $idx;
 				}
@@ -217,8 +320,12 @@ function merge_config($file, $values, $select_one_more_value='key')
 					}
 				}
 				$config_check_types = config_check_types($conf_chan[$v['var']]['model'][$v['key']], $v['value']);
-				if(true === $config_check_types)
+				if(true === $config_check_types || (is_array($config_check_types) && isset($config_check_types['new_val'])) )
 				{
+					if(is_array($config_check_types) && isset($config_check_types['new_val']))
+					{
+						$v['value'] = $config_check_types['new_val'];
+					}
 					if('1' == $conf_chan[$v['var']]['model'][$v['key']]['index'] && isset($conf_chan[$v['var']]['index'][$v['key']][$v['value']]))
 					{
 						#die('double index field');
@@ -245,6 +352,10 @@ function merge_config($file, $values, $select_one_more_value='key')
 				if(true === $config_check_types)
 				{
 					$conf_chan[$v['var']]['value'] = $v['value'];
+				}
+				elseif(is_array($config_check_types) && isset($config_check_types['new_val']))
+				{
+					$conf_chan[$v['var']]['value'] = $config_check_types['new_val'];
 				}
 				else 
 				{
@@ -388,11 +499,56 @@ function array_sort_keys($a, $b)
 }
 function config_check_types($conf_val, $new_val)
 {
+	if( ('select_more' === $conf_val['type'] || 'select_one' === $conf_val['type']) && isset($conf_val['options']['from_config']))
+	{
+		$conf_idx = explode(':', $conf_val['options']['from_config']);
+		$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
+		#die(var_dump($conf_opts));
+		$conf_val['options'] = array();
+		if(isset($conf_val['allow_none']))
+		{
+			$conf_val['options'][] = '---';
+		}
+		foreach($conf_opts as $ok => $ov)
+		{
+			$conf_val['options'][] = $ov[$conf_idx[2]];
+		}
+		if(is_array($new_val))
+		{
+			foreach($new_val as $k => $v)
+			{
+				if(isset($conf_val['options'][$v]))
+				{
+					$new_val[$k] = $conf_val['options'][$v];
+				}
+				else 
+				{
+					unset($new_val[$k]);
+				}
+			}
+		}
+		else 
+		{
+			if(isset($conf_val['options'][$new_val]))
+			{
+				$new_val = $conf_val['options'][$new_val];
+			}
+			else 
+			{
+				$new_val = '';
+			}
+		}
+		#print_r('new');
+		#print_r($new_val);
+		#print_r('conf');
+		#print_r($conf_val);
+		#die();
+	}
 	if($conf_val['type'] === 'select_one')
 	{
 		if(in_array($new_val, $conf_val['options']))
 		{
-			return true;
+			return array('new_val'=>$new_val);
 		}
 		else 
 		{
@@ -407,12 +563,12 @@ function config_check_types($conf_val, $new_val)
 		}
 		foreach($new_val as $k => $v)
 		{
-			if(!in_array($v, $conf_val['options']))
+			if($v && !in_array($v, $conf_val['options']))
 			{
 				return 'conf_err_not_in_options';
 			}
 		}
-		return true;
+		return array('new_val'=>$new_val);
 	}
 	elseif($conf_val['type'] === 'text')
 	{
@@ -548,6 +704,7 @@ function session_my_register()
 		'role' => $user_data['role'],
 		'email' => $user_data['email'],
 	);
+	$sess_data['use_role'] = ($user_data['role'] == 'admin')? 'admin' : 'user';
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'sess', 'value'=>$_COOKIE['sess']);
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'ua', 'value'=>$_SERVER['HTTP_USER_AGENT']);
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'ip', 'value'=>$_SERVER['REMOTE_ADDR']);
@@ -557,6 +714,7 @@ function session_my_register()
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'real_name', 'value'=>$user_data['real_name']);
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'email', 'value'=>$user_data['email']);
 	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'role', 'value'=>$user_data['role']);
+	$send_data[] = array('var'=>'sessions', 'index'=>'_new_1', 'key'=>'use_role', 'value'=>$sess_data['use_role']);
 	#die('now merge session: '.print_r($send_data, true));
 	merge_config('sessions', $send_data);
 }
@@ -583,6 +741,13 @@ function check_session()
 	merge_config('sessions', array(array('var'=>'sessions', 'index'=>$sess_key, 'key'=>'time', 'value'=>date('r'))));
 	$sess_data = $sessions['sessions']['value'][$sess_key];
 	return true;
+}
+function check_logout()
+{
+	global $sessions, $sess_data;
+	require_once('cms/config/sessions.php');
+	merge_config('sessions', array(array('var'=>'sessions', 'index'=>'[sess='.$_COOKIE['sess'].']', 'delete'=>'1',)));
+	$sess_data = array();
 }
 function check_login($user, $pass, $p_type='plain')
 {
@@ -681,6 +846,24 @@ function get_user_data($user)
 	}
 	return array();
 }
+function get_config_data($file, $var, $index = false, $key = false)
+{
+	global $$file;
+	require_once('cms/config/'.$file.'.php');
+	$file = $$file;
+	if(false !== $index && false !== $key)
+	{
+		return $file[$var]['value'][$index][$key];
+	}
+	elseif(false === $key && false !== $index)
+	{
+		return $file[$var]['value'][$index];
+	}
+	else 
+	{
+		return $file[$var]['value'];
+	}
+}
 function lecho($t, $l, $m='cms')
 {
 	#global $lang;
@@ -736,15 +919,15 @@ function get_include_file($f)
 			$tmp_c = file_get_contents($file);
 			if($type === 'css' && false === strpos($file, '.min.'))
 			{
-				#$tmp_c = preg_replace('#/\*.*?\*/#s', '', $tmp_c);
-				#$tmp_c = preg_replace('#(?s)\s|/\*.*?\*/#s', '', $tmp_c);
-				include_once('cms/system/css_compressor.php');
-				$tmp_c = Minify_CSS_Compressor::process($tmp_c);
+				###$tmp_c = preg_replace('#/\*.*?\*/#s', '', $tmp_c);
+				###$tmp_c = preg_replace('#(?s)\s|/\*.*?\*/#s', '', $tmp_c);
+				#include_once('cms/system/css_compressor.php');
+				#$tmp_c = Minify_CSS_Compressor::process($tmp_c);
 			}
 			elseif($type === 'js' && false === strpos($file, '.min.'))
 			{
-				include_once('cms/system/jsmin.php');
-				$tmp_c = JSMin::minify($tmp_c);
+				#include_once('cms/system/jsmin.php');
+				#$tmp_c = JSMin::minify($tmp_c);
 			}
 			$c .= $tmp_c ."\n";
 		}

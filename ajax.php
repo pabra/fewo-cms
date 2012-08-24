@@ -8,6 +8,26 @@ $admin_lang = $cms['admin_language']['value'];
 header('Content-Type: application/json; charset=utf-8');
 $return = array();
 
+if($_GET['do'] == 'lecho' && $_GET['text'] && $_GET['lang'])
+{
+	$json_age = 1*24*60*60;
+	header('Cache-Control: max-age='.$json_age);
+	header('Expires: ' . date('r', time()+$json_age));
+	if(is_array($_GET['text']))
+	{
+		$lret = array();
+		foreach($_GET['text'] as $k => $v)
+		{
+			$lret[$v] = lecho($v, $_GET['lang']);
+		}
+		echo json_encode(array('status'=>true, 'txt'=> $lret));
+	}
+	else 
+	{
+		echo json_encode(array('status'=>true, 'txt'=> lecho($_GET['text'], $_GET['lang'])));
+	}
+	die();
+}
 if($_COOKIE['sess'])
 {
 	if($_GET['do'] === 'check_login' && $_POST['user'] && $_POST['md5_pass'])
@@ -77,6 +97,24 @@ if(isset($sess_data['role']))
 		foreach($merge as $k => $v)
 		{
 			$merge_return .= merge_config($k, $v);
+			if('users' === $k)
+			{
+				$renew = false;
+				foreach($v as $vv)
+				{
+					if(isset($vv['index']) && $vv['index'] == $sess_data['user_index'])
+					{
+						$renew = true;
+						break 1;
+					}
+				}
+				if(true === $renew)
+				{
+					$_POST['user'] = $sess_data['user_name'];
+					check_logout();
+					session_my_register();
+				}
+			}
 		}
 		if($merge_return)
 		{
@@ -84,6 +122,25 @@ if(isset($sess_data['role']))
 		}
 		else 
 		{
+			echo json_encode(array('status'=>true, 'txt'=>'ok'));
+		}
+	}
+	if($_POST['do'] == 'logout')
+	{
+		check_logout();
+		setcookie('sess', '', 1);
+		echo json_encode(array('status'=>true, 'txt'=>'ok'));
+	}
+	if('superuser' == $sess_data['role'])
+	{
+		if($_POST['do'] == 'use_role_admin')
+		{
+			merge_config('sessions', array(array('var'=>'sessions', 'index'=>"[sess=${_COOKIE['sess']}]", 'key'=>'use_role', 'value'=>'admin')));
+			echo json_encode(array('status'=>true, 'txt'=>'ok'));
+		}
+		elseif($_POST['do'] == 'use_role_user')
+		{
+			merge_config('sessions', array(array('var'=>'sessions', 'index'=>"[sess=${_COOKIE['sess']}]", 'key'=>'use_role', 'value'=>'user')));
 			echo json_encode(array('status'=>true, 'txt'=>'ok'));
 		}
 	}

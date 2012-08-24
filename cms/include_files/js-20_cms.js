@@ -50,6 +50,62 @@ function check_email_address(email)
 	}
 	return true;
 }
+function titleToTip(){
+	'use strict';
+	var ttbto,ttbtom, ttbow,ttboh, docW=$(document).width(), docH=$(document).height(), ttB=$('#ttBox'), offX=-10, offY=-15, ttbevpos={}, 
+		toPosX=function(evX){
+			if(evX -7 + ttbow > docW -3){
+				evX = docW -3 - ttbow;
+			} else {
+				evX = evX -7;
+			}
+			return evX;
+		},
+		toPosY=function(evY){
+			if(evY -10 -ttboh < 3){
+				evY = evY + 10;
+			} else {
+				evY = evY -10 - ttboh;
+			}
+			return evY;
+		};
+	$('[title]').each(function(k,v){
+		$(this).prop({ttBoxTitle:$(this).attr('title')}).removeAttr('title');
+		$(this).mouseenter(function(ev){
+			var self = $(this), posX, posY;
+			window.clearTimeout(ttbto);
+			ttbto = window.setTimeout(function(){
+				ttB.css({top:5, left:5}).html(self.prop('ttBoxTitle'));
+				ttbow = ttB.outerWidth();
+				ttboh = ttB.outerHeight();
+				if('undefined' !== typeof(ttbevpos.x) && 'undefined' !== typeof(ttbevpos.y)){
+					posX = ttbevpos.x;
+					posY = ttbevpos.y;
+				} else {
+					posX = ev.pageX;
+					posY = ev.pageY;
+				}
+				ttB.css({top:toPosY(posY), left:toPosX(posX)}).fadeIn(150);
+				//$('#ttBox').html(self.prop('ttBoxTitle')).css({top:posY -$('#ttBox').outerHeight() +offY, left:posX +offX}).fadeIn(150);
+				//clog(ev.pageX);
+			}, 300);
+		}).mouseleave(function(ev){
+			ttbevpos = {};
+			window.clearTimeout(ttbto);
+			window.clearTimeout(ttbtom);
+			ttB.fadeOut(150, function(){ ttB.empty().css({top:5, left:5}); });
+		}).mousemove(function(ev){
+			var self = $(this);
+			ttbevpos = {x:ev.pageX, y:ev.pageY};
+			window.clearTimeout(ttbtom);
+			ttbtom = window.setTimeout(function(){
+				//clog('y: '+(ev.pageY -$('#ttBox').outerHeight() +offY));
+				//$('#ttBox').css({top:ev.pageY -$('#ttBox').outerHeight() +offY, left:ev.pageX +offX});
+				ttB.css({top:toPosY(ev.pageY), left:toPosX(ev.pageX)});
+			}, 10);
+		});
+	});
+}
 
 $(function(){
 	//alert('cms');
@@ -58,7 +114,8 @@ $(function(){
 		//this.files[0].size gets the size of your file.
 		alert(this.files[0].size);
 	});
-	$('body').append('<div id="dialog"></div>');
+	$('body').append('<div id="ttBox"></div><div id="dialog"></div>');
+	titleToTip();
 	/*$('form').find('textarea,select,input[type!=submit],option')
 		.addClass('ui-corner-all ui-button ui-state-active ui-widget')
 		.css({textAlign:'left', outlineWidth:'0px', padding:'0.4em 1em', width:'155px'})

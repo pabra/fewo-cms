@@ -6,7 +6,16 @@ html.ie7 h1 { background-color:#333; }
 html.ie8 h1 { background-color:#999; }
 html.ie9 h1 { background-color:#999; }
 
-div#admin_head_bar { position:absolute; top:0px; left:0px; right:0px; height:71px; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:bottom; }
+div#admin_head_bar { position:absolute; top:0px; left:0px; right:0px; height:70px; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:bottom; }
+div#admin_head_bar.admin { height:108px; background-image:url(cms/include_files/images/head_bar_bg2.png); }
+div#admin_head_bar #head_user_box { position:absolute; top:-2px; right:10px; text-align:right; }
+div#admin_head_bar #head_adv_admin { position:absolute; left:0px; top:60px; }
+div#use_role_switch { position:absolute; top:30px; right:50px; }
+div#use_role_switch.to_user { top:70px; right:10px; }
+div#use_role_switch .ui-icon { float:right; margin:3px 0px 0px 3px; }
 html.ie6 div#admin_head_bar { width:100%; }
 body { background-image:url(cms/include_files/images/bg_lines.gif); background-repeat:repeat; }
-
+div#admin_head_bar a, div#admin_head_bar a:active, div#admin_head_bar a:visited { color:#bf8c94; text-decoration:none; text-shadow:#333 1px 1px 1px; }
+div#admin_head_bar a:hover { text-decoration:underline; }
+a, a:active, a:visited { color:#7f5374; text-decoration:none; }
+a:hover { text-decoration:underline; }

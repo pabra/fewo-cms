@@ -17,9 +17,8 @@ $admin_header = <<< EOT
 		<script type="text/javascript" src="?javascript_admin_js"></script>
 	</head>
 	<body>
-	<div id="admin_head_bar"></div>
 EOT;
-
+$admin_head_bar = '';
 $admin_footer = <<< EOT
 	</body>
 </html>
@@ -30,9 +29,10 @@ EOT;
 #echo var_export(isset($users['users']['index']['user_name']['usera']), true);
 #echo preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($users['users']['index']['user_name']['user'], true));
 #die();
+$glob_var = array();
 $user = false;
 $admin_lang = $cms['admin_language']['value'];
-$admin_content = '<h1>Admin</h1>'."\n";
+#$admin_content = '<h1>Admin</h1>'."\n";
 $admin_content .= '<noscript>'.lecho('admin_enable_javascript', $admin_lang).'</noscript>'."\n";
 #merge_config('users', 'users|value|[index=user_name="user"]|email', 'email@host.dom');
 #merge_config('cms', array('admin_language'=> 'en'));
@@ -47,10 +47,10 @@ $admin_content .= '<noscript>'.lecho('admin_enable_javascript', $admin_lang).'</
 	));*/
 #merge_config('users', array(array('var'=>'users', 'index'=>'ab12d', 'key'=>'email', 'value'=>'pat.bass@gmx.de')));
 /*merge_config('users', array(
-	array('var'=>'users', 'index'=>'[user_name==user]', 'key'=>'email', 'value'=>'abc@def.gh'),
-	array('var'=>'users', 'index'=>'[user_name==user]', 'key'=>'user_name', 'value'=>'pepp'),
-	array('var'=>'users', 'index'=>'[user_name==user]', 'key'=>'real_name', 'value'=>'Pat.Bass'),
-	array('var'=>'users', 'index'=>'[user_name==user]', 'key'=>'role', 'value'=>'user'),
+	array('var'=>'users', 'index'=>'[user_name=user]', 'key'=>'email', 'value'=>'abc@def.gh'),
+	array('var'=>'users', 'index'=>'[user_name=user]', 'key'=>'user_name', 'value'=>'pepp'),
+	array('var'=>'users', 'index'=>'[user_name=user]', 'key'=>'real_name', 'value'=>'Pat.Bass'),
+	array('var'=>'users', 'index'=>'[user_name=user]', 'key'=>'role', 'value'=>'user'),
 	));*/
 /*merge_config('users', array(
 	array('var'=>'users', 'sort_order'=>array('_new_1','CioR2','mko98','ab12d','LU9Au')),
@@ -80,19 +80,6 @@ if($_COOKIE['sess'])
 		if(true === $login_checked['status'])
 		{
 			$session_register = session_my_register();
-#			$admin_content .= "get user data<br/>\n";
-#			$login_user_data = get_user_data($_POST['user']);
-#			if(count($login_user_data) && isset($login_user_data['role']))
-#			{
-#				unset($login_user_data['password']);
-#				$session_data = $login_user_data;
-#				$session_data['sess'] = $_COOKIE['sess'];
-#				$session_data['time'] = time();
-#				$session_data['ip'] = $_SERVER['REMOTE_ADDR'];
-#				$session_data['ua'] = var_export($_SERVER['HTTP_USER_AGENT'], true);
-#				#write_config('sessions', )
-#			}
-#			$admin_content .= print_r($session_data, true)."<br/>\n";
 			if(isset($_POST['req_page']) && 'admin&' == substr($_POST['req_page'], 0, 6))
 			{
 				header('Location: ?'.$_POST['req_page']);
@@ -100,55 +87,89 @@ if($_COOKIE['sess'])
 			}
 		}
 		$admin_content .= lecho($login_checked['txt'], $admin_lang);
-		/*require_once('cms/config/users.php');
-		#die('user (plain): ' . $_POST['user'] ."<br/>\n" . 'user (export): '.var_export($_POST['user'], true) . "<br/>\n" . var_export($users['users']['index']['user_name'], true) . "<br/>\n" . var_export(isset($users['users']['index']['user_name'][$_POST['user']]), true));
-		if(isset($users['users']['index']['user_name'][$_POST['user']])
-			&&  ( md5($_POST['pass']) == $users['users']['value'][$users['users']['index']['user_name'][$_POST['user']]]['password']
-			 || $_POST['md5_pass'] == $users['users']['value'][$users['users']['index']['user_name'][$_POST['user']]]['password'] ) )
-		{
-			$admin_content .= 'User gibts SEHRWOHL';
-		}
-		else 
-		{
-			$admin_content .= 'User gibts NICH (' . md5($_POST['pass']) . ')';
-		}*/
-		
-		#if($_POST['user'] == 'user' && $_POST['pass'] == 'pass')
-		#{
-		#	$user = array( 'role' => 'admin', 'name' => 'user', 'sess' => $_COOKIE['sess']);
-		#}
-		#$admin_content .= 'From: '.$_SERVER['HTTP_REFERER']."\n".'check_login()'."\n";
+	}
+	elseif($_GET['do'] == 'logout')
+	{
+		check_logout();
+		$admin_content .= '<script type="text/javascript">window.location=\'?admin\';</script>'."\n";
 	}
 	else 
 	{
-		/*$admin_content .=*/ check_session();
+		check_session();
 	}
 	if(!isset($sess_data['role']))
 	{
 		setcookie('sess', '', 1);
-		$admin_content .= 'cookie cleared'."<br/>\n";
+		#$admin_content .= 'cookie cleared'."<br/>\n";
 	}
 }
 if(!isset($sess_data['role']))
 {
 	setcookie('sess', md5($_SERVER['HTTP_HOST'].microtime(true)));
-	$admin_content .= '<form class="login" action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
+	$admin_content .= '<div id="login_form_wrap"><form class="login" action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
 	$admin_content .= '<div class="form_row"><label for="in_user" class="main">'.lecho('admin_field_user', $admin_lang).':</label> <input id="in_user" type="text" name="user" /></div>';
 	$admin_content .= '<div class="form_row"><label for="in_pass" class="main">'.lecho('admin_field_pass', $admin_lang).':</label> <input id="in_pass" type="password" name="pass" /></div>';
 	#$admin_content .= '<div><label for="in_select">Select:</label> <select id="in_select" name="select" size="1"><option>erster</option><option>zweiter und erster</option></select></div>';
 	#$admin_content .= '<div><label for="in_text">Text:</label> <textarea id="in_text" name="pass" /></textarea></div>';
 	#$admin_content .= '<div><label for="in_check">Check:</label> <input id="in_check" type="checkbox" name="check" /></div>';
 	$admin_content .= '<input type="hidden" name="req_page" value="'.htmlspecialchars($_SERVER['QUERY_STRING']).'" />';
-	$admin_content .= '<div class="form_row"><input type="submit" value="'.lecho('button_submit', $admin_lang).'" /></div></form>'."\n";
+	$admin_content .= '<div class="form_row"><input type="submit" value="'.lecho('button_submit', $admin_lang).'" /></div></form></div>'."\n";
 }
 else 
 {
-	$admin_content .= "You are someone<br/>\n";
-	$admin_content .= '<script type="text/javascript">var admin_keep_alive = '.$sessions['keep_alive']['value'].';</script>'."\n";
+	#$glob_var['lang_edit_now'] = 'english';
+	$admin_head_bar .= '<script type="text/javascript">var admin_keep_alive='.$sessions['keep_alive']['value'].';admin_lang="'.$admin_lang.'";</script>'."\n";
+	$admin_head_bar .= '<div id="head_user_box">'.$sess_data['user_name'].' '.lecho('admin_logged_in_as', $admin_lang).'<br/><a title="'.lecho('admin_user_pref', $admin_lang).'" href="?admin&amp;do=user_pref">'.$sess_data['real_name'].'</a><br/><a title="'.lecho('admin_log_timer_out', $admin_lang).'" class="ajax" id="keep_alive_timer" href="#do=logout">logout</a></div>'."\n";
+	$admin_head_bar .= ' <a href="?admin&amp;do=pages_order">pages_order</a> '."\n";
+	if('superuser' == $sess_data['role'])
+	{
+		$admin_head_bar .= '<div id="use_role_switch" ';
+		if('user' == $sess_data['use_role'])
+			$admin_head_bar .= 'class="to_admin"><span class="ui-icon ui-icon-circle-triangle-s"></span><a title="'.lecho('admin_use_role_toadmin', $admin_lang).'" class="ajax" href="#do=use_role_admin">to admin</a>';
+		else
+			$admin_head_bar .= 'class="to_user"><span class="ui-icon ui-icon-circle-triangle-n"></span><a title="'.lecho('admin_use_role_touser', $admin_lang).'" class="ajax" href="#do=use_role_user">to user</a>';
+		$admin_head_bar .= '</div>'."\n";
+	}
+	if('admin' == $sess_data['use_role'])
+	{
+		$admin_head_bar .= '<div id="head_adv_admin">'."\n";
+		$admin_head_bar .= '<a href="?admin&amp;do=config_users">All Users</a>'."\n";
+		$admin_head_bar .= '</div">'."\n";
+	}
+	if($_GET['do'] == 'user_pref')
+	{
+		$admin_content .= edit_config('users', array('users'), array($sess_data['user_index']), array('real_name', 'password', 'email'), '', array('no_idx_nav'));
+	}
+	elseif($_GET['do'] == 'pages_order')
+	{
+		$admin_content .= '<div id="lang_button_set">'."\n";
+		$i = 0;
+		foreach($cms['avail_page_lang']['value'] as $k => $v)
+		{
+			
+			$admin_content .= '<input type="radio" id="'.$k.'" name="fe_lang" /><label for="'.$k.'">'.$v['lang_name'].'</label>'."\n";
+			$i++;
+		}
+		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset();</script>'."\n";
+		$admin_content .= edit_config('pages');
+	}
+	elseif('admin' == $sess_data['use_role'])
+	{
+		if($_GET['do'] == 'config_users')
+		{
+			$admin_content .= edit_config('users');
+		}
+	}
+	else 
+	{
+		$admin_content .= 'admin content';
+	}
+	#$admin_content .= "You are someone<br/>\n";
+	#$admin_content .= '<a href="">huhu</a><pre>'.print_r($sess_data, true).'</pre>'."\n";
 	#$admin_content .= print_r($sess_data, true)."<br/>\n";
-	$admin_content .= edit_config('cms');
+	#$admin_content .= edit_config('pages', array(), array(), array(), '');
 }
-
-$page_out = $admin_header . $admin_content . $admin_footer;
+$admin_head_bar = '<div id="admin_head_bar" class="'.$sess_data['use_role'].'">'.$admin_head_bar.'</div>'."\n";
+$page_out = $admin_header . $admin_content . $admin_head_bar . $admin_footer;
 
 ?>
