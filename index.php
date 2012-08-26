@@ -4,8 +4,9 @@
 error_reporting(E_ALL ^ E_NOTICE);
 setlocale(LC_ALL, 'de_DE.UTF-8');
 require_once('cms/config/cms.php');
-$use_cache = true;
-$use_cache = false;
+#$use_cache = true;
+#$use_cache = false;
+$use_cache = ('On' == $cms['use_cache']['value'])? true : false;
 $gzip_cache = true;
 $cache_expire = 86400;
 $req_page = false;

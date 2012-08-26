@@ -1,4 +1,4 @@
-<?php # Thu, 23 Aug 2012 02:05:08 +0200
+<?php # Sun, 26 Aug 2012 23:50:02 +0200
 
 $cms = array (
 	'admin_language' => 
@@ -12,99 +12,90 @@ $cms = array (
 			1 => 'en',
 		),
 	),
-	'test' => 
+	'use_cache' => 
 	array (
-		'value' => 'huhu',
-		'type' => 'text',
-		'match' => '^[a-z]+$',
-	),
-	'test_multi' => 
-	array (
-		'value' => 
-		array (
-			0 => 'c',
-		),
-		'type' => 'select_more',
-		'must' => '1',
+		'value' => 'On',
+		'type' => 'select_one',
 		'options' => 
 		array (
-			0 => 'a',
-			1 => 'bbbbbbb',
-			2 => 'c',
-			3 => 'dddddddddddd',
+			0 => 'On',
+			1 => 'Off',
 		),
 	),
-	'test_mail' => 
+	'compress_js' => 
 	array (
-		'value' => 'abc@def.gh',
-		'type' => 'email',
-		'must' => 1,
+		'value' => 'On',
+		'type' => 'select_one',
+		'options' => 
+		array (
+			0 => 'On',
+			1 => 'Off',
+		),
+	),
+	'compress_css' => 
+	array (
+		'value' => 'On',
+		'type' => 'select_one',
+		'options' => 
+		array (
+			0 => 'On',
+			1 => 'Off',
+		),
 	),
 	'avail_page_lang' => 
 	array (
 		'value' => 
 		array (
-			'abcd1' => 
+			'pz28x' => 
 			array (
 				'lang' => 'de',
 				'lang_name' => 'deutsch',
-				'option' => 'def',
-				'select' => 
-				array (
-					0 => 'stu',
-					1 => 'vwx',
-				),
+				'visible' => 'On',
 			),
-			'xyz2z' => 
+			'zfKou' => 
 			array (
 				'lang' => 'en',
 				'lang_name' => 'english',
-				'option' => 'def',
-				'select' => 
-				array (
-					0 => 'vwx',
-				),
+				'visible' => 'On',
 			),
 		),
 		'type' => 'array',
-		'keep' => 2,
+		'keep' => 1,
 		'model' => 
 		array (
 			'lang' => 
 			array (
 				'type' => 'text',
 				'must' => '1',
+				'index' => '1',
 			),
 			'lang_name' => 
 			array (
 				'type' => 'text',
 				'must' => '1',
 			),
-			'option' => 
+			'visible' => 
 			array (
 				'type' => 'select_one',
 				'options' => 
 				array (
-					0 => 'abc',
-					1 => 'def',
-					2 => 'ghi',
+					0 => 'On',
+					1 => 'Off',
 				),
 			),
-			'select' => 
+		),
+		'index' => 
+		array (
+			'lang' => 
 			array (
-				'type' => 'select_more',
-				'options' => 
-				array (
-					0 => 'stu',
-					1 => 'vwx',
-					2 => 'yzß',
-				),
+				'de' => 'pz28x',
+				'en' => 'zfKou',
 			),
 		),
 	),
 	'page_def_lang_prior_browser_accept' => 
 	array (
-		'value' => '1',
+		'value' => '0',
 		'type' => 'select_one',
 		'options' => 
 		array (

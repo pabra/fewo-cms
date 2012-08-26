@@ -60,6 +60,7 @@ if(isset($sess_data['role']))
 {
 	if($_GET['do'] == 'send_config' && $_POST)
 	{
+		#die(print_r($_POST, true));
 		$merge = array();
 		foreach($_POST as $k => $v)
 		{

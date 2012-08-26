@@ -1,40 +1,29 @@
-<?php # Thu, 23 Aug 2012 19:30:29 +0200
+<?php # Sun, 26 Aug 2012 22:27:33 +0200
 
 $pages = array (
-	'start_page' => 
-	array (
-		'value' => 'neue',
-		'type' => 'select_one',
-		'options' => 
-		array (
-			'from_config' => 'pages:pages:name',
-		),
-	),
 	'pages' => 
 	array (
 		'value' => 
 		array (
-			'KD4mY' => 
+			'RHOsF' => 
 			array (
 				'name' => 'Startseite',
-				'title' => 'Die Startseite',
-				'lang' => 'deutsch',
+				'title' => 'start',
+				'lang' => 'pz28x',
 				'startpage_for_lang' => 
 				array (
-					0 => 'X',
 				),
-				'is_subpage_of' => '---',
+				'is_sub_of' => '0',
 			),
-			'unskc' => 
+			'x0jUs' => 
 			array (
-				'name' => 'startpage',
-				'title' => 'the startpage new',
-				'lang' => 'english',
+				'name' => 'Startpage',
+				'title' => 'start',
+				'lang' => 'zfKou',
 				'startpage_for_lang' => 
 				array (
-					0 => 'X',
 				),
-				'is_subpage_of' => '---',
+				'is_sub_of' => '0',
 			),
 		),
 		'type' => 'array',
@@ -68,7 +57,7 @@ $pages = array (
 					0 => 'X',
 				),
 			),
-			'is_subpage_of' => 
+			'is_sub_of' => 
 			array (
 				'type' => 'select_one',
 				'allow_none' => '1',
@@ -83,8 +72,8 @@ $pages = array (
 		array (
 			'name' => 
 			array (
-				'Startseite' => 'KD4mY',
-				'startpage' => 'unskc',
+				'Startseite' => 'RHOsF',
+				'Startpage' => 'x0jUs',
 			),
 		),
 	),

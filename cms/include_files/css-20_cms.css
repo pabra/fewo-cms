@@ -5,11 +5,12 @@ div#ttBox { border:1px solid #000; border-radius:5px; max-width:300px; padding:5
 .even { background-color:#ccc; background-color:rgba(255,255,255,0.2); }
 .odd { background-color:#bbb; background-color:rgba(0,0,0,0.2); }
 fieldset { width:508px; position:relative; margin:3px 0px 3px -1px; padding-bottom:6px; border: 1px solid #333; border-radius:10px; }
-legend { border:1px solid #333; border-radius:5px; padding:1px 5px; margin-left:20px; background-color:rgba(0,0,0,0.1);}
-div#login_form_wrap { border:5px solid #333; border-radius:15px; padding:50px; background-color:#EEE; background-color:rgba(255, 255, 255, 0.5); }
+legend { border:1px solid #333; border-radius:5px; padding:1px 5px; margin-left:20px; background-color:rgba(42,42,42,0.5);}
+div#login_form_wrap { width:350px; border:5px solid #333; border-radius:15px; padding:50px 5px; margin:0 auto; background-color:#EEE; background-color:rgba(255, 255, 255, 0.5); }
+form.login .form_row { width:300px; margin:0 auto; }
 form div.form_row { width:500px; position:relative; height:30px; border-radius:5px; border:1px solid transparent; }
-/*form div.form_row.select_more { height:auto; }*/
-form div.idx_group { position:relative; width:auto; margin:0px; padding:0px; border-radius:0px; cursor:move; }
+form div.form_row.select_more { min-height:30px; height:auto; }
+form div.idx_group { position:relative; width:auto; margin:0px; padding:0px; border-radius:0px; }
 form div label.main { text-align:right; position:absolute; right:186px; top:0px; width:300px; padding:6px 0px; }
 form div.form_row span.ui-icon-info { position:absolute; right:-1px; top:-1px; display:none; cursor:pointer; }
 form div.form_row:hover span.ui-icon-info { display:block; }
@@ -29,7 +30,7 @@ form .mismatch { background-color:#800; border-color:#800 !important; background
 .idx_nav span.ui-icon { width:16px; float:left; margin:0 4px; }
 /*form div.idx_group:hover .idx_nav { display:block; }*/
 input, textarea, select  { border:1px solid #333; width:150px; border-radius:6px; padding:4px 6px; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#ccc 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
-form div.form_row input, form div.form_row textarea, form div.form_row select { position:absolute; right:14px; top:2px; }
+form div.form_row input, form div.form_row textarea, form div.form_row select, form div.form_row span.humanfilter_wrap { position:absolute; right:14px; top:2px; }
 select { width:164px; }
 textarea { height:100px; }
 form div.more_row { height:15px; position:relative; }
@@ -39,9 +40,16 @@ form div.more_row input { position:absolute; top:3px; right:166px; }
 form div.more_row label { width:145px; position:absolute; right:14px; top:0px; text-align:left; }
 input:hover, textarea:hover, select:hover { /*border-color:#333;*/ background-color:rgba(255,255,255,0.3); /*background-image:url(cms/include_files/images/ui-bg_glass_75_e6e6e6_1x400.png);*/ }
 input:focus, textarea:focus, select:focus { /*border-color:#000;*/ background-color:rgba(255,255,255,0.5); /*background-image:url(cms/include_files/images/ui-bg_glass_95_fef1ec_1x400.png);*/ }
+input[type=button] { border-color: #999 #333 #333 #999; }
+input[type=button]:active { margin:1px -1px; border-color:#333 #999 #999 #333;  background-color:rgba(255,255,255,0.5); }
 input[type=submit], input[type=reset] {padding:8px; background-color:#333; background-image:none; background-color:rgba(0,0,0,0.5); color:#ccc; border-color:#333; width:auto; text-shadow:#333 1px 1px 1px; }
 input[type=submit]:hover, input[type=reset]:hover { border-color:#333; background-color:#444; background-color:rgba(0,0,0,0.6); }
 input[type=submit]:active, input[type=reset]:active { border-color:#333; background-color:#666; background-color:rgba(0,0,0,0.7); }
 input[disabled], textarea[disabled], select[disabled], input[disabled]:hover, textarea[disabled]:hover, select[disabled]:hover { background-image:none; background-color:#eee; color:#aaa; border-color:#aaa }
 /*input[type=submit]:active {color:maroon; background-color:rgba(33,33,33,0.5)}*/
+ul.menu, ul.menu ul { list-style-type:none; margin:0px; padding:0px; clear:both; }
+ul.menu li ul { display:none; position:absolute; padding-top:10px; top:12px; left:0px; white-space:nowrap; }
+ul.menu li:hover ul { display:block; }
+ul.menu li { list-style-type:none; float:left; padding-right:15px; position:relative; }
+ul.menu a { font-size:12pt; }
 

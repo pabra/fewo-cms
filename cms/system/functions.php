@@ -10,6 +10,7 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 	{
 		$vars = array_keys($$file);
 	}
+	#die(print_r($vars, true));
 	if(false !== strpos($filter, '='))
 	{
 		$filter = explode('=', $filter);
@@ -21,11 +22,13 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 		if(in_array($k, $vars))
 		{
 			#var_dump($v);
+			#die('<pre>'.print_r($$file, true).'</pre>');
 			if('array' == $v['type'])
 			{
 				if(0 === count($indizes))
 				{
 					$indizes = array_keys($v['value']);
+					$indizes['auto'] = true;
 				}
 				$keep = (isset($v['keep']))? ' keep keep_'.$v['keep'] : '';
 				$out .= '<fieldset class="sortable'.$keep.'"><legend>'.lecho('config_'.$k, $admin_lang).'</legend>'."\n";
@@ -38,6 +41,7 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 				$out .= '<input type="text" class="hidden no_parent delete_index" name="'.$idx_name_del.'" id="'.$idx_name_del.'" value="" />'."\n";
 				if(0 === count($v['value']))
 				{
+					$indizes[] = '_new_1';
 					foreach($v['model'] as $mod_k => $mod_v)
 					{
 						$v['value']['_new_1'][$mod_k] = '';
@@ -49,11 +53,13 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 				}
 				foreach($v['value'] as $idx_k => $idx_v)
 				{
+					#if($k === 'menu_admin')die('<pre>'.print_r($indizes, true).'</pre>');
 					if(in_array($idx_k, $indizes) && (!is_array($filter) || ($idx_v[$filter[0]] == $filter[1])) )
 					{
 						if(0 === count($keys))
 						{
 							$keys = array_keys($idx_v);
+							$keys['auto'] = true;
 						}
 						$even_odd = ($even_odd=='odd')? 'even' : 'odd';
 						$out .= '<div id="'.$k.':'.$idx_k.'" class="idx_group '.$even_odd.'">'."\n";
@@ -67,6 +73,10 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 									$out .= gen_config_field($mod_v, array('file'=>$file,'val'=>$k,'index'=>$idx_k,'key'=>$mod_k));
 								}
 							}
+						}
+						if(true === $keys['auto'])
+						{
+							$keys = array();
 						}
 						#$out .= '<div class="idx_nav ui-widget ui-state-default"><a href="#" class="ui-icon ui-icon-arrowthick-1-n ui-state-default ui-corner-all sort_up"></a><a href="#" class="sort_down">down</a></div></div>';
 						if(!in_array('no_move_free', $nav_opts) && !in_array('no_idx_nav', $nav_opts))
@@ -85,6 +95,10 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 						}
 						$out .= '</div>'."\n";
 					}
+				}
+				if(true === $indizes['auto'])
+				{
+					$indizes = array();
 				}
 				$out .= '</fieldset>'."\n";
 			}
@@ -148,12 +162,12 @@ function gen_config_field($v, $k)
 					{
 						if($ov[$filter[0]] == $filter[1])
 						{
-							$v['options'][] = $ov[$conf_idx[2]];
+							$v['options'][$ok] = $ov[$conf_idx[2]];
 						}
 					}
 					else 
 					{
-						$v['options'][] = $ov[$conf_idx[2]];
+						$v['options'][$ok] = $ov[$conf_idx[2]];
 					}
 				}
 			}
@@ -161,7 +175,11 @@ function gen_config_field($v, $k)
 			#{
 				foreach($v['options'] as $ok => $ov)
 				{
-					$sel = ($ov == $v['value'])? ' selected="selected"' : '';
+					$sel = '';
+					if(is_numeric($ok) && $ov == $v['value'])
+						$sel = ' selected="selected"';
+					elseif(!is_numeric($ok) && $ok == $v['value'])
+						$sel = ' selected="selected"';
 					$out .= '<option value="'.$ok.'"'.$sel.'>'.htmlspecialchars($ov).'</option>'."\n";
 				}
 			#}
@@ -176,13 +194,19 @@ function gen_config_field($v, $k)
 				$v['options'] = array();
 				foreach($conf_opts as $ok => $ov)
 				{
-					$v['options'][] = $ov[$conf_idx[2]];
+					$v['options'][$ok] = $ov[$conf_idx[2]];
 				}
 			}
 			$val = '';
 			foreach($v['options'] as $ok => $ov)
 			{
-				$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
+				$sel = '';
+				#die('<pre>'.print_r($v, true).'</pre>');
+				if(is_array($v['value']) && is_numeric($ok) && in_array($ov, $v['value']))
+					$sel = ' checked="checked"';
+				elseif(is_array($v['value']) && !is_numeric($ok) && in_array($ok, $v['value']))
+					$sel = ' checked="checked"';
+				#$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
 				$val .= ($sel)? ':'.$ok : '';
 				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' value="'.$ok.'"/><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($ov).'</label></div>'."\n";
 			}
@@ -281,6 +305,9 @@ function merge_config($file, $values, $select_one_more_value='key')
 					#$v['value'] = $conf_chan[$v['var']]['options'][$v['value']];
 				}
 				$tmp = explode(':', $v['value']);
+				if(1 === count($tmp) && !$tmp[0])
+					$tmp = array();
+				#die('<pre>'.print_r($tmp, true).'</pre>');
 				$v['value'] = array();
 				if(!isset($opts['from_config']))
 				{
@@ -503,17 +530,20 @@ function config_check_types($conf_val, $new_val)
 	{
 		$conf_idx = explode(':', $conf_val['options']['from_config']);
 		$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
-		#die(var_dump($conf_opts));
+		#die(print_r($conf_opts));
 		$conf_val['options'] = array();
 		if(isset($conf_val['allow_none']))
 		{
-			$conf_val['options'][] = '---';
+			#$conf_val['options'][] = '---';
+			$conf_val['options'][] = 0;
 		}
 		foreach($conf_opts as $ok => $ov)
 		{
-			$conf_val['options'][] = $ov[$conf_idx[2]];
+			#$conf_val['options'][] = $ov[$conf_idx[2]];
+			$conf_val['options'][] = $ok;
 		}
-		if(is_array($new_val))
+		#die('<pre>'.print_r($new_val, true).'</pre>');
+		/*if(is_array($new_val))
 		{
 			foreach($new_val as $k => $v)
 			{
@@ -537,10 +567,10 @@ function config_check_types($conf_val, $new_val)
 			{
 				$new_val = '';
 			}
-		}
-		#print_r('new');
+		}*/
+		#print_r("\nnew\n");
 		#print_r($new_val);
-		#print_r('conf');
+		#print_r("\nconf\n");
 		#print_r($conf_val);
 		#die();
 	}
@@ -864,6 +894,33 @@ function get_config_data($file, $var, $index = false, $key = false)
 		return $file[$var]['value'];
 	}
 }
+function config2menu($file, $var)
+{
+	global $$file, $admin_lang;
+	require_once('cms/config/'.$file.'.php');
+	$out = '<ul class="menu ui-helper-clearfix">'."\n";
+	$file = $$file;
+	foreach($file[$var]['value'] as $k => $v)
+	{
+		if($v['is_sub_of'] == '0')
+		{
+			$out .= '<li><a title="'.lecho('help_menu_'.$v['name'], $admin_lang).'" href="'.htmlspecialchars($v['link']).'">'.htmlspecialchars($v['name']).'</a>';
+			if(is_array($file[$var]['list']['is_sub_of'][$k]) 
+				&& 0 < count($file[$var]['list']['is_sub_of'][$k]))
+			{
+				$out .= '<ul>'."\n";
+				foreach($file[$var]['list']['is_sub_of'][$k] as $sk => $sv)
+				{
+					$out .= '<li><a title="'.lecho('help_menu_'.$file[$var]['value'][$sv]['name'], $admin_lang).'" href="'.htmlspecialchars($file[$var]['value'][$sv]['link']).'">'.htmlspecialchars($file[$var]['value'][$sv]['name']).'</a></li>'."\n";
+				}
+				$out .= '</ul>'."\n";
+			}
+			$out .= '</li>'."\n";
+		}
+	}
+	$out .= '</ul>'."\n";
+	return $out;
+}
 function lecho($t, $l, $m='cms')
 {
 	#global $lang;
@@ -890,6 +947,8 @@ function lecho($t, $l, $m='cms')
 }
 function get_include_file($f)
 {
+	global $cms;
+	require_once('cms/config/cms.php');
 	$p = false;
 	$path = 'cms/include_files/';
 	$c = '';
@@ -921,13 +980,19 @@ function get_include_file($f)
 			{
 				###$tmp_c = preg_replace('#/\*.*?\*/#s', '', $tmp_c);
 				###$tmp_c = preg_replace('#(?s)\s|/\*.*?\*/#s', '', $tmp_c);
-				#include_once('cms/system/css_compressor.php');
-				#$tmp_c = Minify_CSS_Compressor::process($tmp_c);
+				if('On' == $cms['compress_css']['value'])
+				{
+					include_once('cms/system/css_compressor.php');
+					$tmp_c = Minify_CSS_Compressor::process($tmp_c);
+				}
 			}
 			elseif($type === 'js' && false === strpos($file, '.min.'))
 			{
-				#include_once('cms/system/jsmin.php');
-				#$tmp_c = JSMin::minify($tmp_c);
+				if('On' == $cms['compress_js']['value'])
+				{
+					include_once('cms/system/jsmin.php');
+					$tmp_c = JSMin::minify($tmp_c);
+				}
 			}
 			$c .= $tmp_c ."\n";
 		}
@@ -963,7 +1028,6 @@ function pwgen($l=8)
 }
 function new_config_key($arr = array())
 {
-	do
 	{
 		$rand = mk_rand_str();
 	} while (in_array($rand, $arr));
@@ -974,14 +1038,125 @@ function mk_rand_str($len = 5, $regex = '')
 	$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 	if('' !== $regex)
 	{
-	$pool = preg_replace('/[^'.$regex.']/', '', $pool);
+		$pool = preg_replace('/[^'.$regex.']/', '', $pool);
 	}
 	$pool = $pool . $pool;
 	do 
 	{
-	$rand = substr(str_shuffle($pool), 0, $len);
+		$rand = substr(str_shuffle($pool), 0, $len);
 	} while (1===preg_match('/[^0-9]/', $pool) && is_numeric(substr($rand, 0, 1)));
 	return $rand;
 }
+function captcha($do=4)
+{
+	$arr = array('Z'=>'bD1','1'=>'fZr','B'=>'H7Q','v'=>'zQw','H'=>'GiR','s'=>'xCy','5'=>'LXl','G'=>'qri','4'=>'wNG','a'=>'opH','p'=>'sXV','x'=>'qyo','O'=>'UGk','F'=>'Ivz','l'=>'Az6','I'=>'L0W','e'=>'cLA','h'=>'nxR','7'=>'nih','V'=>'JsO','R'=>'UgO','k'=>'SDY','S'=>'fP4','0'=>'x6u','r'=>'HP0','D'=>'J9b','c'=>'BRH','L'=>'YcP','q'=>'mb6','3'=>'hX5','K'=>'udY','Y'=>'NSn','Q'=>'nQe','z'=>'XT1','g'=>'uhx','y'=>'e9C','N'=>'nh6','f'=>'wyA','C'=>'Vsk','2'=>'tCY','w'=>'FCb','P'=>'mrq','M'=>'BFh','d'=>'vwJ','i'=>'bsZ','J'=>'rqK','X'=>'E9B','9'=>'lV9','6'=>'nTj','T'=>'fgh','t'=>'KBI','U'=>'FEL','b'=>'AQh','8'=>'YBv','A'=>'iMy','m'=>'n2I','o'=>'Fq5','W'=>'Hjf','E'=>'pcU','n'=>'Es4','j'=>'Q5v','u'=>'h1S',);
+	$class = 'humanfilter';
+	$md5_salt_prefix = $_SERVER['HTTP_HOST'].'|->';
+	if(is_array($do) && isset($do[$class]) && isset($do['answer']))
+	{
+		if(md5($md5_salt_prefix.$do['answer']) == $do[$class])
+		{
+			return true;
+		}
+		return false;
+	}
+	else 
+	{
+		$length = intval($do, 10);
+		$length = (0 === $length)? 4 : $length;
+		$str = mk_rand_str($length, 'a-hkm-z');
+		$solution = md5($md5_salt_prefix.$str);
+		$out = '<span class="'.$class.'_wrap">';
+		for($i=0; $i<$length;$i++)
+		{
+			$out .= '<span class="'.$class.' '.$arr[substr($str, $i, 1)].'"></span>';
+		}
+		$out .= '</span>'."\n";
+		$solution_input = "<input type=\"hidden\" name=\"$class\" value=\"$solution\" />";
+		return array($out, $solution, $solution_input);
+	}
+}
+function gen_captcha_styles()
+{
+	$str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	$font_color = '#333';
+	$bg_color = '#eee';
+	$css_class = 'humanfilter';
+	$css_img_path = 'cms/include_files/images/humanfilter.png';
+	#$css_img_path = 'b64';
+	$do_it_with = 'php';
+	#$do_it_with = 'google';
 
+
+	$str = str_shuffle($str);
+	$str_arr = str_split($str);
+	$str_arr = array_flip($str_arr);
+	$str_arr2 = array();
+	foreach($str_arr as $k => $v)
+	{
+		do
+			$rand = mk_rand_str(3);
+		while(in_array($rand, $str_arr2));
+		$str_arr2[$k] = $rand;
+	}
+	$str_arr = $str_arr2;
+	$str_inx_arr = array_flip($str_arr);
+	if('google' == $do_it_with)
+	{
+		$js = '<script type="text/javascript">WebFontConfig={google:{families:["Ubuntu+Mono::latin"]}};(function(){var a=document.createElement("script");a.src=("https:"==document.location.protocol?"https":"http")+"://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";a.type="text/javascript";a.async="true";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})();</script>';
+		$prev = '<div style="font-family: \'Ubuntu Mono\';font-size:20px;text-shadow:none;color:'.$font_color.';background-color:'.$bg_color.';line-height:18px; width:'.(strlen($str)*10).'px; height:20px; border:1px solid #000;">' . $str . '</div>'."\n";
+		$out = $js . $prev;
+	}
+	elseif('php' == $do_it_with)
+	{
+		$font = 'cms/include_files/UbuntuMono-R.ttf';
+		$im = @imagecreate((strlen($str)*10), 20) # imagecreatetruecolor
+			or die('Cannot Initialize new GD image stream');
+		$bg_color = str_replace('#', '', $bg_color);
+		$font_color = str_replace('#', '', $font_color);
+		if(3 === strlen($bg_color))
+			$bg_color = substr($bg_color, 0, 1).substr($bg_color, 0, 1).substr($bg_color, 1, 1).substr($bg_color, 1, 1).substr($bg_color, 2, 1).substr($bg_color, 2, 1);
+		$bg_r = intval(substr($bg_color, 0, 2), 16);
+		$bg_g = intval(substr($bg_color, 2, 2), 16);
+		$bg_b = intval(substr($bg_color, 4, 2), 16);
+		if(3 === strlen($font_color))
+			$font_color = substr($font_color, 0, 1).substr($font_color, 0, 1).substr($font_color, 1, 1).substr($font_color, 1, 1).substr($font_color, 2, 1).substr($font_color, 2, 1);
+		$font_r = intval(substr($font_color, 0, 2), 16);
+		$font_g = intval(substr($font_color, 2, 2), 16);
+		$font_b = intval(substr($font_color, 4, 2), 16);
+		$col_bg = imagecolorallocate($im, $bg_r, $bg_g, $bg_b);
+		$col_font = imagecolorallocate($im, $font_r, $font_g, $font_b);
+		imagefill($im, 1, 1, $col_bg);
+		for($i=0; $i<strlen($str); $i++)
+		{
+			imagettftext($im, 15, 0, ($i*10+0), 16, $col_font, $font, substr($str, $i, 1));
+		}
+		ob_start();
+			imagepng($im, null, 9, PNG_ALL_FILTERS);
+			$im_data = ob_get_contents();
+		ob_end_clean();
+		$im_data_b64 = base64_encode($im_data);
+		$out = '<img src="data:image/png;base64,'.$im_data_b64.'"/><br/>'."\n";
+		if($css_img_path == 'b64')
+		{
+			$css_img_path = 'data:image/png;base64,'.$im_data_b64;
+		}
+	}
+	$str_style = '.'.$css_class.'_wrap { display:inline-block; border:1px solid #333; border-radius:5px; padding:2px; background-color:#EEE; }'."\n";
+	$str_style .= '.'.$css_class.' { width:10px; height:20px; display:inline-block; background-repeat:no-repeat; background-image:url(\''.$css_img_path.'\'); }'."\n";
+	$i = 0;
+	foreach($str_arr as $k => $v)
+	{
+		$str_style .= '.'.$css_class.'.'.$v.' { background-position:'.($i*10*(-1)).'px 0px; }'."\n";
+		$i++;
+	}
+	$out .= 'Stylesheet:'."\n<pre>".$str_style."</pre><br/>\n";
+	$out .= 'Array for PHP-Function:'."\n".'<pre>array(';
+	foreach($str_arr as $k => $v)
+	{
+		$out .= "'$k'=>'$v',";
+	}
+	$out .= ');</pre><br/>'."\n";
+	return $out;
+}
 ?>

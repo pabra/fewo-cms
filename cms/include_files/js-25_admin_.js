@@ -58,16 +58,14 @@ $(function(){
 	$('div.idx_group:not(:last)').mouseenter(function(ev){
 		$(this).find('.idx_nav.move_down').show('slide',{direction:'down'},300);
 	});*/
-	if(0 === $('form.config .idx_group .activate_new_index').length){
+	fieldset_add_listener();
+	$('form.config .idx_group .activate_new_index').parents('.idx_group').unbind('mouseenter');
+	$('form.config .idx_group .activate_new_index').click(function(){
+		var group = $(this).parents('.idx_group');
+		$(this).mouseleave().remove();
 		fieldset_add_listener();
-	} else {
-		$('form.config .idx_group .activate_new_index').click(function(){
-			var group = $(this).parents('.idx_group');
-			$(this).remove();
-			fieldset_add_listener();
-			group.find('input, textarea, select').change();
-		});
-	}
+		group.find('input, textarea, select').change();
+	});
 	$('form.config').submit(function(ev){
 		var send_obj = {}, mis_matched = $('form.config .mismatch');
 		ev.preventDefault();
@@ -241,6 +239,7 @@ function fieldset_add_listener(){
 		});
 		clone.insertAfter(master);
 		fieldset_add_listener();
+		titleToTip();
 		idx_group_sorted($(this).parents('fieldset'));
 		clone.find('input, textarea, select').change();
 		clog(clone);

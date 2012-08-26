@@ -120,7 +120,9 @@ else
 	#$glob_var['lang_edit_now'] = 'english';
 	$admin_head_bar .= '<script type="text/javascript">var admin_keep_alive='.$sessions['keep_alive']['value'].';admin_lang="'.$admin_lang.'";</script>'."\n";
 	$admin_head_bar .= '<div id="head_user_box">'.$sess_data['user_name'].' '.lecho('admin_logged_in_as', $admin_lang).'<br/><a title="'.lecho('admin_user_pref', $admin_lang).'" href="?admin&amp;do=user_pref">'.$sess_data['real_name'].'</a><br/><a title="'.lecho('admin_log_timer_out', $admin_lang).'" class="ajax" id="keep_alive_timer" href="#do=logout">logout</a></div>'."\n";
-	$admin_head_bar .= ' <a href="?admin&amp;do=pages_order">pages_order</a> '."\n";
+	$admin_head_bar .= '<a href="?admin" style="margin:5px;font-size:24pt;" title="'.lecho('admin_homepage', $admin_lang).'">A</a> '."\n";
+	#$admin_head_bar .= '<a href="?admin&amp;do=pages_order" title="huhu">pages_order</a> '."\n";
+	$admin_head_bar .= config2menu('admin_menu', 'menu_user');
 	if('superuser' == $sess_data['role'])
 	{
 		$admin_head_bar .= '<div id="use_role_switch" ';
@@ -133,8 +135,35 @@ else
 	if('admin' == $sess_data['use_role'])
 	{
 		$admin_head_bar .= '<div id="head_adv_admin">'."\n";
-		$admin_head_bar .= '<a href="?admin&amp;do=config_users">All Users</a>'."\n";
-		$admin_head_bar .= '</div">'."\n";
+		$adm_menu = get_config_data('admin_menu', 'menu_admin');
+		$admin_head_bar .= config2menu('admin_menu', 'menu_admin');
+		$admin_head_bar .= '</div>'."\n";
+		if($_GET['do'] == 'config_select')
+		{
+			$c_files = glob('cms/config/*.php');
+			$admin_content .= '<select name="file_select" onchange="var tval=$(this).val();if(tval!==\'---\'){window.location=\'?admin&amp;do='.$_GET['do'].'&amp;config=\'+tval;}">'."\n";
+			$admin_content .= '<option>---</option>'."\n";
+			foreach($c_files as $k => $v)
+			{
+				if(preg_match('#/[^.]+\.php#', $v))
+				{
+					$v = str_replace('.php', '', basename($v));
+					$selected = ($v == $_GET['config'])? ' selected="selected"' : '';
+					$admin_content .= '<option'.$selected.'>'.$v.'</option>'."\n";
+				}
+			}
+			$admin_content .= '</select>'."<br/>\n";
+			if($_GET['config'] && is_file('cms/config/'.$_GET['config'].'.php'))
+			{
+				$admin_content .= edit_config($_GET['config']);
+			}
+		}
+		elseif($_GET['do'] == 'clear_cache')
+		{
+			$admin_content .= '<form action="javascript:void(0);" method="get">';
+			$admin_content .= '<div class="form_row"><label class="main">huhu</label><input type="button" onclick="$(this).blur();" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$admin_content .= '</form>';
+		}
 	}
 	if($_GET['do'] == 'user_pref')
 	{
@@ -146,23 +175,41 @@ else
 		$i = 0;
 		foreach($cms['avail_page_lang']['value'] as $k => $v)
 		{
-			
-			$admin_content .= '<input type="radio" id="'.$k.'" name="fe_lang" /><label for="'.$k.'">'.$v['lang_name'].'</label>'."\n";
+			$sel = '';
+			if(0 === $i && !$_GET['lang'])
+			{
+				$sel = ' checked="checked"';
+				$_GET['lang'] = $v['lang'];
+			}
+			elseif($v['lang'] == $_GET['lang'])
+				$sel = ' checked="checked"';
+			$admin_content .= '<input type="radio"'.$sel.' id="'.$k.'" name="fe_lang" value="'.$v['lang'].'" /><label for="'.$k.'">'.$v['lang_name'].'</label>'."\n";
 			$i++;
 		}
-		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset();</script>'."\n";
-		$admin_content .= edit_config('pages');
+		$glob_var['lang_edit_now'] = $cms['avail_page_lang']['index']['lang'][$_GET['lang']];
+		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val();/*clog($(this).find(\':checked\').val());*/ });</script>'."\n";
+		$admin_content .= edit_config('pages', array('pages'), array(), array(), 'lang='.$cms['avail_page_lang']['index']['lang'][$_GET['lang']]);
 	}
-	elseif('admin' == $sess_data['use_role'])
+	elseif(!$_GET['do'])
 	{
-		if($_GET['do'] == 'config_users')
+		$admin_content .= '<pre>'.print_r($_POST, true).'</pre>';
+		if($_POST && true === captcha(array('answer'=>$_POST['answer'], 'humanfilter'=>$_POST['humanfilter'])))
 		{
-			$admin_content .= edit_config('users');
+			$admin_content .= 'is true<br/>'."\n";
+			#$admin_content .= 'mail sent: '. var_export(mail('pat.bass@gmx.de', 'betreff', 'nachricht'), true) ."<br/>\n";
 		}
-	}
-	else 
-	{
-		$admin_content .= 'admin content';
+		#$admin_content .= 'admin content<br/>'."\n";
+		#$admin_content .= gen_captcha_styles();
+		$captcha = captcha();
+		$admin_content .= <<<EOT
+<form action="?${_SERVER['QUERY_STRING']}" method="post">
+<div class="form_row"><label for="feld1" class="main">irgendwas:</label><input type="text" id="feld1" name="irgendein_feld" /></div>
+<div class="form_row"><label class="main">captcha:</label>${captcha[0]}</div>
+<div class="form_row"><label for="answer" class="main">Antwort:</label><input type="text" name="answer" id="answer" /></div>
+${captcha[2]}
+<div class="form_row"><input type="submit" /></div>
+</form>
+EOT;
 	}
 	#$admin_content .= "You are someone<br/>\n";
 	#$admin_content .= '<a href="">huhu</a><pre>'.print_r($sess_data, true).'</pre>'."\n";
@@ -170,6 +217,6 @@ else
 	#$admin_content .= edit_config('pages', array(), array(), array(), '');
 }
 $admin_head_bar = '<div id="admin_head_bar" class="'.$sess_data['use_role'].'">'.$admin_head_bar.'</div>'."\n";
-$page_out = $admin_header . $admin_content . $admin_head_bar . $admin_footer;
+$page_out = $admin_header . '<div id="content_wrap" class="'.$sess_data['use_role'].'">' . $admin_content . '</div>' . $admin_head_bar . $admin_footer;
 
 ?>
