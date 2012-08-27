@@ -49,8 +49,16 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 						{
 							$v['value']['_new_1'][$mod_k] = array();
 						}
+						if(is_array($filter) && $mod_k == $filter[0])
+						{
+							$v['value']['_new_1'][$mod_k] = $filter[1];
+						}
 					}
 				}
+				#echo '<pre>'.print_r($indizes, true).'</pre>'."<br/>\n";
+				#echo '<pre>'.print_r($filter, true).'</pre>'."<br/>\n";
+				#echo '<pre>'.print_r($v, true).'</pre>'."<br/>\n";
+				#die();
 				foreach($v['value'] as $idx_k => $idx_v)
 				{
 					#if($k === 'menu_admin')die('<pre>'.print_r($indizes, true).'</pre>');
@@ -111,7 +119,7 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 		}
 	}
 	#$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div>'."\n".'</form>'."\n";
-	$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/></div>'."\n".'</form>'."\n";
+	$out .= '<div class="form_submit"><input type="submit" accesskey="s" title="'.lecho('button_submit_title', $admin_lang).'" value="'.lecho('button_submit', $admin_lang).'"/></div>'."\n".'</form>'."\n";
 	#echo $out;
 	#die();
 	return $out;
@@ -154,7 +162,7 @@ function gen_config_field($v, $k)
 				$v['options'] = array();
 				if(isset($v['allow_none']))
 				{
-					$v['options'][] = '---';
+					$v['options']['_none_'] = '---';
 				}
 				foreach($conf_opts as $ok => $ov)
 				{
@@ -535,7 +543,7 @@ function config_check_types($conf_val, $new_val)
 		if(isset($conf_val['allow_none']))
 		{
 			#$conf_val['options'][] = '---';
-			$conf_val['options'][] = 0;
+			$conf_val['options']['_none_'] = 0;
 		}
 		foreach($conf_opts as $ok => $ov)
 		{
@@ -902,7 +910,7 @@ function config2menu($file, $var)
 	$file = $$file;
 	foreach($file[$var]['value'] as $k => $v)
 	{
-		if($v['is_sub_of'] == '0')
+		if($v['is_sub_of'] == '_none_')
 		{
 			$out .= '<li><a title="'.lecho('help_menu_'.$v['name'], $admin_lang).'" href="'.htmlspecialchars($v['link']).'">'.htmlspecialchars($v['name']).'</a>';
 			if(is_array($file[$var]['list']['is_sub_of'][$k]) 
@@ -1046,6 +1054,114 @@ function mk_rand_str($len = 5, $regex = '')
 		$rand = substr(str_shuffle($pool), 0, $len);
 	} while (1===preg_match('/[^0-9]/', $pool) && is_numeric(substr($rand, 0, 1)));
 	return $rand;
+}
+function clear_cache($what='pages')
+{
+	$status = null;
+	$txt = 'wrong type of cache to delete ('.$what.')';
+	$files = glob('cms/cache/*.php');
+	$count = array();
+	$i = 0;
+	if('pages' === substr($what, -5) || 'count' === $what)
+	{
+		if(is_array($files) && 0 < count($files))
+		{
+			foreach($files as $k => $v)
+			{
+				$bn = basename($v);
+				if(0 !== strpos($bn, 'javascript_js') 
+					&& 0 !== strpos($bn, 'javascript_admin_js') 
+					&& 0 !== strpos($bn, 'style_css') 
+					&& 0 !== strpos($bn, 'style_admin_css') )
+				{
+					if('count' !== $what)
+					{
+						unlink($v);
+					}
+					$i++;
+				}
+			}
+		}
+		$status = true;
+		$txt = $i. ' files removed.';
+		$count['pages'] = $i;
+		$i = 0;
+	}
+	if('css' === substr($what, -3) || 'count' === $what)
+	{
+		if(is_array($files) && 0 < count($files))
+		{
+			foreach($files as $k => $v)
+			{
+				$bn = basename($v);
+				if(0 === strpos($bn, 'style_css') 
+					|| 0 === strpos($bn, 'style_admin_css') )
+				{
+					if('count' !== $what)
+					{
+						unlink($v);
+					}
+					$i++;
+				}
+			}
+		}
+		$status = true;
+		$txt = $i. ' files removed.';
+		$count['css'] = $i;
+		$i = 0;
+	}
+	if('js' === substr($what, -2) || 'count' === $what)
+	{
+		if(is_array($files) && 0 < count($files))
+		{
+			foreach($files as $k => $v)
+			{
+				$bn = basename($v);
+				if(0 === strpos($bn, 'javascript_js') 
+					|| 0 === strpos($bn, 'javascript_admin_js') )
+				{
+					if('count' !== $what)
+					{
+						unlink($v);
+					}
+					$i++;
+				}
+			}
+		}
+		$status = true;
+		$txt = $i. ' files removed.';
+		$count['js'] = $i;
+		$i = 0;
+	}
+	if('all' === substr($what, -3) || 'count' === $what)
+	{
+		if(is_array($files) && 0 < count($files))
+		{
+			foreach($files as $k => $v)
+			{
+				if('count' !== $what)
+				{
+					unlink($v);
+				}
+				$i++;
+			}
+		}
+		$status = true;
+		$txt = $i. ' files removed.';
+		$count['all'] = $i;
+		$i = 0;
+	}
+	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
+}
+function show_info($t)
+{
+	$out = '<div class="ui-widget"><div class="ui-corner-all ui-state-highlight" style="position:relative;padding:0px 20px;"><span class="ui-icon ui-icon-info" style="position:absolute;top:2px;left:2px;"></span><p>'.$t.'</p></div></div>'."\n";
+	return $out;
+}
+function show_warning($t)
+{
+	$out = '<div class="ui-widget"><div class="ui-corner-all ui-state-error" style="position:relative;padding:0px 20px;"><span class="ui-icon ui-icon-alert" style="position:absolute;top:2px;left:2px;"></span><p>'.$t.'</p></div></div>'."\n";
+	return $out;
 }
 function captcha($do=4)
 {

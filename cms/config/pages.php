@@ -1,29 +1,41 @@
-<?php # Sun, 26 Aug 2012 22:27:33 +0200
+<?php # Mon, 27 Aug 2012 23:36:05 +0200
 
 $pages = array (
 	'pages' => 
 	array (
 		'value' => 
 		array (
-			'RHOsF' => 
+			'fjk5P' => 
 			array (
-				'name' => 'Startseite',
-				'title' => 'start',
+				'name' => 'Start',
+				'title' => 'Startseite',
+				'access' => 'private',
 				'lang' => 'pz28x',
-				'startpage_for_lang' => 
-				array (
-				),
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
-			'x0jUs' => 
+			'oON9n' => 
+			array (
+				'name' => 'Preise',
+				'title' => 'hier \'sind\' die "Preise" in € & Cent',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+			),
+			'nkewc' => 
+			array (
+				'name' => 'price',
+				'title' => 'here are the prices',
+				'access' => 'public',
+				'lang' => 'zfKou',
+				'is_sub_of' => '_none_',
+			),
+			'iCHhz' => 
 			array (
 				'name' => 'Startpage',
-				'title' => 'start',
+				'title' => 'the beginning',
+				'access' => 'private',
 				'lang' => 'zfKou',
-				'startpage_for_lang' => 
-				array (
-				),
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
 		),
 		'type' => 'array',
@@ -35,26 +47,29 @@ $pages = array (
 				'type' => 'text',
 				'must' => '1',
 				'index' => '1',
-				'match' => '^[a-zA-Z0-9_üöäÜÖÄß]+$',
+				'match' => '^[a-zA-Z]+[a-zA-Z0-9_üöäÜÖÄß]*$',
 			),
 			'title' => 
 			array (
 				'type' => 'text',
 			),
-			'lang' => 
+			'access' => 
 			array (
 				'type' => 'select_one',
 				'options' => 
 				array (
-					'from_config' => 'cms:avail_page_lang:lang_name',
+					0 => 'public',
+					1 => 'private',
+					2 => 'password',
 				),
 			),
-			'startpage_for_lang' => 
+			'lang' => 
 			array (
-				'type' => 'select_more',
+				'type' => 'select_one',
+				'list' => '1',
 				'options' => 
 				array (
-					0 => 'X',
+					'from_config' => 'cms:avail_page_lang:lang_name',
 				),
 			),
 			'is_sub_of' => 
@@ -72,8 +87,26 @@ $pages = array (
 		array (
 			'name' => 
 			array (
-				'Startseite' => 'RHOsF',
-				'Startpage' => 'x0jUs',
+				'Start' => 'fjk5P',
+				'Preise' => 'oON9n',
+				'price' => 'nkewc',
+				'Startpage' => 'iCHhz',
+			),
+		),
+		'list' => 
+		array (
+			'lang' => 
+			array (
+				'pz28x' => 
+				array (
+					0 => 'fjk5P',
+					1 => 'oON9n',
+				),
+				'zfKou' => 
+				array (
+					0 => 'nkewc',
+					1 => 'iCHhz',
+				),
 			),
 		),
 	),

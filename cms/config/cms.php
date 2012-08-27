@@ -1,20 +1,20 @@
-<?php # Sun, 26 Aug 2012 23:50:02 +0200
+<?php # Mon, 27 Aug 2012 23:39:59 +0200
 
 $cms = array (
 	'admin_language' => 
 	array (
 		'value' => 'de',
-		'help' => 'help_admin_language',
 		'type' => 'select_one',
 		'options' => 
 		array (
 			0 => 'de',
 			1 => 'en',
 		),
+		'help' => 'help_admin_language',
 	),
 	'use_cache' => 
 	array (
-		'value' => 'On',
+		'value' => 'Off',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -24,7 +24,7 @@ $cms = array (
 	),
 	'compress_js' => 
 	array (
-		'value' => 'On',
+		'value' => 'Off',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -34,12 +34,21 @@ $cms = array (
 	),
 	'compress_css' => 
 	array (
-		'value' => 'On',
+		'value' => 'Off',
 		'type' => 'select_one',
 		'options' => 
 		array (
 			0 => 'On',
 			1 => 'Off',
+		),
+	),
+	'page_author' => 
+	array (
+		'value' => 'hOpQ5',
+		'type' => 'select_one',
+		'options' => 
+		array (
+			'from_config' => 'users:users:real_name',
 		),
 	),
 	'avail_page_lang' => 
@@ -91,16 +100,6 @@ $cms = array (
 				'de' => 'pz28x',
 				'en' => 'zfKou',
 			),
-		),
-	),
-	'page_def_lang_prior_browser_accept' => 
-	array (
-		'value' => '0',
-		'type' => 'select_one',
-		'options' => 
-		array (
-			0 => '1',
-			1 => '0',
 		),
 	),
 );

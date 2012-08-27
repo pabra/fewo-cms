@@ -126,7 +126,7 @@ if(isset($sess_data['role']))
 			echo json_encode(array('status'=>true, 'txt'=>'ok'));
 		}
 	}
-	if($_POST['do'] == 'logout')
+	if('logout' === $_POST['do'])
 	{
 		check_logout();
 		setcookie('sess', '', 1);
@@ -145,6 +145,18 @@ if(isset($sess_data['role']))
 			echo json_encode(array('status'=>true, 'txt'=>'ok'));
 		}
 	}
+	if('clear_cache' === $_POST['do'])
+	{
+		echo json_encode(clear_cache($_POST['what']));
+	}
 }
+
+
+
+
+
+
+
+
 
 ?>

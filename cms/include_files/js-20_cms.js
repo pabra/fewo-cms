@@ -106,6 +106,26 @@ function titleToTip(){
 		});
 	});
 }
+function show_info(txt, title){
+	if('undefined' === typeof(title)){
+		title = 'Information';
+	}
+	$('#dialog').html('<p><span class="ui-icon ui-icon-info" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>').dialog({modal:true,title:title,buttons:{
+		Ok:function(){
+			$(this).dialog('close');
+		}
+		}});
+}
+function show_warning(txt, title){
+	if('undefined' === typeof(title)){
+		title = 'Warning';
+	}
+	$('#dialog').html('<p style="color:maroon;"><span class="ui-icon ui-icon-alert" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>').dialog({modal:true,title:title,buttons:{
+		Ok:function(){
+			$(this).dialog('close');
+		}
+		}});
+}
 
 $(function(){
 	$('input[type=file]').bind('change', function() {

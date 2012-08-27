@@ -160,9 +160,37 @@ else
 		}
 		elseif($_GET['do'] == 'clear_cache')
 		{
-			$admin_content .= '<form action="javascript:void(0);" method="get">';
-			$admin_content .= '<div class="form_row"><label class="main">huhu</label><input type="button" onclick="$(this).blur();" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$count = clear_cache('count');
+			$admin_content .= show_warning( lecho('admin_warning_clear_cache', $admin_lang) );
+			$admin_content .= '<br/><form id="clear_cache" action="javascript:void(0);" method="get">';
+			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_pages', $admin_lang).' ('.intval($count['count']['pages']).')</label><input id="clear_cache_pages" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_js', $admin_lang).' ('.intval($count['count']['js']).')</label><input id="clear_cache_js" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_css', $admin_lang).' ('.intval($count['count']['css']).')</label><input id="clear_cache_css" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_all', $admin_lang).' ('.intval($count['count']['all']).')</label><input id="clear_cache_all" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
 			$admin_content .= '</form>';
+			$admin_content .= <<<EOJS
+<script type="text/javascript">
+function ccbuttons(what){
+	if(what === 'enabled'){
+		$('#clear_cache input[type=button]').prop({disabled:false});
+	} else if(what === 'disabled'){
+		$('#clear_cache input[type=button]').prop({disabled:true});
+	}
+}
+function post_clear_cache(what){
+	ccbuttons('disabled');
+	$.post('ajax.php', {do:'clear_cache',what:what},function(data){
+		if(true === data.status){
+			show_info(data.txt);
+			ccbuttons('enabled');
+		} else {
+			show_warning(data.txt);
+		}
+	});
+}
+$('#clear_cache input[type=button]').click(function(){post_clear_cache($(this).attr('id'));});
+</script>
+EOJS;
 		}
 	}
 	if($_GET['do'] == 'user_pref')

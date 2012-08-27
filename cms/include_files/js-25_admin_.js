@@ -26,14 +26,15 @@ $(function(){
 			clog(data);
 			form_fields.prop({disabled:false});
 			if(false === data.status){
-				$('#dialog').attr('title', 'Fehler').text(data.msg).dialog({
+				show_warning(data.msg);
+				/*$('#dialog').attr('title', 'Fehler').text(data.msg).dialog({
 					modal:true,
 					buttons: {
 						Ok: function() {
 							$( this ).dialog( "close" );
 						}
 					}
-					});
+					});*/
 			} else {
 				clog('goto: '+form.find('[name=req_page]').val());
 				clog(form);
@@ -87,7 +88,8 @@ $(function(){
 		clog(send_obj.length);
 		if(0 === Object.size(send_obj)){
 			//$('#dialog').attr({title:'nothing to do'}).text('Here is nothing to do.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
-			$('#dialog').attr('title', 'nothing changed').html('No changed values to submit.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+			//$('#dialog').attr('title', 'nothing changed').html('No changed values to submit.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+			show_info('No changed values to submit.','nothing changed');
 		} else {
 			clog(send_obj);
 			$.post('ajax.php?do=send_config', send_obj, function(data){
@@ -95,7 +97,8 @@ $(function(){
 				if(true === data.status){
 					window.location.reload();
 				} else {
-					$('#dialog').attr('title', 'Error').html(data.txt).dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+					//$('#dialog').attr('title', 'Error').html(data.txt).dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+					show_warning(data.txt, 'Error');
 				}
 			});
 		}
@@ -244,12 +247,6 @@ function fieldset_add_listener(){
 		clone.find('input, textarea, select').change();
 		clog(clone);
 	});
-	$('form.config select').each(function(k, v){
-		if('undefined' === typeof($(v).prop('defaultValue'))){
-			$(v).prop({defaultValue: $(v).val()});
-		}
-		//clog($(v));
-	});
 	$('form.config .ui-icon-arrowreturnthick-1-s').unbind('click').click(function(){
 		$(this).parents('.form_row').find('input, textarea, select').each(function(k,v){
 			if('checkbox' === $(v).prop('type')){
@@ -366,6 +363,19 @@ function fieldset_add_listener(){
 				$(this).parents('.form_row').addClass('changed');
 			}
 		}
+	});
+	$('form.config select').each(function(k, v){
+		if('undefined' === typeof($(v).prop('defaultValue'))){
+			var sel = $(v).find('option[selected]');
+			if(1 === sel.length){
+				$(v).prop({defaultValue: sel.val()});
+			} else {
+				$(v).prop({defaultValue: ''});
+				$(v).change();
+			}
+			//$(v).prop({defaultValue: $(v).val()});
+		}
+		//clog($(v));
 	});
 	$('form.config input:not(.notrim)').change(function(){
 		var trimmed = $.trim($(this).val());

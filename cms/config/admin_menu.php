@@ -1,4 +1,4 @@
-<?php # Sun, 26 Aug 2012 22:49:19 +0200
+<?php # Mon, 27 Aug 2012 23:35:17 +0200
 
 $admin_menu = array (
 	'menu_user' => 
@@ -9,7 +9,7 @@ $admin_menu = array (
 			array (
 				'name' => 'pages',
 				'link' => '?admin&do=pages_order',
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
 			'TUG3u' => 
 			array (
@@ -27,7 +27,7 @@ $admin_menu = array (
 			array (
 				'name' => 'another one',
 				'link' => '?admin',
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
 		),
 		'type' => 'array',
@@ -49,7 +49,7 @@ $admin_menu = array (
 				'options' => 
 				array (
 					'from_config' => 'admin_menu:menu_user:name',
-					'filter' => 'is_sub_of=0',
+					'filter' => 'is_sub_of=_none_',
 				),
 			),
 		),
@@ -57,7 +57,7 @@ $admin_menu = array (
 		array (
 			'is_sub_of' => 
 			array (
-				0 => 
+				'_none_' => 
 				array (
 					0 => 'Es5FG',
 					1 => 'fqp4T',
@@ -78,13 +78,13 @@ $admin_menu = array (
 			array (
 				'name' => 'edit config',
 				'link' => '?admin&do=config_select',
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
 			'fZDR1' => 
 			array (
 				'name' => 'clear cache',
 				'link' => '?admin&do=clear_cache',
-				'is_sub_of' => '0',
+				'is_sub_of' => '_none_',
 			),
 		),
 		'type' => 'array',
@@ -106,7 +106,7 @@ $admin_menu = array (
 				'options' => 
 				array (
 					'from_config' => 'admin_menu:menu_admin:name',
-					'filter' => 'is_sub_of=0',
+					'filter' => 'is_sub_of=_none_',
 				),
 			),
 		),
@@ -114,7 +114,7 @@ $admin_menu = array (
 		array (
 			'is_sub_of' => 
 			array (
-				0 => 
+				'_none_' => 
 				array (
 					0 => 'DVXAX',
 					1 => 'fZDR1',

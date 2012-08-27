@@ -1,6 +1,8 @@
 <?php
 
 #header('Content-Type: text/plain; charset=utf-8');
+#print_r($_SERVER);
+#die();
 error_reporting(E_ALL ^ E_NOTICE);
 setlocale(LC_ALL, 'de_DE.UTF-8');
 require_once('cms/config/cms.php');
@@ -14,20 +16,6 @@ $keys_of_get = array_keys($_GET);
 if(isset($keys_of_get[0]))
 {
 	$req_page = preg_replace('/[^a-zA-Z0-9_-]/', '', $keys_of_get[0]);
-	$req_lang = $_GET[$keys_of_get[0]];
-	$show_lang = '';
-	foreach($cms['avail_page_lang']['value'] as $k => $v)
-	{
-		if($req_lang == $v['lang'])
-		{
-			$show_lang = $v['lang'];
-			break 1;
-		}
-	}
-	if('' === $show_lang)
-	{
-		$show_lang = $cms['avail_page_lang']['value'][0]['lang'];
-	}
 	unset($_GET[$keys_of_get[0]]);
 	if(0 < count($_GET))
 	{
@@ -84,6 +72,8 @@ if(true === $use_cache && false !== $req_page)
 }
 #var_dump($_GET);
 require_once('cms/system/functions.php');
+#var_dump(get_browser_lang($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+#die();
 
 $page_content_type = 'text/html; charset=utf-8';
 if($req_page == 'style_css' || $req_page == 'style_admin_css'){
@@ -106,8 +96,46 @@ elseif($req_page == 'admin')
 }
 else 
 {
-	$tpl_page_title = 'Das ist der "Titel"';
-	$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}";
+	$conf_default_lang = array();
+	foreach($cms['avail_page_lang']['value'] as $k => $v)
+	{
+		if('On' === $v['visible'])
+		{
+			$conf_default_lang = array('index'=>$k, 'lang'=>$v['lang']);
+			break 1;
+		}
+	}
+	require_once('cms/config/pages.php');
+	if(false === $req_page)
+	{
+		$startpage = $pages['pages']['list']['lang'][$conf_default_lang['index']][0];
+		if($startpage)
+		{
+			$startpage = $pages['pages']['value'][$startpage]['name'];
+			header("Location: http://${_SERVER['HTTP_HOST']}/?${startpage}");
+			die();
+		}
+		else 
+		{
+			header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+			die('Not Found');
+		}
+	}
+	if(!isset($pages['pages']['index']['name'][$req_page]))
+	{
+		header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+		die('Not Found');
+	}
+	else 
+	{
+		$conf_page = $pages['pages']['value'][$pages['pages']['index']['name'][$req_page]];
+	}
+	require_once('cms/config/users.php');
+	$tpl_lang = $cms['avail_page_lang']['value'][$conf_page['lang']]['lang'];
+	$tpl_page_author = $users['users']['value'][$cms['page_author']['value']]['real_name'];
+	$tpl_page_title = htmlspecialchars($conf_page['title']);
+	$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
+	$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
 	require_once('cms/template/default/template.php');
 	/*$C = array(
 		'page_title' => 'Das ist der Titelü',
