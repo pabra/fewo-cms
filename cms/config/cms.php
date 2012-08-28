@@ -10,7 +10,6 @@ $cms = array (
 			0 => 'de',
 			1 => 'en',
 		),
-		'help' => 'help_admin_language',
 	),
 	'use_cache' => 
 	array (
