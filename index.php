@@ -96,19 +96,23 @@ elseif($req_page == 'admin')
 }
 else 
 {
-	$conf_default_lang = array();
+	$conf_lang = array('all'=>array());
 	foreach($cms['avail_page_lang']['value'] as $k => $v)
 	{
 		if('On' === $v['visible'])
 		{
-			$conf_default_lang = array('index'=>$k, 'lang'=>$v['lang']);
-			break 1;
+			if(!isset($conf_lang['default']))
+			{
+				$conf_lang['default'] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
+			}
+			$conf_lang['all'][] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
+			$conf_lang[$v['lang']] = array('index'=>$k, 'name'=>$v['lang_name']);
 		}
 	}
 	require_once('cms/config/pages.php');
 	if(false === $req_page)
 	{
-		$startpage = $pages['pages']['list']['lang'][$conf_default_lang['index']][0];
+		$startpage = $pages['pages']['list']['lang'][$conf_lang['default']['index']][0];
 		if($startpage)
 		{
 			$startpage = $pages['pages']['value'][$startpage]['name'];
@@ -133,10 +137,59 @@ else
 	}
 	require_once('cms/config/users.php');
 	$tpl_lang = $cms['avail_page_lang']['value'][$conf_page['lang']]['lang'];
-	$tpl_page_author = $users['users']['value'][$cms['page_author']['value']]['real_name'];
-	$tpl_page_title = htmlspecialchars($conf_page['title']);
-	$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
-	$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
+	$menu = '';
+	if(is_array($pages['pages']['value']) && 0 < count($pages['pages']['value']))
+	{
+		$menu .= 'Menu: <ul>';
+		foreach($pages['pages']['value'] as $k => $v)
+		{
+			if('_none_' == $v['is_sub_of'] && 'public' == $v['access'] && $v['lang'] == $conf_lang[$tpl_lang]['index'])
+			{
+				$menu .= '<li><a href="?'.$v['name'].'" title="'.htmlspecialchars($v['title']).'">'.$v['name'] . '</a>';
+				if(is_array($pages['pages']['list']['is_sub_of'][$k]))
+				{
+					$menu .= '<ul>';
+					foreach($pages['pages']['list']['is_sub_of'][$k] as $sk => $sv)
+					{
+						$svv = $pages['pages']['value'][$sv];
+						if('public' == $svv['access'] && $svv['lang'] == $conf_lang[$tpl_lang]['index'])
+						{
+							$menu .= '<li><a href="?'.$svv['name'].'" title="'.htmlspecialchars($svv['title']).'">'.$svv['name'] . '</a></li>';
+						}
+					}
+					$menu .= '</ul>';
+				}
+				$menu .= '</li>';
+			}
+		}
+		$menu .= '</ul>';
+	}
+	$lang_box = '';
+	if(0 < count($conf_lang['all']))
+	{
+		$lang_box .= 'Lang: <ul>';
+		foreach($conf_lang['all'] as $k => $v)
+		{
+			if($tpl_lang != $v['lang'])
+			{
+				$lp = $pages['pages']['list']['lang'][$v['index']][0];
+				if($lp)
+				{
+					$lp = $pages['pages']['value'][$lp]['name'];
+					$lang_box .= '<li><a href="?'.$lp.'">'.$v['name'].'</a></li>';
+				}
+			}
+		}
+		$lang_box .= '</ul>'."\n";
+	}
+	$tpl_page_header = $menu . $lang_box;
+	$tpl_page_author = htmlspecialchars( $users['users']['value'][$cms['page_author']['value']]['real_name'] );
+	$tpl_page_description = ($conf_page['description'])? htmlspecialchars($conf_page['description']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_description'] );
+	$tpl_page_keywords = ($conf_page['keywords'])? htmlspecialchars($conf_page['keywords']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_keywords'] );
+	$tpl_page_title = htmlspecialchars($cms['avail_page_lang']['value'][$conf_lang[$tpl_lang]['index']]['page_title']) .' | '. htmlspecialchars($conf_page['title']);
+	#$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
+	#$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
+	$tpl_page_content = $conf_page['content'];
 	require_once('cms/template/default/template.php');
 	/*$C = array(
 		'page_title' => 'Das ist der Titelü',

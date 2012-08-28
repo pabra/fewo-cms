@@ -179,6 +179,20 @@ function gen_config_field($v, $k)
 					}
 				}
 			}
+			elseif(isset($v['options']['from_file']))
+			{
+				$files = glob($v['options']['from_file']);
+				$filter = ($v['options']['filter'])? $v['options']['filter'] : false;
+				$v['options'] = array();
+				foreach($files as $fk => $fv)
+				{
+					$bn = basename($fv);
+					if(false === $filter || preg_match('/'.$filter.'/', $bn))
+					{
+						$v['options'][] = $bn;
+					}
+				}
+			}
 			#else 
 			#{
 				foreach($v['options'] as $ok => $ov)
@@ -205,6 +219,20 @@ function gen_config_field($v, $k)
 					$v['options'][$ok] = $ov[$conf_idx[2]];
 				}
 			}
+			elseif(isset($v['options']['from_file']))
+			{
+				$files = glob($v['options']['from_file']);
+				$filter = ($v['options']['filter'])? $v['options']['filter'] : false;
+				$v['options'] = array();
+				foreach($files as $fk => $fv)
+				{
+					$bn = basename($fv);
+					if(false === $filter || preg_match('/'.$filter.'/', $bn))
+					{
+						$v['options'][] = $bn;
+					}
+				}
+			}
 			$val = '';
 			foreach($v['options'] as $ok => $ov)
 			{
@@ -225,6 +253,9 @@ function gen_config_field($v, $k)
 			break;
 		case 'email':
 			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
+			break;
+		case 'textarea':
+			$out .= '<textarea class="'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.$v['value'].'</textarea>'."\n";
 			break;
 		case 'text':
 		default:
@@ -247,6 +278,18 @@ function merge_config($file, $values, $select_one_more_value='key')
 		#echo "change ${val_val['value']}<br/>\n";
 		if(isset($v['sort_order']))
 		{
+			if(count($v['sort_order']) < count($conf_chan[$v['var']]['value']))
+			{
+				#echo "sort_order: ".count($v['sort_order'])." : conf: ".count($conf_chan[$v['var']]['value'])."\n";
+				$conf_keys = array_keys($conf_chan[$v['var']]['value']);
+				foreach($conf_keys as $ck => $cv)
+				{
+					if(!in_array($cv, $v['sort_order']))
+					{
+						$v['sort_order'][] = $cv;
+					}
+				}
+			}
 			#echo '<pre>'.print_r($conf_chan, true)."</pre><br/>\n";
 			$resort_vars[$v['var']] = $v['sort_order'];
 			#die(print_r($resort_vars, true));
@@ -292,7 +335,7 @@ function merge_config($file, $values, $select_one_more_value='key')
 				{
 					$opts = $conf_chan[$v['var']]['options'];
 				}
-				if(!isset($opts['from_config']))
+				if(!isset($opts['from_config']) && !isset($opts['from_file']))
 				{
 					$v['value'] = $opts[$v['value']];
 				}
@@ -550,38 +593,35 @@ function config_check_types($conf_val, $new_val)
 			#$conf_val['options'][] = $ov[$conf_idx[2]];
 			$conf_val['options'][] = $ok;
 		}
-		#die('<pre>'.print_r($new_val, true).'</pre>');
-		/*if(is_array($new_val))
+	}
+	if( ('select_more' === $conf_val['type'] || 'select_one' === $conf_val['type']) && isset($conf_val['options']['from_file']))
+	{
+		#return $conf_val;
+		$files = glob($conf_val['options']['from_file']);
+		$filter = ($conf_val['options']['filter'])? $conf_val['options']['filter'] : false;
+		$conf_val['options'] = array();
+		if(isset($conf_val['allow_none']))
 		{
-			foreach($new_val as $k => $v)
+			#$conf_val['options'][] = '---';
+			$conf_val['options']['_none_'] = 0;
+		}
+		$conf_val['options'] = array();
+		#return $files;
+		foreach($files as $fk => $fv)
+		{
+			$bn = basename($fv);
+			if(false === $filter || preg_match('/'.$filter.'/', $bn))
 			{
-				if(isset($conf_val['options'][$v]))
-				{
-					$new_val[$k] = $conf_val['options'][$v];
-				}
-				else 
-				{
-					unset($new_val[$k]);
-				}
+				$conf_val['options'][] = $bn;
 			}
 		}
-		else 
+		if(isset($conf_val['options'][$new_val]))
 		{
-			if(isset($conf_val['options'][$new_val]))
-			{
-				$new_val = $conf_val['options'][$new_val];
-			}
-			else 
-			{
-				$new_val = '';
-			}
-		}*/
-		#print_r("\nnew\n");
-		#print_r($new_val);
-		#print_r("\nconf\n");
-		#print_r($conf_val);
-		#die();
+			$new_val = $conf_val['options'][$new_val];
+		}
+		#return var_export($new_val,true) . ' : '.$conf_val['options'][0];
 	}
+	#return var_export($new_val,true) . ' : '.$conf_val['options'][0];
 	if($conf_val['type'] === 'select_one')
 	{
 		if(in_array($new_val, $conf_val['options']))
@@ -607,6 +647,10 @@ function config_check_types($conf_val, $new_val)
 			}
 		}
 		return array('new_val'=>$new_val);
+	}
+	elseif($conf_val['type'] === 'textarea')
+	{
+		return true;
 	}
 	elseif($conf_val['type'] === 'text')
 	{
@@ -676,6 +720,11 @@ function write_config($file, $value)
 	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
 	@chmod($file_name, 0666);
 	$$file = $value;
+	$clear_cache_on_change = array('cms','pages','users');
+	if(in_array($file, $clear_cache_on_change))
+	{
+		clear_cache();
+	}
 }
 function check_email_address($email)
 {

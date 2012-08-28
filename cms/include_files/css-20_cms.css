@@ -9,6 +9,8 @@ legend { border:1px solid #333; border-radius:5px; padding:1px 5px; margin-left:
 div#login_form_wrap { width:350px; border:5px solid #333; border-radius:15px; padding:50px 5px; margin:0 auto; background-color:#EEE; background-color:rgba(255, 255, 255, 0.5); }
 form.login .form_row { width:300px; margin:0 auto; }
 form div.form_row { width:500px; position:relative; height:30px; border-radius:5px; border:1px solid transparent; }
+form div.form_row.textarea { height:120px; }
+form div.form_row textarea:focus { width:450px; }
 form div.form_row.select_more { min-height:30px; height:auto; }
 form div.idx_group { position:relative; width:auto; margin:0px; padding:0px; border-radius:0px; }
 form div label.main { text-align:right; position:absolute; right:186px; top:0px; width:300px; padding:6px 0px; }

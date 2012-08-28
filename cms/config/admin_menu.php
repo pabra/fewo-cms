@@ -1,4 +1,4 @@
-<?php # Mon, 27 Aug 2012 23:35:17 +0200
+<?php # Tue, 28 Aug 2012 17:39:48 +0200
 
 $admin_menu = array (
 	'menu_user' => 
@@ -11,22 +11,10 @@ $admin_menu = array (
 				'link' => '?admin&do=pages_order',
 				'is_sub_of' => '_none_',
 			),
-			'TUG3u' => 
-			array (
-				'name' => 'order',
-				'link' => '?admin&do=pages_order',
-				'is_sub_of' => 'Es5FG',
-			),
-			'TnkRq' => 
-			array (
-				'name' => 'content',
-				'link' => '?admin&do=pages_content',
-				'is_sub_of' => 'Es5FG',
-			),
 			'fqp4T' => 
 			array (
-				'name' => 'another one',
-				'link' => '?admin',
+				'name' => 'cms',
+				'link' => '?admin&do=cms_config',
 				'is_sub_of' => '_none_',
 			),
 		),
@@ -61,11 +49,6 @@ $admin_menu = array (
 				array (
 					0 => 'Es5FG',
 					1 => 'fqp4T',
-				),
-				'Es5FG' => 
-				array (
-					0 => 'TUG3u',
-					1 => 'TnkRq',
 				),
 			),
 		),

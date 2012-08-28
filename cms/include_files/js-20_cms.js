@@ -73,6 +73,9 @@ function titleToTip(){
 		$(this).prop({ttBoxTitle:$(this).attr('title')}).removeAttr('title');
 		$(this).mouseenter(function(ev){
 			var self = $(this), posX, posY;
+			if('undefined' === typeof(self.prop('ttBoxMovTime'))){
+				self.prop({ttBoxMovTime:0});
+			}
 			window.clearTimeout(ttbto);
 			ttbto = window.setTimeout(function(){
 				ttB.css({top:5, left:5}).html(self.prop('ttBoxTitle'));
@@ -96,13 +99,11 @@ function titleToTip(){
 			ttB.fadeOut(150, function(){ ttB.empty().css({top:5, left:5}); });
 		}).mousemove(function(ev){
 			var self = $(this);
-			ttbevpos = {x:ev.pageX, y:ev.pageY};
-			window.clearTimeout(ttbtom);
-			ttbtom = window.setTimeout(function(){
-				//clog('y: '+(ev.pageY -$('#ttBox').outerHeight() +offY));
-				//$('#ttBox').css({top:ev.pageY -$('#ttBox').outerHeight() +offY, left:ev.pageX +offX});
+			if($.now() > self.prop('ttBoxMovTime')){
+				ttbevpos = {x:ev.pageX, y:ev.pageY};
+				self.prop({ttBoxMovTime: ($.now() + 25) });
 				ttB.css({top:toPosY(ev.pageY), left:toPosX(ev.pageX)});
-			}, 10);
+			}
 		});
 	});
 }

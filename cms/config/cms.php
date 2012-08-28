@@ -1,4 +1,4 @@
-<?php # Mon, 27 Aug 2012 23:39:59 +0200
+<?php # Tue, 28 Aug 2012 17:32:04 +0200
 
 $cms = array (
 	'admin_language' => 
@@ -11,9 +11,18 @@ $cms = array (
 			1 => 'en',
 		),
 	),
+	'page_author' => 
+	array (
+		'value' => 'hOpQ5',
+		'type' => 'select_one',
+		'options' => 
+		array (
+			'from_config' => 'users:users:real_name',
+		),
+	),
 	'use_cache' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -23,7 +32,7 @@ $cms = array (
 	),
 	'compress_js' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -33,7 +42,7 @@ $cms = array (
 	),
 	'compress_css' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -41,13 +50,13 @@ $cms = array (
 			1 => 'Off',
 		),
 	),
-	'page_author' => 
+	'template' => 
 	array (
-		'value' => 'hOpQ5',
+		'value' => 'default',
 		'type' => 'select_one',
 		'options' => 
 		array (
-			'from_config' => 'users:users:real_name',
+			'from_file' => 'cms/template/*',
 		),
 	),
 	'avail_page_lang' => 
@@ -58,12 +67,18 @@ $cms = array (
 			array (
 				'lang' => 'de',
 				'lang_name' => 'deutsch',
+				'page_title' => 'Titel der Seite',
+				'page_description' => 'allgemeine Beschreibung der Seite',
+				'page_keywords' => 'allg,schlag,worte,für,die,seite',
 				'visible' => 'On',
 			),
 			'zfKou' => 
 			array (
 				'lang' => 'en',
 				'lang_name' => 'english',
+				'page_title' => 'title of page',
+				'page_description' => 'general description of the page',
+				'page_keywords' => 'general,key,words,of,web,site',
 				'visible' => 'On',
 			),
 		),
@@ -78,6 +93,21 @@ $cms = array (
 				'index' => '1',
 			),
 			'lang_name' => 
+			array (
+				'type' => 'text',
+				'must' => '1',
+			),
+			'page_title' => 
+			array (
+				'type' => 'text',
+				'must' => '1',
+			),
+			'page_description' => 
+			array (
+				'type' => 'text',
+				'must' => '1',
+			),
+			'page_keywords' => 
 			array (
 				'type' => 'text',
 				'must' => '1',

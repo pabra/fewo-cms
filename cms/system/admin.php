@@ -183,6 +183,7 @@ function post_clear_cache(what){
 		if(true === data.status){
 			show_info(data.txt);
 			ccbuttons('enabled');
+			//window.location = window.location;
 		} else {
 			show_warning(data.txt);
 		}
@@ -217,6 +218,11 @@ EOJS;
 		$glob_var['lang_edit_now'] = $cms['avail_page_lang']['index']['lang'][$_GET['lang']];
 		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val();/*clog($(this).find(\':checked\').val());*/ });</script>'."\n";
 		$admin_content .= edit_config('pages', array('pages'), array(), array(), 'lang='.$cms['avail_page_lang']['index']['lang'][$_GET['lang']]);
+	}
+	elseif($_GET['do'] == 'cms_config')
+	{
+		$admin_content .= '<h1>'.lecho('cms_config_header', $admin_lang).'</h1>'."\n";
+		$admin_content .= edit_config('cms', array('admin_language','page_author','avail_page_lang'));
 	}
 	elseif(!$_GET['do'])
 	{

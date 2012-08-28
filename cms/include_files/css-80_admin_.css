@@ -1,10 +1,10 @@
 /* Styles for admin */
 
-h1 { background-color:maroon; }
+/*h1 { background-color:maroon; }
 html.ie6 h1 { background-color:#000; }
 html.ie7 h1 { background-color:#333; }
 html.ie8 h1 { background-color:#999; }
-html.ie9 h1 { background-color:#999; }
+html.ie9 h1 { background-color:#999; }*/
 
 div#admin_head_bar { position:absolute; top:0px; left:0px; right:0px; height:70px; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:bottom; }
 div#admin_head_bar.admin { height:108px; background-image:url(cms/include_files/images/head_bar_bg2.png); }
