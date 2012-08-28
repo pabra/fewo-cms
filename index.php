@@ -112,7 +112,8 @@ else
 		if($startpage)
 		{
 			$startpage = $pages['pages']['value'][$startpage]['name'];
-			header("Location: http://${_SERVER['HTTP_HOST']}".dirname($_SERVER['REQUEST_URI'])."?${startpage}");
+			$dirname = ('/' == dirname($_SERVER['REQUEST_URI']))? '' : dirname($_SERVER['REQUEST_URI']);
+			header("Location: http://${_SERVER['HTTP_HOST']}".dirname($_SERVER['REQUEST_URI'])."/?${startpage}");
 			die();
 		}
 		else 
