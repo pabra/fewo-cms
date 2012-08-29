@@ -181,11 +181,11 @@ function post_clear_cache(what){
 	ccbuttons('disabled');
 	$.post('ajax.php', {do:'clear_cache',what:what},function(data){
 		if(true === data.status){
-			show_info(data.txt);
+			show_info(data.txt, undefined, function(){ window.location = window.location; });
 			ccbuttons('enabled');
 			//window.location = window.location;
 		} else {
-			show_warning(data.txt);
+			show_warning(data.txt, undefined, function(){ window.location = window.location; });
 		}
 	});
 }
@@ -223,6 +223,16 @@ EOJS;
 	{
 		$admin_content .= '<h1>'.lecho('cms_config_header', $admin_lang).'</h1>'."\n";
 		$admin_content .= edit_config('cms', array('admin_language','page_author','avail_page_lang'));
+	}
+	elseif($_GET['do'] == 'textblock')
+	{
+		$admin_content .= '<h1>'.lecho('cms_config_textblock', $admin_lang).'</h1>'."\n";
+		$admin_content .= edit_config('textblock');
+	}
+	elseif($_GET['do'] == 'reservations')
+	{
+		$admin_content .= '<h1>'.lecho('cms_config_reservations', $admin_lang).'</h1>'."\n";
+		$admin_content .= reservation_calendar();
 	}
 	elseif(!$_GET['do'])
 	{

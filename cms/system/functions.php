@@ -248,6 +248,9 @@ function gen_config_field($v, $k)
 			}
 			$out .= '<input type="text" class="hidden select_more_value'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.substr($val, 1).'" />'."\n";
 			break;
+		case 'include_code':
+			$out .= '<input type="text" readonly="readonly" class="include_code" name="'.$fid.'" id="'.fid.'" value="" />'."\n";
+			break;
 		case 'password':
 			$out .= '<input type="password" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 			break;
@@ -720,7 +723,7 @@ function write_config($file, $value)
 	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
 	@chmod($file_name, 0666);
 	$$file = $value;
-	$clear_cache_on_change = array('cms','pages','users');
+	$clear_cache_on_change = array('cms','pages','users','textblock');
 	if(in_array($file, $clear_cache_on_change))
 	{
 		clear_cache();
@@ -760,6 +763,27 @@ function check_email_address($email)
 		}
 	}
 	return true;
+}
+function parse_page_content($t)
+{
+	#$out = $t;
+	if(false !== preg_match_all('#\[\[:([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):\]\]#', $t, $match))
+	{
+		foreach($match[1] as $k => $v)
+		{
+			$replace = '';
+			if('textblock' == $v)
+			{
+				$replace = get_config_data('textblock', 'textblock', '[name='.$match[2][$k].']', 'text');
+			}
+			elseif('anderes_plugin' == $v)
+			{
+				$replace = 'anderes_plugin';
+			}
+			$t = str_replace($match[0][$k], $replace, $t);
+		}
+	}
+	return $t;
 }
 function session_my_register()
 {
@@ -938,6 +962,14 @@ function get_config_data($file, $var, $index = false, $key = false)
 	global $$file;
 	require_once('cms/config/'.$file.'.php');
 	$file = $$file;
+	if(false !== $index && '[' === substr($index, 0, 1) && ']' === substr($index, -1))
+	{
+		#$idx = $conf_chan[$v['var']]['index'];
+		$idx = substr($index, 1, -1);
+		$idx = explode('=', $idx, 2);
+		$idx = $file[$var]['index'][$idx[0]][$idx[1]];
+		$index = $idx;
+	}
 	if(false !== $index && false !== $key)
 	{
 		return $file[$var]['value'][$index][$key];
@@ -949,6 +981,90 @@ function get_config_data($file, $var, $index = false, $key = false)
 	else 
 	{
 		return $file[$var]['value'];
+	}
+}
+function sitemap()
+{
+	global $pages, $cms;
+	require_once('cms/config/pages.php');
+	require_once('cms/config/cms.php');
+	$dirname = ('/' == dirname($_SERVER['PHP_SELF']))? '' : dirname($_SERVER['PHP_SELF']);
+	$host_path = 'http://'.$_SERVER['HTTP_HOST'].$dirname.'/?';
+	$out = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+	$out .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+	foreach($pages['pages']['value'] as$k => $v)
+	{
+		if('public' == $v['access'] && 'On' == $cms['avail_page_lang']['value'][$v['lang']]['visible'])
+		{
+			$out .= '<url>'."\n";
+			$out .= '<loc>'.$host_path.htmlspecialchars($v['name']).'</loc>'."\n";
+			$out .= '</url>'."\n";
+		}
+	}
+	$out .= '</urlset>'."\n";
+	return $out;
+}
+function pages_menu($lang='de', $active='', $sitemap=false)
+{
+	global $pages, $cms;
+	require_once('cms/config/pages.php');
+	require_once('cms/config/cms.php');
+	$out = '';
+	$lk = $cms['avail_page_lang']['index']['lang'][$lang];
+	if(!$lk || 'On' !== $cms['avail_page_lang']['value'][$lk]['visible'])
+		return null;
+	$out .= '<ul class="l0">';
+	foreach($pages['pages']['value'] as $k => $v)
+	{
+		if($v['lang'] == $lk && $v['access'] == 'public' && $v['is_sub_of'] == '_none_')
+		{
+			$entry = pages_menu_entry($k, $active, 0, $sitemap);
+			$out .= $entry['entry'];
+		}
+	}
+	$out .= '</ul>';
+	return $out;
+}
+function pages_menu_entry($page, $active='', $level=0, $sitemap=false)
+{
+	global $pages;
+	require_once('cms/config/pages.php');
+	$level++;
+	$out = '';
+	$has_active = false;
+	if(isset($pages['pages']['value'][$page]))
+	{
+		$v = $pages['pages']['value'][$page];
+		$class = array();
+		if($active == $v['name'])
+		{
+			$class[] = 'active';
+			$has_active = true;
+		}
+		$title = ($v['title'] && false === $sitemap)? ' title="'.htmlspecialchars($v['title']).'"' : '';
+		$tmp_out = '';
+		if(isset($pages['pages']['list']['is_sub_of'][$page]))
+		{
+			$class[] = 'has_sub';
+			$tmp_out .= "<ul class=\"l${level}\">";
+			foreach($pages['pages']['list']['is_sub_of'][$page] as $sk => $sv)
+			{
+				$entry = pages_menu_entry($sv, $active, $level, $sitemap);
+				if(true === $entry['has_active'])
+				{
+					$has_active = true;
+				}
+				$tmp_out .= $entry['entry'];
+			}
+			$tmp_out .= '</ul>'."\n";
+		}
+		if(true === $has_active && $active !== $v['name'])
+			$class[] = 'has_active';
+		$class = (0 < count($class) && false === $sitemap)? ' class="'.implode(' ', $class).'"' : '';
+		$out .= '<li'.$class.'><a href="?'.$v['name'].'"'.$title.'>'.(($v['name_show'])? htmlspecialchars($v['name_show']) : $v['name']) .'</a>';
+		$out .= $tmp_out;
+		$out .= "</li>\n";
+		return array('has_active'=>$has_active, 'entry'=>$out);
 	}
 }
 function config2menu($file, $var)
@@ -1027,6 +1143,20 @@ function get_include_file($f)
 	}
 	$files = glob($p);
 	sort($files);
+	if(false === $admin && 'css' === $type)
+	{
+		if(is_file('cms/template/'.$cms['template']['value'].'/style.css'))
+			$files[] = 'cms/template/'.$cms['template']['value'].'/style.css';
+		if(is_file('cms/template/'.$cms['template']['value'].'/style.min.css'))
+			$files[] = 'cms/template/'.$cms['template']['value'].'/style.min.css';
+	}
+	if(false === $admin && 'js' === $type)
+	{
+		if(is_file('cms/template/'.$cms['template']['value'].'/javascript.js'))
+			$files[] = 'cms/template/'.$cms['template']['value'].'/javascript.js';
+		if(is_file('cms/template/'.$cms['template']['value'].'/javascript.min.js'))
+			$files[] = 'cms/template/'.$cms['template']['value'].'/javascript.min.js';
+	}
 	foreach($files as $file)
 	{
 		if( (true === $admin && false === strpos($file, '_noadmin_')) || (false === $admin && false === strpos($file, '_admin_')) )
@@ -1201,6 +1331,31 @@ function clear_cache($what='pages')
 		$i = 0;
 	}
 	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
+}
+function reservation_calendar($year=false, $lang='de')
+{
+	if(false === $year)
+		$year = date('Y');
+	$type = 1; # 1=flat simple; 2=flat weekday ordered; 3=month block
+	$out = '<table border="1">'."\n";
+	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
+	$prev = $start - 86400;
+	for($d=$start; date('Y', $d)==$year; $d+=86400)
+	{
+		if(date('j', $d) == 1)
+		{
+			$out .= '<tr><td><div>'.lecho('cal_month_'.date('n', $d), $lang).'</div></td>';
+			if($type == 2)
+				$out .= str_repeat('<td></td>', date('N', $d) - 1);
+		}
+		$out .= '<td><div title="'.lecho('cal_weekday_'.date('N', $d), $lang).'">'.date('d', $d).'</div></td>';
+		if(date('j', $d) == date('t', $d))
+		{
+			$out .= str_repeat('<td></td>', 31 - date('t', $d)) . '</tr>'."\n";
+		}
+	}
+	$out .= '</table>'."\n";
+	return $out;
 }
 function show_info($t)
 {

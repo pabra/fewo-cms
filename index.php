@@ -1,6 +1,7 @@
 <?php
 
 #header('Content-Type: text/plain; charset=utf-8');
+#print_r($_GET);
 #print_r($_SERVER);
 #die();
 error_reporting(E_ALL ^ E_NOTICE);
@@ -87,6 +88,11 @@ elseif($req_page == 'javascript_js' || $req_page == 'javascript_admin_js')
 	$page_out = "$(function(){alert('huhu');});";
 	$page_out = get_include_file($req_page);
 }
+elseif($req_page == 'sitemap_xml')
+{
+	$page_content_type = 'application/xml; charset=utf-8';
+	$page_out = sitemap();
+}
 elseif($req_page == 'admin')
 {
 	$use_cache = false;
@@ -137,33 +143,7 @@ else
 	}
 	require_once('cms/config/users.php');
 	$tpl_lang = $cms['avail_page_lang']['value'][$conf_page['lang']]['lang'];
-	$menu = '';
-	if(is_array($pages['pages']['value']) && 0 < count($pages['pages']['value']))
-	{
-		$menu .= 'Menu: <ul>';
-		foreach($pages['pages']['value'] as $k => $v)
-		{
-			if('_none_' == $v['is_sub_of'] && 'public' == $v['access'] && $v['lang'] == $conf_lang[$tpl_lang]['index'])
-			{
-				$menu .= '<li><a href="?'.$v['name'].'" title="'.htmlspecialchars($v['title']).'">'.$v['name'] . '</a>';
-				if(is_array($pages['pages']['list']['is_sub_of'][$k]))
-				{
-					$menu .= '<ul>';
-					foreach($pages['pages']['list']['is_sub_of'][$k] as $sk => $sv)
-					{
-						$svv = $pages['pages']['value'][$sv];
-						if('public' == $svv['access'] && $svv['lang'] == $conf_lang[$tpl_lang]['index'])
-						{
-							$menu .= '<li><a href="?'.$svv['name'].'" title="'.htmlspecialchars($svv['title']).'">'.$svv['name'] . '</a></li>';
-						}
-					}
-					$menu .= '</ul>';
-				}
-				$menu .= '</li>';
-			}
-		}
-		$menu .= '</ul>';
-	}
+	$menu = 'Menu: '.pages_menu($tpl_lang, $req_page);
 	$lang_box = '';
 	if(0 < count($conf_lang['all']))
 	{
@@ -189,7 +169,7 @@ else
 	$tpl_page_title = htmlspecialchars($cms['avail_page_lang']['value'][$conf_lang[$tpl_lang]['index']]['page_title']) .' | '. htmlspecialchars($conf_page['title']);
 	#$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
 	#$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
-	$tpl_page_content = $conf_page['content'];
+	$tpl_page_content = parse_page_content($conf_page['content']);
 	require_once('cms/template/default/template.php');
 	/*$C = array(
 		'page_title' => 'Das ist der Titelü',

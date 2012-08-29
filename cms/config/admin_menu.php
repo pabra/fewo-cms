@@ -1,4 +1,4 @@
-<?php # Tue, 28 Aug 2012 17:39:48 +0200
+<?php # Thu, 30 Aug 2012 00:27:46 +0200
 
 $admin_menu = array (
 	'menu_user' => 
@@ -15,6 +15,36 @@ $admin_menu = array (
 			array (
 				'name' => 'cms',
 				'link' => '?admin&do=cms_config',
+				'is_sub_of' => '_none_',
+			),
+			'ESXV6' => 
+			array (
+				'name' => 'media',
+				'link' => '?admin&do=media',
+				'is_sub_of' => '_none_',
+			),
+			'rJ9JV' => 
+			array (
+				'name' => 'images',
+				'link' => '?admin&do=media&what=images',
+				'is_sub_of' => 'ESXV6',
+			),
+			's6Noe' => 
+			array (
+				'name' => 'files',
+				'link' => '?admin&do=media&what=files',
+				'is_sub_of' => 'ESXV6',
+			),
+			'crfxF' => 
+			array (
+				'name' => 'textblock',
+				'link' => '?admin&do=textblock',
+				'is_sub_of' => '_none_',
+			),
+			'YGolI' => 
+			array (
+				'name' => 'reservations',
+				'link' => '?admin&do=reservations',
 				'is_sub_of' => '_none_',
 			),
 		),
@@ -49,6 +79,14 @@ $admin_menu = array (
 				array (
 					0 => 'Es5FG',
 					1 => 'fqp4T',
+					2 => 'ESXV6',
+					3 => 'crfxF',
+					4 => 'YGolI',
+				),
+				'ESXV6' => 
+				array (
+					0 => 'rJ9JV',
+					1 => 's6Noe',
 				),
 			),
 		),

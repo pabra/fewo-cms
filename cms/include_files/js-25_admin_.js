@@ -67,6 +67,17 @@ $(function(){
 		fieldset_add_listener();
 		group.find('input, textarea, select').change();
 	});
+	$('form.config input.include_code').each(function(k,v){
+		var self = $(this),
+			id_field = self.parents('.idx_group').find('input[type=text]:first'),
+			inc_code = ['[[:textblock:',':]]'];
+		self.val(inc_code[0]+id_field.val()+inc_code[1]);
+		id_field.change(function(){
+			//clog(self);
+			//clog(id_field);
+			self.val(inc_code[0]+id_field.val()+inc_code[1]);
+		});
+	});
 	$('form.config').submit(function(ev){
 		var send_obj = {}, mis_matched = $('form.config .mismatch');
 		ev.preventDefault();

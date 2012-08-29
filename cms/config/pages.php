@@ -1,49 +1,14 @@
-<?php # Tue, 28 Aug 2012 18:10:23 +0200
+<?php # Thu, 30 Aug 2012 00:14:57 +0200
 
 $pages = array (
 	'pages' => 
 	array (
 		'value' => 
 		array (
-			'fjk5P' => 
-			array (
-				'name' => 'Start',
-				'title' => 'Startseite',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => '_none_',
-				'content' => 'Inhalt der Startseite.<br/> 
-zu den <a href="?Preise" title="tolle Preise">Preisen</a>.',
-				'description' => 'Beschreibung der Startseite.',
-				'keywords' => 'start,seite,schlag,wort',
-			),
-			'oON9n' => 
-			array (
-				'name' => 'Preise',
-				'title' => 'hier \'sind\' die "Preise" in € & Cent',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => '_none_',
-				'content' => 'Hier stehen dann die Preise.
-Und noch einiges mehr...<br/>
-zurück <a href="?Start" title="Startseite">zur Startseite</a>.',
-				'description' => '',
-				'keywords' => '',
-			),
-			'R6yYj' => 
-			array (
-				'name' => 'Preise_im_Detail',
-				'title' => 'die Preis-Unterseite',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'oON9n',
-				'content' => 'hier steht dann was ganz spezielles.',
-				'description' => '',
-				'keywords' => '',
-			),
 			'dIjvm' => 
 			array (
 				'name' => 'Startpage',
+				'name_show' => '',
 				'title' => 'the beginning',
 				'access' => 'public',
 				'lang' => 'zfKou',
@@ -56,12 +21,115 @@ go, see <a href="?price">the price</a>.',
 			'YCS9k' => 
 			array (
 				'name' => 'price',
+				'name_show' => '',
 				'title' => 'here are the prices',
 				'access' => 'public',
 				'lang' => 'zfKou',
 				'is_sub_of' => '_none_',
 				'content' => 'here are the big prices. <br/>
 <a href="?Startpage">start</a>',
+				'description' => '',
+				'keywords' => '',
+			),
+			'ru8OK' => 
+			array (
+				'name' => 'meet_greet',
+				'name_show' => 'meet & greet üöäß',
+				'title' => 'üäöäß"und" ja \'so\'',
+				'access' => 'public',
+				'lang' => 'zfKou',
+				'is_sub_of' => '_none_',
+				'content' => '123',
+				'description' => '',
+				'keywords' => '',
+			),
+			'fjk5P' => 
+			array (
+				'name' => 'Start',
+				'name_show' => '',
+				'title' => 'Startseite',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => 'Inhalt der Startseite.<br/> 
+zu den <a href="?Preise" title="tolle Preise">Preisen</a>.
+[[:textblock:test:]]
+[[:textblock:noch_einer:]]',
+				'description' => 'Beschreibung der Startseite.',
+				'keywords' => 'start,seite,schlag,wort',
+			),
+			'oON9n' => 
+			array (
+				'name' => 'Preise',
+				'name_show' => '',
+				'title' => 'hier \'sind\' die "Preise" in € & Cent',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => 'Hier stehen dann die Preise.
+Und noch einiges mehr...<br/>
+zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
+[[:anderes_plugin:123:]]',
+				'description' => '',
+				'keywords' => '',
+			),
+			'R6yYj' => 
+			array (
+				'name' => 'preise_detail',
+				'name_show' => 'Preise im Detail',
+				'title' => 'die Preis-Unterseite',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => 'oON9n',
+				'content' => 'hier steht dann was ganz spezielles.',
+				'description' => '',
+				'keywords' => '',
+			),
+			'hf31w' => 
+			array (
+				'name' => 'sub_preise_2',
+				'name_show' => 'unterseite 2 preise',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => 'oON9n',
+				'content' => 'huhu',
+				'description' => '',
+				'keywords' => '',
+			),
+			'kBtPS' => 
+			array (
+				'name' => 'p2_sub1',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => 'hf31w',
+				'content' => 'subsub 1',
+				'description' => '',
+				'keywords' => '',
+			),
+			'DLlJa' => 
+			array (
+				'name' => 'p2_sub2',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => 'hf31w',
+				'content' => 'subsub 2',
+				'description' => '',
+				'keywords' => '',
+			),
+			'a7ab4' => 
+			array (
+				'name' => 'sub_preise_3',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => 'oON9n',
+				'content' => 'huhu 3',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -75,7 +143,11 @@ go, see <a href="?price">the price</a>.',
 				'type' => 'text',
 				'must' => '1',
 				'index' => '1',
-				'match' => '^[a-zA-Z]+[a-zA-Z0-9_üöäÜÖÄß]*$',
+				'match' => '^[a-zA-Z]+[a-zA-Z0-9_]*$',
+			),
+			'name_show' => 
+			array (
+				'type' => 'text',
 			),
 			'title' => 
 			array (
@@ -128,41 +200,59 @@ go, see <a href="?price">the price</a>.',
 		array (
 			'name' => 
 			array (
-				'Start' => 'fjk5P',
-				'Preise' => 'oON9n',
-				'Preise_im_Detail' => 'R6yYj',
 				'Startpage' => 'dIjvm',
 				'price' => 'YCS9k',
+				'meet_greet' => 'ru8OK',
+				'Start' => 'fjk5P',
+				'Preise' => 'oON9n',
+				'preise_detail' => 'R6yYj',
+				'sub_preise_2' => 'hf31w',
+				'p2_sub1' => 'kBtPS',
+				'p2_sub2' => 'DLlJa',
+				'sub_preise_3' => 'a7ab4',
 			),
 		),
 		'list' => 
 		array (
 			'lang' => 
 			array (
+				'zfKou' => 
+				array (
+					0 => 'dIjvm',
+					1 => 'YCS9k',
+					2 => 'ru8OK',
+				),
 				'pz28x' => 
 				array (
 					0 => 'fjk5P',
 					1 => 'oON9n',
 					2 => 'R6yYj',
-				),
-				'zfKou' => 
-				array (
-					0 => 'dIjvm',
-					1 => 'YCS9k',
+					3 => 'hf31w',
+					4 => 'kBtPS',
+					5 => 'DLlJa',
+					6 => 'a7ab4',
 				),
 			),
 			'is_sub_of' => 
 			array (
 				'_none_' => 
 				array (
-					0 => 'fjk5P',
-					1 => 'oON9n',
-					2 => 'dIjvm',
-					3 => 'YCS9k',
+					0 => 'dIjvm',
+					1 => 'YCS9k',
+					2 => 'ru8OK',
+					3 => 'fjk5P',
+					4 => 'oON9n',
 				),
 				'oON9n' => 
 				array (
 					0 => 'R6yYj',
+					1 => 'hf31w',
+					2 => 'a7ab4',
+				),
+				'hf31w' => 
+				array (
+					0 => 'kBtPS',
+					1 => 'DLlJa',
 				),
 			),
 		),

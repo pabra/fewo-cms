@@ -1,5 +1,5 @@
 # www.robotstxt.org/
 
-#Sitemap: ?sitemap_xml
+Sitemap: ?sitemap_xml
 
 User-agent: *

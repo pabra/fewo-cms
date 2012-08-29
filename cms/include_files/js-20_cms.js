@@ -107,7 +107,7 @@ function titleToTip(){
 		});
 	});
 }
-function show_info(txt, title){
+function show_info(txt, title, callback){
 	if('undefined' === typeof(title)){
 		title = 'Information';
 	}
@@ -116,8 +116,11 @@ function show_info(txt, title){
 			$(this).dialog('close');
 		}
 		}});
+	if('function' === typeof(callback)){
+		$('#dialog').bind('dialogclose', callback);
+	}
 }
-function show_warning(txt, title){
+function show_warning(txt, title, callback){
 	if('undefined' === typeof(title)){
 		title = 'Warning';
 	}
@@ -126,6 +129,9 @@ function show_warning(txt, title){
 			$(this).dialog('close');
 		}
 		}});
+	if('function' === typeof(callback)){
+		$('#dialog').bind('dialogclose', callback);
+	}
 }
 
 $(function(){

@@ -55,3 +55,9 @@ ul.menu li:hover ul { display:block; }
 ul.menu li { list-style-type:none; float:left; padding-right:15px; position:relative; }
 ul.menu a { font-size:12pt; }
 
+li.active { background-color:rgba(180,42,42,0.4); }
+li.has_active { background-color:rgba(125,42,42,0.4); }
+li.has_sub > a:after { content:"\2022"; }
+
+
+
