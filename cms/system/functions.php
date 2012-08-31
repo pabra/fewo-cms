@@ -249,7 +249,7 @@ function gen_config_field($v, $k)
 			$out .= '<input type="text" class="hidden select_more_value'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.substr($val, 1).'" />'."\n";
 			break;
 		case 'include_code':
-			$out .= '<input type="text" readonly="readonly" class="include_code" name="'.$fid.'" id="'.fid.'" value="" />'."\n";
+			$out .= '<input type="text" readonly="readonly" class="include_code" name="'.$fid.'" id="'.$fid.'" value="" />'."\n";
 			break;
 		case 'password':
 			$out .= '<input type="password" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
@@ -688,6 +688,10 @@ function config_check_types($conf_val, $new_val)
 			return 'conf_err_empty_password';
 		}
 	}
+	elseif($conf_val['type'] === 'include_code')
+	{
+		return true;
+	}
 	return 'conf_err_unknown_type_of_conf_var';
 }
 function write_config($file, $value)
@@ -723,7 +727,7 @@ function write_config($file, $value)
 	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
 	@chmod($file_name, 0666);
 	$$file = $value;
-	$clear_cache_on_change = array('cms','pages','users','textblock');
+	$clear_cache_on_change = array('cms','pages','users','textblock','res_cal');
 	if(in_array($file, $clear_cache_on_change))
 	{
 		clear_cache();
@@ -764,10 +768,10 @@ function check_email_address($email)
 	}
 	return true;
 }
-function parse_page_content($t)
+function parse_page_content($t, $lang='')
 {
 	#$out = $t;
-	if(false !== preg_match_all('#\[\[:([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):\]\]#', $t, $match))
+	while(0 !== preg_match_all('#\[\[:([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):\]\]#', $t, $match))
 	{
 		foreach($match[1] as $k => $v)
 		{
@@ -775,6 +779,10 @@ function parse_page_content($t)
 			if('textblock' == $v)
 			{
 				$replace = get_config_data('textblock', 'textblock', '[name='.$match[2][$k].']', 'text');
+			}
+			elseif('res_cal' == $v)
+			{
+				$replace = reservation_calendar('[name='.$match[2][$k].']', date('Y'), $lang);
 			}
 			elseif('anderes_plugin' == $v)
 			{
@@ -1332,26 +1340,162 @@ function clear_cache($what='pages')
 	}
 	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
 }
-function reservation_calendar($year=false, $lang='de')
+function reservation_calendar($cal_conf_index, $year=false, $lang='de')
 {
-	if(false === $year)
-		$year = date('Y');
-	$type = 1; # 1=flat simple; 2=flat weekday ordered; 3=month block
-	$out = '<table border="1">'."\n";
+	$year = (false === $year || !$year)? date('Y') : $year;
+	$cal_conf = get_config_data('res_cal', 'calendar', $cal_conf_index);
+	#var_dump($cal_conf);
+	#die();
+	if(null === $cal_conf)
+	{
+		return null;
+	}
+	$reserved = explode('|', $cal_conf['reserved']);
+	#$type = 3; # 1=flat simple; 2=flat weekday ordered; 3=month block
+	$type = intval($cal_conf['type']);
+	$kw_on_3 = ('On'==$cal_conf['kw_t3'])? true : false;
+	$with_headline = ('On'==$cal_conf['with_headline'])? true : false;
+	$month_name_length = ('On'==$cal_conf['short_month_names'])? 'short' : 'long'; # long / short
+	$res_first_last_half = ('On'==$cal_conf['first_last_resday_half'])? true : false;
+	$year = ($year < date('Y') -1)? date('Y') -1 : $year;
+	$year = ($year > date('Y') +2)? date('Y') +2 : $year;
+	$prev_y = $year -1;
+	$next_y = $year +1;
+	$wd_arr = array('mo','tu','we','th','fr','sa','su');
+	$out = '';
+	$out .= '<a href="?admin&amp;do='.$_GET['do'].'&amp;y='.$prev_y.'">&lt;--</a> <a href="?admin&amp;do='.$_GET['do'].'&amp;y='.date('Y').'">'.$year.'</a> <a href="?admin&amp;do='.$_GET['do'].'&amp;y='.$next_y.'">--&gt;</a><br/>'."\n";
+	$out .= '<table class="res_cal year t'.$type.'" border="1">'."\n";
 	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
 	$prev = $start - 86400;
+	# Date-Format:
+	#  j   #Tag
+	#  d  ##Tag
+	#  w    Wochentag 0-6 -> So-Sa
+	#  N    Wochentag 1-7 -> Mo-So seit PHP 5.1.0
+	#  t    Tage im Monat
+	#  W  KW
+	#  n   #Monat
+	#  M  ##Monat
+	#  y    ##Jahr
+	#  Y  ####Jahr
+	#
+	if($type == 2 && true === $with_headline)
+	{
+		$out .= '<tr class="headline"><td></td>';
+		for($i=0; $i<37; $i++)
+		{
+			$class_we = ($i % 7 === 6 || $i % 7 === 5)? ' class="is_we"' : '';
+			$out .= '<td'.$class_we.'><div>'.lecho('cal_head_'.$wd_arr[($i % 7)], $lang).'</div></td>';
+		}
+		$out .= '</tr>'."\n";
+	}
+	if($type == 1 && true === $with_headline)
+	{
+		$out .= '<tr class="headline"><td></td>';
+		for($i=1; $i<32; $i++)
+			$out .= '<td><div>'.$i.'</div></td>';
+		$out .= '</tr>'."\n";
+	}
 	for($d=$start; date('Y', $d)==$year; $d+=86400)
 	{
-		if(date('j', $d) == 1)
+		$kw_td = ($type == 3 && true === $kw_on_3)? '<td class="cal_kw"><div>'.date('W', $d).'</div></td>' : '';
+		if(date('j', $d) == 1) # Monatserster
 		{
-			$out .= '<tr><td><div>'.lecho('cal_month_'.date('n', $d), $lang).'</div></td>';
-			if($type == 2)
-				$out .= str_repeat('<td></td>', date('N', $d) - 1);
+			if($type == 3)
+			{
+				if(date('n', $d) % 3 == 1) # neues Quartal
+				{
+					$out .= '<tr>';
+				}
+				$colspan = (true === $kw_on_3)? '8' : '7';
+				$out .= '<td><table class="res_cal month" border="2"><tr class="month_head"><td colspan="'.$colspan.'"><div>'.lecho('cal_month_'.$month_name_length.'_'.date('n', $d), $lang).'</div></td></tr>'."\n";
+				if(true === $with_headline)
+				{
+					$kw_head = (true === $kw_on_3)? '<td><div>'.lecho('cal_head_kw', $lang).'</div></td>' : '';
+					$out .= '<tr class="headline">'.$kw_head;
+					foreach($wd_arr as $wd_k => $wd)
+					{
+						$class_we = ($wd_k == 5 || $wd_k == 6)? ' class="is_we"' : '';
+						$out .= '<td'.$class_we.'><div>'.lecho('cal_head_'.$wd, $lang).'</div></td>';
+					}
+					$out .= '</tr>'."\n";
+				}
+				$out .= '<tr>'. $kw_td . str_repeat('<td class="cal_day empty"></td>', (('0' === date('w', $d))? 7 : date('w', $d)) - 1);
+			}
+			else 
+			{
+				# neuer Monat Typ 1 und 2
+				$out .= '<tr><td class="cal_index_month"><div>'.lecho('cal_month_'.$month_name_length.'_'.date('n', $d), $lang).'</div></td>';
+				if($type == 2)
+				{
+					$t2_ins = (('0' === date('w', $d))? 7 : date('w', $d)) - 1;
+					$out .= str_repeat('<td class="cal_day empty"></td>', $t2_ins);
+				}
+			}
 		}
-		$out .= '<td><div title="'.lecho('cal_weekday_'.date('N', $d), $lang).'">'.date('d', $d).'</div></td>';
-		if(date('j', $d) == date('t', $d))
+		else 
 		{
-			$out .= str_repeat('<td></td>', 31 - date('t', $d)) . '</tr>'."\n";
+			if($type == 3 && date('w', $d) == 1) # neue Woche
+			{
+				$out .= '<tr>'.$kw_td;
+			}
+		}
+		#######
+		$day_content = ($type == 1 && true === $with_headline)? '' : date('d', $d);
+		$class_we = ('6' === date('w', $d) || '0' === date('w', $d))? ' is_we' : '';
+		if(in_array(date('y-m-d', $d), $reserved))
+		{
+			if(true === $res_first_last_half)
+			{
+				$bg_half = '';
+				if(!in_array(date('y-m-d', $d-86400), $reserved))
+				{
+					$class_res = ' res_beg';
+					$bg_half = '<div class="res_half half_beg"></div>';
+				}
+				elseif(!in_array(date('y-m-d', $d+86400), $reserved))
+				{
+					$class_res = ' res_end';
+					$bg_half = '<div class="res_half helf_end"></div>';
+				}
+				else 
+					$class_res = ' res';
+			}
+			else 
+			{
+				$class_res = ' res';
+			}
+		}
+		else 
+		{
+			$class_res = '';
+			$bg_half = '';
+		}
+		$out .= '<td id="d_'.date('y-m-d', $d).'" class="cal_day content'.$class_we.$class_res.'">'.$bg_half.'<div title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$day_content.'</div></td>';
+		#######
+		if($type == 3 && date('w', $d) === '0' && date('j', $d) != date('t', $d)) # Woche ende (Sonntag) ABER NICHT Monatsletzter
+		{
+			$out .= '</tr>'."\n";
+		}
+		if(date('j', $d) == date('t', $d)) # Monatsletzter
+		{
+			if($type == 1)
+				$out .= str_repeat('<td class="cal_day empty"></td>', 31 - date('t', $d));
+			elseif($type == 2)
+				$out .= str_repeat('<td class="cal_day empty"></td>', 37 - date('t', $d) - $t2_ins);
+			elseif($type == 3)
+			{
+				$out .= str_repeat('<td class="cal_day empty"></td>', 7 - (('0' === date('w', $d))? 7 : date('w', $d)) );
+			}
+			$out .= '</tr>'."\n";
+			if($type == 3)
+			{
+				$out .= '</table></td>'."\n";
+				if(date('n', $d) % 3 === 0) # Quartal zu ende
+				{
+					$out .= '</tr>';
+				}
+			}
 		}
 	}
 	$out .= '</table>'."\n";

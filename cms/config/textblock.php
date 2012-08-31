@@ -1,22 +1,10 @@
-<?php # Wed, 29 Aug 2012 14:17:21 +0200
+<?php # Fri, 31 Aug 2012 22:29:15 +0200
 
 $textblock = array (
 	'textblock' => 
 	array (
 		'value' => 
 		array (
-			'IxB1s' => 
-			array (
-				'name' => 'test',
-				'text' => '<table><tr><td>erstens:</td><td>dies & das</td></tr>
-<tr><td>zweitens:</td><td>jenes & welches</td></tr></table>',
-			),
-			'B4ON9' => 
-			array (
-				'name' => 'noch_einer',
-				'text' => 'huhu',
-				'include' => '',
-			),
 		),
 		'type' => 'array',
 		'model' => 
@@ -41,8 +29,6 @@ $textblock = array (
 		array (
 			'name' => 
 			array (
-				'test' => 'IxB1s',
-				'noch_einer' => 'B4ON9',
 			),
 		),
 	),

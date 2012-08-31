@@ -1,4 +1,4 @@
-<?php # Wed, 29 Aug 2012 13:45:08 +0200
+<?php # Fri, 31 Aug 2012 23:59:44 +0200
 
 $cms = array (
 	'admin_language' => 
@@ -32,7 +32,7 @@ $cms = array (
 	),
 	'compress_js' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -42,7 +42,7 @@ $cms = array (
 	),
 	'compress_css' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (

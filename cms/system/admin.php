@@ -216,7 +216,7 @@ EOJS;
 			$i++;
 		}
 		$glob_var['lang_edit_now'] = $cms['avail_page_lang']['index']['lang'][$_GET['lang']];
-		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val();/*clog($(this).find(\':checked\').val());*/ });</script>'."\n";
+		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val(); });</script>'."\n";
 		$admin_content .= edit_config('pages', array('pages'), array(), array(), 'lang='.$cms['avail_page_lang']['index']['lang'][$_GET['lang']]);
 	}
 	elseif($_GET['do'] == 'cms_config')
@@ -232,7 +232,43 @@ EOJS;
 	elseif($_GET['do'] == 'reservations')
 	{
 		$admin_content .= '<h1>'.lecho('cms_config_reservations', $admin_lang).'</h1>'."\n";
-		$admin_content .= reservation_calendar();
+		$admin_content .= '<div id="cal_button_set">'."\n";
+		$i = 0;
+		$calendars = get_config_data('res_cal', 'calendar');
+		foreach($calendars as $k => $v)
+		{
+			$sel = '';
+			if(0 === $i)
+			{
+				if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
+					$sel = ' checked="checked"';
+				$admin_content .= '<input type="radio" '.$sel.' id="null" name="cal_idx" value="null" /><label for="null">all</label>'."\n";
+				$sel = '';
+			}
+			if($_GET['cal_idx'] == $k)
+				$sel = ' checked="checked"';
+			$admin_content .= '<input type="radio" '.$sel.' id="'.$k.'" name="cal_idx" value="'.$k.'" /><label for="'.$k.'">'.$v['name'].'</label>'."\n";
+			$i++;
+		}
+		$admin_content .= '</div><script type="text/javascript">$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });</script>'."\n";
+		if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
+		{
+			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','kw_t3','with_headline','short_month_names','first_last_resday_half','include'));
+		}
+		else 
+		{
+			$admin_content .= reservation_calendar($_GET['cal_idx'], false, $admin_lang);
+			$admin_content .= '<div class="add_timespan_buttonset"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
+			$admin_content .= <<<EOJS
+<script type="text/javascript">
+var select_begin=0, select_end=0, reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
+let_select();
+</script>
+EOJS;
+		}
+		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 1);
+		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 2);
+		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 3);
 	}
 	elseif(!$_GET['do'])
 	{

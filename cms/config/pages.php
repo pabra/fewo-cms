@@ -1,4 +1,4 @@
-<?php # Thu, 30 Aug 2012 00:14:57 +0200
+<?php # Fri, 31 Aug 2012 23:34:00 +0200
 
 $pages = array (
 	'pages' => 
@@ -27,19 +27,8 @@ go, see <a href="?price">the price</a>.',
 				'lang' => 'zfKou',
 				'is_sub_of' => '_none_',
 				'content' => 'here are the big prices. <br/>
-<a href="?Startpage">start</a>',
-				'description' => '',
-				'keywords' => '',
-			),
-			'ru8OK' => 
-			array (
-				'name' => 'meet_greet',
-				'name_show' => 'meet & greet üöäß',
-				'title' => 'üäöäß"und" ja \'so\'',
-				'access' => 'public',
-				'lang' => 'zfKou',
-				'is_sub_of' => '_none_',
-				'content' => '123',
+<a href="?Startpage">start</a><br/>
+[[:res_cal:kalender_1:]]',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -53,8 +42,7 @@ go, see <a href="?price">the price</a>.',
 				'is_sub_of' => '_none_',
 				'content' => 'Inhalt der Startseite.<br/> 
 zu den <a href="?Preise" title="tolle Preise">Preisen</a>.
-[[:textblock:test:]]
-[[:textblock:noch_einer:]]',
+[[:textblock:test:]]',
 				'description' => 'Beschreibung der Startseite.',
 				'keywords' => 'start,seite,schlag,wort',
 			),
@@ -69,7 +57,8 @@ zu den <a href="?Preise" title="tolle Preise">Preisen</a>.
 				'content' => 'Hier stehen dann die Preise.
 Und noch einiges mehr...<br/>
 zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
-[[:anderes_plugin:123:]]',
+[[:anderes_plugin:123:]]
+[[:res_cal:kalender_1:]]',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -81,7 +70,8 @@ zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 				'access' => 'public',
 				'lang' => 'pz28x',
 				'is_sub_of' => 'oON9n',
-				'content' => 'hier steht dann was ganz spezielles.',
+				'content' => 'hier steht dann was ganz spezielles.<br/>
+[[:res_cal:kalender_2:]]',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -202,7 +192,6 @@ zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 			array (
 				'Startpage' => 'dIjvm',
 				'price' => 'YCS9k',
-				'meet_greet' => 'ru8OK',
 				'Start' => 'fjk5P',
 				'Preise' => 'oON9n',
 				'preise_detail' => 'R6yYj',
@@ -220,7 +209,6 @@ zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 				array (
 					0 => 'dIjvm',
 					1 => 'YCS9k',
-					2 => 'ru8OK',
 				),
 				'pz28x' => 
 				array (
@@ -239,9 +227,8 @@ zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 				array (
 					0 => 'dIjvm',
 					1 => 'YCS9k',
-					2 => 'ru8OK',
-					3 => 'fjk5P',
-					4 => 'oON9n',
+					2 => 'fjk5P',
+					3 => 'oON9n',
 				),
 				'oON9n' => 
 				array (

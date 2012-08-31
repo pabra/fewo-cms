@@ -70,7 +70,8 @@ $(function(){
 	$('form.config input.include_code').each(function(k,v){
 		var self = $(this),
 			id_field = self.parents('.idx_group').find('input[type=text]:first'),
-			inc_code = ['[[:textblock:',':]]'];
+			inc_code_file_var = self.attr('id').split(':'),
+			inc_code = ['[[:'+inc_code_file_var[0]+':',':]]'];
 		self.val(inc_code[0]+id_field.val()+inc_code[1]);
 		id_field.change(function(){
 			//clog(self);
