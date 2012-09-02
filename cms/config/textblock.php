@@ -1,10 +1,16 @@
-<?php # Fri, 31 Aug 2012 22:29:15 +0200
+<?php # Sun, 02 Sep 2012 17:29:52 +0200
 
 $textblock = array (
 	'textblock' => 
 	array (
 		'value' => 
 		array (
+			'LT1bZ' => 
+			array (
+				'name' => 'ein_textblock',
+				'text' => 'das ist ein textblock',
+				'include' => '[[:textblock::]]',
+			),
 		),
 		'type' => 'array',
 		'model' => 
@@ -29,6 +35,7 @@ $textblock = array (
 		array (
 			'name' => 
 			array (
+				'ein_textblock' => 'LT1bZ',
 			),
 		),
 	),

@@ -244,7 +244,10 @@ function gen_config_field($v, $k)
 					$sel = ' checked="checked"';
 				#$sel = (in_array($ov, $v['value']))? ' checked="checked"' : '';
 				$val .= ($sel)? ':'.$ok : '';
-				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' value="'.$ok.'"/><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($ov).'</label></div>'."\n";
+				$label_val = lecho($label.'_'.$ov, $admin_lang);
+				if('[[' == substr($label_val, 0, 2))
+					$label_val = $ov;
+				$out .= '<div class="more_row"><input type="checkbox" name="'.$fid.'.'.$ok.'" id="'.$fid.'.'.$ok.'"'.$sel.' value="'.$ok.'"/><label class="each" for="'.$fid.'.'.$ok.'">'.htmlspecialchars($label_val).'</label></div>'."\n";
 			}
 			$out .= '<input type="text" class="hidden select_more_value'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.substr($val, 1).'" />'."\n";
 			break;
@@ -359,7 +362,7 @@ function merge_config($file, $values, $select_one_more_value='key')
 					#$v['value'] = $conf_chan[$v['var']]['options'][$v['value']];
 				}
 				$tmp = explode(':', $v['value']);
-				if(1 === count($tmp) && !$tmp[0])
+				if(1 === count($tmp) && '' === $tmp[0])
 					$tmp = array();
 				#die('<pre>'.print_r($tmp, true).'</pre>');
 				$v['value'] = array();
@@ -782,7 +785,7 @@ function parse_page_content($t, $lang='')
 			}
 			elseif('res_cal' == $v)
 			{
-				$replace = reservation_calendar('[name='.$match[2][$k].']', date('Y'), $lang);
+				$replace = reservation_calendar('[name='.$match[2][$k].']', $lang);
 			}
 			elseif('anderes_plugin' == $v)
 			{
@@ -1340,7 +1343,7 @@ function clear_cache($what='pages')
 	}
 	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
 }
-function reservation_calendar($cal_conf_index, $year=false, $lang='de')
+function reservation_calendar_bak($cal_conf_index, $year=false, $lang='de')
 {
 	$year = (false === $year || !$year)? date('Y') : $year;
 	$cal_conf = get_config_data('res_cal', 'calendar', $cal_conf_index);
@@ -1471,7 +1474,7 @@ function reservation_calendar($cal_conf_index, $year=false, $lang='de')
 			$class_res = '';
 			$bg_half = '';
 		}
-		$out .= '<td id="d_'.date('y-m-d', $d).'" class="cal_day content'.$class_we.$class_res.'">'.$bg_half.'<div title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$day_content.'</div></td>';
+		$out .= '<td id="d_'.date('y-m-d', $d).'" class="cal_day content'.$class_we.$class_res.'"><div class="cal_cell_wrap">'.$bg_half.'<div class="cal_cell_cont" title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$day_content.'</div></div></td>';
 		#######
 		if($type == 3 && date('w', $d) === '0' && date('j', $d) != date('t', $d)) # Woche ende (Sonntag) ABER NICHT Monatsletzter
 		{
@@ -1499,6 +1502,207 @@ function reservation_calendar($cal_conf_index, $year=false, $lang='de')
 		}
 	}
 	$out .= '</table>'."\n";
+	return $out;
+}
+function reservation_calendar($cal_conf_index, $lang='de', $year=false)
+{
+	if(false === $year || !$year)
+	{
+		if(isset($_GET['y']))
+			$year = intval($_GET['y']);
+		else 
+			$year = date('Y');
+	}
+	$cal_conf = get_config_data('res_cal', 'calendar', $cal_conf_index);
+	#var_dump($cal_conf);
+	#die();
+	if(null === $cal_conf)
+	{
+		return null;
+	}
+	$reserved = explode('|', $cal_conf['reserved']);
+	$type = intval($cal_conf['type']);
+	$kw_on_3 = (in_array('kw_t3', $cal_conf['settings']))? true : false;
+	$with_headline = (in_array('with_headline', $cal_conf['settings']))? true : false;
+	$month_name_length = (in_array('short_month_names', $cal_conf['settings']))? 'short' : 'long'; # long / short
+	$res_first_last_half = (in_array('first_last_resday_half', $cal_conf['settings']))? true : false;
+	$year = ($year < date('Y') -1)? date('Y') -1 : $year;
+	$year = ($year > date('Y') +2)? date('Y') +2 : $year;
+	$prev_y = $year -1;
+	$next_y = $year +1;
+	$wd_arr = array('mo','tu','we','th','fr','sa','su');
+	$out = '';
+	$out .= '<a href="'.merge_href('self', array('y'=>$prev_y)).'">&lt;--</a> <a href="'.merge_href('self', array('y'=>date('Y'))).'">'.$year.'</a> <a href="'.merge_href('self', array('y'=>$next_y)).'">--&gt;</a><br/>'."\n";
+	$out .= '<div class="res_cal t'.$type.'">'."\n";
+	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
+	$prev = $start - 86400;
+	# Date-Format:
+	#  j   #Tag
+	#  d  ##Tag
+	#  w    Wochentag 0-6 -> So-Sa
+	#  N    Wochentag 1-7 -> Mo-So seit PHP 5.1.0
+	#  t    Tage im Monat
+	#  W  KW
+	#  n   #Monat
+	#  M  ##Monat
+	#  y    ##Jahr
+	#  Y  ####Jahr
+	#
+	if($type == 2 && true === $with_headline)
+	{
+		$out .= '<div class="row headline"><div class="float month_'.$month_name_length.'">&nbsp;</div>';
+		for($i=0; $i<37; $i++)
+		{
+			$class_we = ($i % 7 === 6 || $i % 7 === 5)? ' is_we' : '';
+			$out .= '<div class="float with_font cal_day empty'.$class_we.'">'.lecho('cal_head_'.$wd_arr[($i % 7)], $lang).'</div>';
+		}
+		$out .= '</div>'."\n";
+	}
+	if($type == 1 && true === $with_headline)
+	{
+		$out .= '<div class="row headline"><div class="float month_'.$month_name_length.'">&nbsp;</div>';
+		for($i=1; $i<32; $i++)
+			$out .= '<div class="float with_font cal_day empty">'.$i.'</div>';
+		$out .= '</div>'."\n";
+	}
+	for($d=$start; date('Y', $d)==$year; $d+=86400)
+	{
+		$kw_td = ($type == 3 && true === $kw_on_3)? '<div class="float with_font cal_kw">'.date('W', $d).'</div>' : '';
+		if(date('j', $d) == 1) # Monatserster
+		{
+			if($type == 3)
+			{
+				if(date('n', $d) % 3 == 1) # neues Quartal
+				{
+					$out .= '<div class="row quarter">';
+				}
+				$out .= '<div class="month"><div class="month_head">'.lecho('cal_month_'.$month_name_length.'_'.date('n', $d), $lang).'</div>'."\n";
+				if(true === $with_headline)
+				{
+					$kw_head = (true === $kw_on_3)? '<div class="float with_font">'.lecho('cal_head_kw', $lang).'</div>' : '';
+					$out .= '<div class="row headline">'.$kw_head;
+					foreach($wd_arr as $wd_k => $wd)
+					{
+						$class_we = ($wd_k == 5 || $wd_k == 6)? ' is_we' : '';
+						$out .= '<div class="float with_font'.$class_we.'">'.lecho('cal_head_'.$wd, $lang).'</div>';
+					}
+					$out .= '</div>'."\n";
+				}
+				$out .= '<div class="row week">'. $kw_td . str_repeat('<div class="float with_font cal_day empty">&nbsp;</div>', (('0' === date('w', $d))? 7 : date('w', $d)) - 1);
+			}
+			else 
+			{
+				# neuer Monat Typ 1 und 2
+				$out .= '<div class="row"><div class="float with_font cal_index_month month_'.$month_name_length.'">'.lecho('cal_month_'.$month_name_length.'_'.date('n', $d), $lang).'</div>';
+				if($type == 2)
+				{
+					$t2_ins = (('0' === date('w', $d))? 7 : date('w', $d)) - 1;
+					$out .= str_repeat('<div class="float with_font cal_day empty">&nbsp;</div>', $t2_ins);
+				}
+			}
+		}
+		else 
+		{
+			if($type == 3 && date('w', $d) == 1) # neue Woche
+			{
+				$out .= '<div class="row week">'.$kw_td;
+			}
+		}
+		#######
+		$day_content = ($type == 1 && true === $with_headline)? '&nbsp;' : date('d', $d);
+		$class_we = ('6' === date('w', $d) || '0' === date('w', $d))? ' is_we' : '';
+		if(in_array(date('y-m-d', $d), $reserved))
+		{
+			if(true === $res_first_last_half)
+			{
+				$bg_half = '';
+				if(!in_array(date('y-m-d', $d-86400), $reserved))
+				{
+					$class_res = ' res_beg';
+					$bg_half = '<div class="res_half half_beg"></div>';
+				}
+				elseif(!in_array(date('y-m-d', $d+86400), $reserved))
+				{
+					$class_res = ' res_end';
+					$bg_half = '<div class="res_half helf_end"></div>';
+				}
+				else 
+					$class_res = ' res';
+			}
+			else 
+			{
+				$class_res = ' res';
+			}
+		}
+		else 
+		{
+			$class_res = '';
+			$bg_half = '';
+		}
+		$out .= '<div id="d_'.date('y-m-d', $d).'" class="float with_font cal_day content'.$class_we.$class_res.'" title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$bg_half.$day_content.'</div>';
+		#######
+		if($type == 3 && date('w', $d) === '0' && date('j', $d) != date('t', $d)) # Woche ende (Sonntag) ABER NICHT Monatsletzter
+		{
+			$out .= '</div>'."\n";
+		}
+		if(date('j', $d) == date('t', $d)) # Monatsletzter
+		{
+			if($type == 1)
+				$out .= str_repeat('<div class="float with_font cal_day empty">&nbsp;</div>', 31 - date('t', $d));
+			elseif($type == 2)
+				$out .= str_repeat('<div class="float with_font cal_day empty">&nbsp;</div>', 37 - date('t', $d) - $t2_ins);
+			elseif($type == 3)
+			{
+				$out .= str_repeat('<div class="float with_font cal_day empty">&nbsp;</div>', 7 - (('0' === date('w', $d))? 7 : date('w', $d)) );
+			}
+			$out .= '</div>'."\n";
+			if($type == 3)
+			{
+				$out .= '</div>'."\n";
+				if(date('n', $d) % 3 === 0) # Quartal zu ende
+				{
+					$out .= '</div>';
+				}
+			}
+		}
+	}
+	$out .= '</div>'."\n";
+	$out .= '<script type="text/javascript">var now='.time().'000;</script>'."\n";
+	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
+	{
+		if(in_array('show_form', $cal_conf['form_settings']))
+		{
+			preg_match('/=([a-zA-Z0-9_]+)]/', $cal_conf_index, $conf_idx_str);
+			$out .= '<form class="res_form" id="res_form_'.$conf_idx_str[1].'" method="" action="">'."\n";
+			$out .= '<div class="form_row"><label class="main" for="name_'.$conf_idx_str[1].'">name</label><input type="text" class="w3" id="name_'.$conf_idx_str[1].'" name="name" /></div>'."\n";
+			$out .= '<div class="form_row"><label class="main" for="street_'.$conf_idx_str[1].'">street</label><label class="main" for="number_'.$conf_idx_str[1].'">number</label><input type="text" class="w2" id="street_'.$conf_idx_str[1].'" name="street" /><input type="text" class="w1" id="number_'.$conf_idx_str[1].'" name="number" /></div>'."\n";
+			$out .= '<div class="form_row"><label class="main" for="name_'.$conf_idx_str[1].'">name</label><input type="text" class="w3" id="name_'.$conf_idx_str[1].'" name="name" /></div>'."\n";
+			$out .= '</form>'."\n";
+		}
+	}
+	return $out;
+}
+function merge_href($p='self', $vars=array(), $noescape=false)
+{
+	global $req_page;
+	$out = '?';
+	$out .= ('self' == $p)? $req_page : $p;
+	foreach($_GET as $k => $v)
+	{
+		if(isset($vars[$k]))
+		{
+			$out .= (false === $vars[$k])? '' : "&$k={$vars[$k]}";
+			unset($vars[$k]);
+		}
+		else 
+			$out .= "&$k=$v";
+	}
+	foreach($vars as $k => $v)
+	{
+		$out .= (false === $v)? '' : "&$k=$v";
+	}
+	if(false === $noescape)
+		$out = htmlspecialchars($out);
 	return $out;
 }
 function show_info($t)

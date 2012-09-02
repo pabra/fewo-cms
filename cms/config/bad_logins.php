@@ -1,4 +1,4 @@
-<?php # Wed, 29 Aug 2012 17:15:35 +0200
+<?php # Sun, 02 Sep 2012 21:36:31 +0200
 
 $bad_logins = array (
 	'login' => 

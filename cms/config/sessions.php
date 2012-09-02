@@ -1,4 +1,4 @@
-<?php # Fri, 31 Aug 2012 23:59:44 +0200
+<?php # Sun, 02 Sep 2012 23:44:31 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -10,12 +10,12 @@ $sessions = array (
 	array (
 		'value' => 
 		array (
-			'Lf847' => 
+			'yobCT' => 
 			array (
-				'sess' => '2380655b3775fe386f4de4d0442fcba2',
+				'sess' => 'adae7f1950292a9aa04ce2173c47a484',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Fri, 31 Aug 2012 23:59:44 +0200',
+				'time' => 'Sun, 02 Sep 2012 23:44:31 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
@@ -23,12 +23,12 @@ $sessions = array (
 				'role' => 'superuser',
 				'use_role' => 'admin',
 			),
-			'aK6Op' => 
+			'MYiXH' => 
 			array (
-				'sess' => '4d6f5b31261a4e382d502965aeaab966',
-				'ua' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0',
+				'sess' => 'b12694ac948e113f3942cdd4171e3e15',
+				'ua' => 'Lynx/2.8.8dev.9 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/2.10.5',
 				'ip' => '127.0.0.1',
-				'time' => 'Fri, 31 Aug 2012 23:54:50 +0200',
+				'time' => 'Sun, 02 Sep 2012 21:37:34 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
@@ -86,8 +86,8 @@ $sessions = array (
 		array (
 			'sess' => 
 			array (
-				'2380655b3775fe386f4de4d0442fcba2' => 'Lf847',
-				'4d6f5b31261a4e382d502965aeaab966' => 'aK6Op',
+				'adae7f1950292a9aa04ce2173c47a484' => 'yobCT',
+				'b12694ac948e113f3942cdd4171e3e15' => 'MYiXH',
 			),
 		),
 	),

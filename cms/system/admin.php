@@ -253,11 +253,11 @@ EOJS;
 		$admin_content .= '</div><script type="text/javascript">$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });</script>'."\n";
 		if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
 		{
-			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','kw_t3','with_headline','short_month_names','first_last_resday_half','include'));
+			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','settings','form_settings','include'));
 		}
 		else 
 		{
-			$admin_content .= reservation_calendar($_GET['cal_idx'], false, $admin_lang);
+			$admin_content .= reservation_calendar($_GET['cal_idx'], $admin_lang);
 			$admin_content .= '<div class="add_timespan_buttonset"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
 			$admin_content .= <<<EOJS
 <script type="text/javascript">
@@ -266,9 +266,6 @@ let_select();
 </script>
 EOJS;
 		}
-		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 1);
-		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 2);
-		#$admin_content .= reservation_calendar('wLUgE', $_GET['y'], 'en', 3);
 	}
 	elseif(!$_GET['do'])
 	{
@@ -281,12 +278,13 @@ EOJS;
 		#$admin_content .= 'admin content<br/>'."\n";
 		#$admin_content .= gen_captcha_styles();
 		$captcha = captcha();
+		$target = merge_href();
 		$admin_content .= <<<EOT
-<form action="?${_SERVER['QUERY_STRING']}" method="post">
+<form action="{$target}" method="post">
 <div class="form_row"><label for="feld1" class="main">irgendwas:</label><input type="text" id="feld1" name="irgendein_feld" /></div>
-<div class="form_row"><label class="main">captcha:</label>${captcha[0]}</div>
+<div class="form_row"><label class="main">captcha:</label>{$captcha[0]}</div>
 <div class="form_row"><label for="answer" class="main">Antwort:</label><input type="text" name="answer" id="answer" /></div>
-${captcha[2]}
+{$captcha[2]}
 <div class="form_row"><input type="submit" /></div>
 </form>
 EOT;

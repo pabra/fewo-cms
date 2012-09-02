@@ -1,6 +1,8 @@
+/*
 table.res_cal td, table.res_cal td div { margin:0px; padding:0px; }
 table.res_cal td.cal_day, table.res_cal td.cal_kw, table.res_cal tr.headline td, table.res_cal td.cal_index_month { width:18px; height:18px; position:relative; overflow:hidden; }
-table.res_cal td.cal_day div, table.res_cal td.cal_kw div, table.res_cal tr.headline td div, table.res_cal td.cal_index_month div { position:absolute; top:0px; left:0px; font-size:0.9em; }
+table.res_cal div.cal_cell_cont { position:absolute; top:0px; left:0px; font-size:0.9em; }
+table.res_cal div.cal_cell_wrap { position:relative; }
 table.res_cal tr.month_head div { text-align:center; font-weight:bold; }
 table.res_cal .is_we { font-weight:bold; }
 table.res_cal td.res { background-color:maroon; }
@@ -14,4 +16,39 @@ table.res_cal td.content.cal_select_begin { border:1px solid blue; }
 table.res_cal td.content.cal_select_end { border:1px solid red; }
 
 table.res_cal td.cal_index_month { width:100px; }
+*/
+
+div.res_cal div.float { height:18px; width:18px; overflow:hidden; display:inline-block; margin:0px; padding:0px; position:relative; }
+html.ie6 div.res_cal div.float { zoom:1; display:inline; }
+div.res_cal .brfl { clear:both; }
+div.res_cal div.row { white-space:nowrap; }
+div.res_cal div.cal_day { border:1px outset #EEE;  text-align:center; }
+div.res_cal div.cal_day.empty { border-style:inset; }
+div.res_cal div.is_we { font-weight:bold; }
+div.res_cal div.with_font { padding-top:2px; height:16px; font-size:0.9em; background-color:#abc; }
+div.res_cal div.res_half { background-color:#abc; }
+div.res_cal div.res_beg, div.res_cal div.res_end { background-color:transparent; }
+div.res_cal div.headline div.float { border:1px inset transparent; }
+
+div.res_cal div.cal_index_month { border:1px inset transparent !important; }
+div.res_cal.t1 div.month_long, div.res_cal.t2 div.month_long { border:1px solid transparent; width:80px; }
+div.res_cal.t1 div.month_short, div.res_cal.t2 div.month_short { border:1px solid transparent; width:35px; }
+html.ie6 div.res_cal.t1 div.month_short, html.ie6 div.res_cal.t2 div.month_short, html.ie6 div.res_cal.t1 div.month_long, html.ie6 div.res_cal.t2 div.month_long { border-color:#eee; }
+
+div.res_cal div.month { display:inline-block; vertical-align:top; border:1px inset #eee; }
+html.ie6 div.res_cal div.month { zoom:1; display:inline; }
+div.res_cal div.month_head { text-align:center; font-weight:bold; border:1px inset #EEE; }
+div.res_cal div.row.quarter { margin:5px 0px; }
+div.res_cal div.cal_kw { text-align:center; border:1px inset transparent; }
+
+div.res_cal div.res { background-color:#D3883D; } /* #D3883D */
+div.res_cal div.res_half { width:0px; height:0px; line-height:0px; position:absolute; top:0px; left:0px; border-width:18px 18px 0px 0px; border-style:solid; border-color:transparent; z-index:-1; }
+html.ie6 div.res_cal div.res_half { border-color:#eee; }
+div.res_cal div.res_half.half_beg { border-right-color:#D3883D !important; }
+div.res_cal div.res_half.helf_end { border-top-color:#D3883D !important; }
+
+div.res_cal div.content.cal_select { border:1px solid lime; }
+div.res_cal div.content.cal_select_begin { border:1px solid green; }
+div.res_cal div.content.cal_select_end { border:1px solid green; }
+
 

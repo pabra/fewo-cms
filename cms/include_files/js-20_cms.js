@@ -19,6 +19,26 @@ function clog(l){
 		console.log(l);
 	}
 }
+function locationSeach2Obj(t){
+	var vars,
+		obj = {},
+		tmp,
+		i;
+	if('undefined' === typeof(t)){
+		vars = window.location.search;
+	} else {
+		vars = t.replace(/^#?/, '');
+	}
+	vars =  vars.replace(/^\??/, '').split('&');
+	for(i in vars){
+		if(vars[i] === ''){
+			continue;
+		}
+		tmp = vars[i].split('=');
+		obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
+	}
+	return obj;
+}
 
 function check_email_address(email)
 {

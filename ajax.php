@@ -7,6 +7,7 @@ require_once('cms/system/functions.php');
 $admin_lang = $cms['admin_language']['value'];
 header('Content-Type: application/json; charset=utf-8');
 $return = array();
+#die();
 
 if($_GET['do'] == 'lecho' && $_GET['text'] && $_GET['lang'])
 {
