@@ -1,4 +1,4 @@
-<?php # Sun, 02 Sep 2012 17:29:52 +0200
+<?php # Mon, 03 Sep 2012 11:12:46 +0200
 
 $textblock = array (
 	'textblock' => 
@@ -10,6 +10,18 @@ $textblock = array (
 				'name' => 'ein_textblock',
 				'text' => 'das ist ein textblock',
 				'include' => '[[:textblock::]]',
+			),
+			'KiFYL' => 
+			array (
+				'name' => 'agb_de',
+				'text' => 'die deutschen AGB',
+				'include' => '',
+			),
+			'OhvlA' => 
+			array (
+				'name' => 'agb_en',
+				'text' => 'here are the terms and conditions',
+				'include' => '',
 			),
 		),
 		'type' => 'array',
@@ -36,6 +48,8 @@ $textblock = array (
 			'name' => 
 			array (
 				'ein_textblock' => 'LT1bZ',
+				'agb_de' => 'KiFYL',
+				'agb_en' => 'OhvlA',
 			),
 		),
 	),

@@ -1,4 +1,4 @@
-<?php # Fri, 31 Aug 2012 23:34:00 +0200
+<?php # Mon, 03 Sep 2012 19:15:56 +0200
 
 $pages = array (
 	'pages' => 
@@ -58,7 +58,9 @@ zu den <a href="?Preise" title="tolle Preise">Preisen</a>.
 Und noch einiges mehr...<br/>
 zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 [[:anderes_plugin:123:]]
-[[:res_cal:kalender_1:]]',
+[[:res_cal:kalender_1:]]
+<p>und noch einer:</p>
+[[:res_cal:kalender_2:]]',
 				'description' => '',
 				'keywords' => '',
 			),

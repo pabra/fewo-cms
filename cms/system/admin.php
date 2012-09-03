@@ -107,8 +107,8 @@ if(!isset($sess_data['role']))
 {
 	setcookie('sess', md5($_SERVER['HTTP_HOST'].microtime(true)));
 	$admin_content .= '<div id="login_form_wrap"><form class="login" action="?admin&amp;do=check_login" method="post">'; #enctype="multipart/form-data"
-	$admin_content .= '<div class="form_row"><label for="in_user" class="main">'.lecho('admin_field_user', $admin_lang).':</label> <input id="in_user" type="text" name="user" /></div>';
-	$admin_content .= '<div class="form_row"><label for="in_pass" class="main">'.lecho('admin_field_pass', $admin_lang).':</label> <input id="in_pass" type="password" name="pass" /></div>';
+	$admin_content .= '<div class="form_row"><div class="label"><label for="in_user" class="main">'.lecho('admin_field_user', $admin_lang).':</label></div><div class="input"><input id="in_user" type="text" name="user" /></div></div>';
+	$admin_content .= '<div class="form_row"><div class="label"><label for="in_pass" class="main">'.lecho('admin_field_pass', $admin_lang).':</label></div><div class="input"><input id="in_pass" type="password" name="pass" /></div></div>';
 	#$admin_content .= '<div><label for="in_select">Select:</label> <select id="in_select" name="select" size="1"><option>erster</option><option>zweiter und erster</option></select></div>';
 	#$admin_content .= '<div><label for="in_text">Text:</label> <textarea id="in_text" name="pass" /></textarea></div>';
 	#$admin_content .= '<div><label for="in_check">Check:</label> <input id="in_check" type="checkbox" name="check" /></div>';
@@ -253,7 +253,7 @@ EOJS;
 		$admin_content .= '</div><script type="text/javascript">$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });</script>'."\n";
 		if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
 		{
-			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','settings','form_settings','include'));
+			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','settings','form_settings','legal_condition','include'));
 		}
 		else 
 		{
@@ -261,7 +261,7 @@ EOJS;
 			$admin_content .= '<div class="add_timespan_buttonset"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
 			$admin_content .= <<<EOJS
 <script type="text/javascript">
-var select_begin=0, select_end=0, reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
+var reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
 let_select();
 </script>
 EOJS;
@@ -277,13 +277,14 @@ EOJS;
 		}
 		#$admin_content .= 'admin content<br/>'."\n";
 		#$admin_content .= gen_captcha_styles();
+		$admin_content .= get_textblock('agb_de', $admin_lang);
 		$captcha = captcha();
 		$target = merge_href();
 		$admin_content .= <<<EOT
 <form action="{$target}" method="post">
-<div class="form_row"><label for="feld1" class="main">irgendwas:</label><input type="text" id="feld1" name="irgendein_feld" /></div>
-<div class="form_row"><label class="main">captcha:</label>{$captcha[0]}</div>
-<div class="form_row"><label for="answer" class="main">Antwort:</label><input type="text" name="answer" id="answer" /></div>
+<div class="form_row"><div class="label"><label for="feld1">irgendwas:</label></div><div class="input"><input type="text" id="feld1" name="irgendein_feld" /></div></div>
+<div class="form_row"><div class="label"><label>captcha:</label></div><div class="input">{$captcha[0]}</div></div>
+<div class="form_row"><div class="label"><label for="answer">Antwort:</label></div><div class="input"><input type="text" name="answer" id="answer" /></div></div>
 {$captcha[2]}
 <div class="form_row"><input type="submit" /></div>
 </form>

@@ -142,6 +142,8 @@ else
 		$conf_page = $pages['pages']['value'][$pages['pages']['index']['name'][$req_page]];
 	}
 	require_once('cms/config/users.php');
+	#var_dump($conf_lang);
+	#die();
 	$tpl_lang = $cms['avail_page_lang']['value'][$conf_page['lang']]['lang'];
 	$menu = 'Menu: '.pages_menu($tpl_lang, $req_page);
 	$lang_box = '';
