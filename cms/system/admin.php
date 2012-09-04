@@ -91,7 +91,7 @@ if($_COOKIE['sess'])
 	elseif($_GET['do'] == 'logout')
 	{
 		check_logout();
-		$admin_content .= '<script type="text/javascript">window.location=\'?admin\';</script>'."\n";
+		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/window.location=\'?admin\';/*]]>*/</script>'."\n";
 	}
 	else 
 	{
@@ -118,7 +118,7 @@ if(!isset($sess_data['role']))
 else 
 {
 	#$glob_var['lang_edit_now'] = 'english';
-	$admin_head_bar .= '<script type="text/javascript">var admin_keep_alive='.$sessions['keep_alive']['value'].';admin_lang="'.$admin_lang.'";</script>'."\n";
+	$admin_head_bar .= '<script type="text/javascript">/*<![CDATA[*/var admin_keep_alive='.$sessions['keep_alive']['value'].';admin_lang="'.$admin_lang.'";/*]]>*/</script>'."\n";
 	$admin_head_bar .= '<div id="head_user_box">'.$sess_data['user_name'].' '.lecho('admin_logged_in_as', $admin_lang).'<br/><a title="'.lecho('admin_user_pref', $admin_lang).'" href="?admin&amp;do=user_pref">'.$sess_data['real_name'].'</a><br/><a title="'.lecho('admin_log_timer_out', $admin_lang).'" class="ajax" id="keep_alive_timer" href="#do=logout">logout</a></div>'."\n";
 	$admin_head_bar .= '<a href="?admin" style="margin:5px;font-size:24pt;" title="'.lecho('admin_homepage', $admin_lang).'">A</a> '."\n";
 	#$admin_head_bar .= '<a href="?admin&amp;do=pages_order" title="huhu">pages_order</a> '."\n";
@@ -163,13 +163,13 @@ else
 			$count = clear_cache('count');
 			$admin_content .= show_warning( lecho('admin_warning_clear_cache', $admin_lang) );
 			$admin_content .= '<br/><form id="clear_cache" action="javascript:void(0);" method="get">';
-			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_pages', $admin_lang).' ('.intval($count['count']['pages']).')</label><input id="clear_cache_pages" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
-			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_js', $admin_lang).' ('.intval($count['count']['js']).')</label><input id="clear_cache_js" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
-			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_css', $admin_lang).' ('.intval($count['count']['css']).')</label><input id="clear_cache_css" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
-			$admin_content .= '<div class="form_row"><label class="main">'.lecho('admin_clear_cache_all', $admin_lang).' ('.intval($count['count']['all']).')</label><input id="clear_cache_all" type="button" value="'.lecho('button_click', $admin_lang).'" /></div>';
+			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_pages', $admin_lang).' ('.intval($count['count']['pages']).')</label></div><div class="input"><input id="clear_cache_pages" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
+			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_js', $admin_lang).' ('.intval($count['count']['js']).')</label></div><div class="input"><input id="clear_cache_js" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
+			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_css', $admin_lang).' ('.intval($count['count']['css']).')</label></div><div class="input"><input id="clear_cache_css" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
+			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_all', $admin_lang).' ('.intval($count['count']['all']).')</label></div><div class="input"><input id="clear_cache_all" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
 			$admin_content .= '</form>';
 			$admin_content .= <<<EOJS
-<script type="text/javascript">
+<script type="text/javascript">/*<![CDATA[*/
 function ccbuttons(what){
 	if(what === 'enabled'){
 		$('#clear_cache input[type=button]').prop({disabled:false});
@@ -190,7 +190,7 @@ function post_clear_cache(what){
 	});
 }
 $('#clear_cache input[type=button]').click(function(){post_clear_cache($(this).attr('id'));});
-</script>
+/*]]>*/</script>
 EOJS;
 		}
 	}
@@ -216,7 +216,7 @@ EOJS;
 			$i++;
 		}
 		$glob_var['lang_edit_now'] = $cms['avail_page_lang']['index']['lang'][$_GET['lang']];
-		$admin_content .= '</div><script type="text/javascript">$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val(); });</script>'."\n";
+		$admin_content .= '</div><script type="text/javascript">/*<![CDATA[*/$(\'#lang_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&lang=\'+$(this).find(\':checked\').val(); });/*]]>*/</script>'."\n";
 		$admin_content .= edit_config('pages', array('pages'), array(), array(), 'lang='.$cms['avail_page_lang']['index']['lang'][$_GET['lang']]);
 	}
 	elseif($_GET['do'] == 'cms_config')
@@ -250,7 +250,7 @@ EOJS;
 			$admin_content .= '<input type="radio" '.$sel.' id="'.$k.'" name="cal_idx" value="'.$k.'" /><label for="'.$k.'">'.$v['name'].'</label>'."\n";
 			$i++;
 		}
-		$admin_content .= '</div><script type="text/javascript">$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });</script>'."\n";
+		$admin_content .= '</div><script type="text/javascript">/*<![CDATA[*/$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });/*]]>*/</script>'."\n";
 		if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
 		{
 			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','settings','form_settings','legal_condition','include'));
@@ -260,10 +260,10 @@ EOJS;
 			$admin_content .= reservation_calendar($_GET['cal_idx'], $admin_lang);
 			$admin_content .= '<div class="add_timespan_buttonset"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
 			$admin_content .= <<<EOJS
-<script type="text/javascript">
+<script type="text/javascript">/*<![CDATA[*/
 var reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
 let_select();
-</script>
+/*]]>*/</script>
 EOJS;
 		}
 	}

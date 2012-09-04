@@ -1,127 +1,118 @@
-<?php # Mon, 03 Sep 2012 19:15:56 +0200
+<?php # Wed, 05 Sep 2012 01:05:01 +0200
 
 $pages = array (
 	'pages' => 
 	array (
 		'value' => 
 		array (
-			'dIjvm' => 
+			'a7ab4' => 
 			array (
-				'name' => 'Startpage',
+				'name' => 'Startseite',
 				'name_show' => '',
-				'title' => 'the beginning',
+				'title' => '',
 				'access' => 'public',
-				'lang' => 'zfKou',
+				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
-				'content' => 'Welcome...<br/>
-go, see <a href="?price">the price</a>.',
+				'content' => '<h1>Weinböhla- Natur pur in der Nähe von Dresden</h1>
+<p>Ferienbungalow zu vermieten:</p>
+<p>Im Weinanbaugebiet Weinböhla (Nähe Dresden) zwischen Moritzburg und Meißen im Landschaftsschutzgebiet.</p>
+<p>Der Bungalow befindet sich auf einem ca. 2500 Quadratmeter großen und gepflegten Gartengrundstück.</p>
+<p>Vorhanden sind: Wohnraum, Schlafraum, Küche, Dusche, separates Innen-WC, Außen-WC, Heizungen, alle Küchengeräte, Sat– TV, Radio, Gartenmöbel, Grill, Bettwäsche und reichlich Handtücher.</p>
+<p>Besonders geeignet für: Familien mit Kindern, (Schaukel, Sandkasten, Spielzeug); Tiere sind willkommen (viel Auslauf, Grundstück ist komplett umzäunt), auch für Wander– und Radfreunde sehr geeignet.</p>',
+				'description' => '',
+				'keywords' => '',
+			),
+			'lJUNP' => 
+			array (
+				'name' => 'Tipps',
+				'name_show' => 'Urlaub in Weinböhla und Umgebung',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => '<h1>Aktiver Urlaub in Weinböhla und Umgebung</h1>
+<ul>
+<li><b>Reiten:</b> Ausgedehnte Reitwege ermöglichen jedem Pferdeliebhaber unvergessliche Stunden im Sattel. Das engmaschige Reitwegenetz und die Angebote der unten aufgeführten Reiterhöfe in Weinböhla laden zu Reitausflügen und Kutschfahrten ein.</li>
+<li><b>Radwandern:</b> Weinböhla liegt mitten im touristischen Dreieck Dresden- Meißen- Moritzburg zwischen Elbe und Weinbergen. Von hier aus können Sie mit dem Fahrrad die idyllischen Landschaften und attraktiven Sehenswürdigkeiten der Umgebung entdecken.</li>
+<li><b<Wandern:</b> Aktivurlauber kommen voll auf ihre Kosten. Romantische Wanderwege führen durch den Friedewald bis hin zum Jagdschloss Moritzburg oder durch die Nassau bis auf den Boselfelsen im Spaargebirge. Je nach Vorliebe kann der aktive Wanderer auf ausgeschilderten Wegen oder eigene Faust Weinböhla und seine Umgebung erkunden. Stets wird er dabei Ruhe und Entspannung finden.</li>
+<li><b>Schwimmen:</b> Schwimmen können Sie nicht nur in Weinböhla, sondern auch in dessen unmittelbarer Umgebung. Neben dem neu sanierten „Elbgaubad“ in Weinböhla gibt es das „Waldbad Oberau“ an dem sich auch ein Zeltplatz befindet, das „Mittelteichbad in Moritzburg“ mit angeschlossenem Zeltplatz, das „Bad Sonnenland“ mit Zeltplatz, ein Freibad in Coswig und viele weitere Badeseen. Ganzjährig baden kann man außerdem in nahe gelegenen Schwimmhallen, dem „Wellenspiel Meißen“ und der Schwimmhalle in Radebeul „Weintraube“.</li>
+<li><b>Tennis:</b> Tennis spielen können Sie im Weinböhlaer Tennisclub "Grün Schwarz" Weinböhla e.V. Des Weiteren besteht im Wald- und Sporthotel Weinböhla die Möglichkeit, Tennis zu spielen.</li>
+<li><b>Hochseilgarten:</b> In Moritzburg (ca. 5 km vom Garten entfernt) erwartet Sie ein Abenteuer der besonderen Art! Von Baum zu Baum, Hindernis über Hindernis, immer neue Prüfungen zu bestehen und dabei Mut, Geschicklichkeit und Selbstvertrauen zu zeigen. In einem riesigen Areal mitten im Wald können Sie Spannung, Nervenkitzel und vor allem Spaß erleben, eigene Grenzen erfahren und den „inneren Schweinehund“ überwinden</li>
+</ul>',
+				'description' => '',
+				'keywords' => '',
+			),
+			't8j6W' => 
+			array (
+				'name' => 'Anfahrt',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => 'hier ist ne große Karte<br/>
+<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox=13.595736,51.159379,13.598767,51.162505&amp;layer=mapnik&amp;marker=51.16102,13.59817" style="border: 1px solid black"></iframe><br /><small><a href="http://www.openstreetmap.org/?lat=51.160942&amp;lon=13.5972515&amp;zoom=17&amp;layers=M&amp;mlat=51.16102&amp;mlon=13.59817">Gr&#246;&#223;ere Karte anzeigen</a></small>',
+				'description' => '',
+				'keywords' => '',
+			),
+			'ivqB4' => 
+			array (
+				'name' => 'Fotos',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => 'Bilder Bilder Bilder',
 				'description' => '',
 				'keywords' => '',
 			),
 			'YCS9k' => 
 			array (
-				'name' => 'price',
+				'name' => 'Startpage',
 				'name_show' => '',
-				'title' => 'here are the prices',
+				'title' => '',
 				'access' => 'public',
 				'lang' => 'zfKou',
 				'is_sub_of' => '_none_',
-				'content' => 'here are the big prices. <br/>
-<a href="?Startpage">start</a><br/>
+				'content' => 'the same procedure as every year - just in english...',
+				'description' => '',
+				'keywords' => '',
+			),
+			'GB35q' => 
+			array (
+				'name' => 'Belegungsplan',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'pz28x',
+				'is_sub_of' => '_none_',
+				'content' => '<h1>Belegungsplan</h1>
 [[:res_cal:kalender_1:]]',
 				'description' => '',
 				'keywords' => '',
 			),
-			'fjk5P' => 
+			'D9yTM' => 
 			array (
-				'name' => 'Start',
+				'name' => 'Kontakt',
 				'name_show' => '',
-				'title' => 'Startseite',
+				'title' => '',
 				'access' => 'public',
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
-				'content' => 'Inhalt der Startseite.<br/> 
-zu den <a href="?Preise" title="tolle Preise">Preisen</a>.
-[[:textblock:test:]]',
-				'description' => 'Beschreibung der Startseite.',
-				'keywords' => 'start,seite,schlag,wort',
+				'content' => 'Kontaktformular...',
+				'description' => '',
+				'keywords' => '',
 			),
-			'oON9n' => 
+			'ZzVXF' => 
 			array (
-				'name' => 'Preise',
+				'name' => 'Impressum',
 				'name_show' => '',
-				'title' => 'hier \'sind\' die "Preise" in € & Cent',
+				'title' => '',
 				'access' => 'public',
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
-				'content' => 'Hier stehen dann die Preise.
-Und noch einiges mehr...<br/>
-zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
-[[:anderes_plugin:123:]]
-[[:res_cal:kalender_1:]]
-<p>und noch einer:</p>
-[[:res_cal:kalender_2:]]',
-				'description' => '',
-				'keywords' => '',
-			),
-			'R6yYj' => 
-			array (
-				'name' => 'preise_detail',
-				'name_show' => 'Preise im Detail',
-				'title' => 'die Preis-Unterseite',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'oON9n',
-				'content' => 'hier steht dann was ganz spezielles.<br/>
-[[:res_cal:kalender_2:]]',
-				'description' => '',
-				'keywords' => '',
-			),
-			'hf31w' => 
-			array (
-				'name' => 'sub_preise_2',
-				'name_show' => 'unterseite 2 preise',
-				'title' => '',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'oON9n',
-				'content' => 'huhu',
-				'description' => '',
-				'keywords' => '',
-			),
-			'kBtPS' => 
-			array (
-				'name' => 'p2_sub1',
-				'name_show' => '',
-				'title' => '',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'hf31w',
-				'content' => 'subsub 1',
-				'description' => '',
-				'keywords' => '',
-			),
-			'DLlJa' => 
-			array (
-				'name' => 'p2_sub2',
-				'name_show' => '',
-				'title' => '',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'hf31w',
-				'content' => 'subsub 2',
-				'description' => '',
-				'keywords' => '',
-			),
-			'a7ab4' => 
-			array (
-				'name' => 'sub_preise_3',
-				'name_show' => '',
-				'title' => '',
-				'access' => 'public',
-				'lang' => 'pz28x',
-				'is_sub_of' => 'oON9n',
-				'content' => 'huhu 3',
+				'content' => 'Wer bin ich und wenn ja, warum hafte ich nicht an was ich linke...',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -192,56 +183,47 @@ zurück <a href="?Start" title="Startseite">zur Startseite</a>.<br/>
 		array (
 			'name' => 
 			array (
-				'Startpage' => 'dIjvm',
-				'price' => 'YCS9k',
-				'Start' => 'fjk5P',
-				'Preise' => 'oON9n',
-				'preise_detail' => 'R6yYj',
-				'sub_preise_2' => 'hf31w',
-				'p2_sub1' => 'kBtPS',
-				'p2_sub2' => 'DLlJa',
-				'sub_preise_3' => 'a7ab4',
+				'Startseite' => 'a7ab4',
+				'Tipps' => 'lJUNP',
+				'Anfahrt' => 't8j6W',
+				'Fotos' => 'ivqB4',
+				'Startpage' => 'YCS9k',
+				'Belegungsplan' => 'GB35q',
+				'Kontakt' => 'D9yTM',
+				'Impressum' => 'ZzVXF',
 			),
 		),
 		'list' => 
 		array (
 			'lang' => 
 			array (
-				'zfKou' => 
-				array (
-					0 => 'dIjvm',
-					1 => 'YCS9k',
-				),
 				'pz28x' => 
 				array (
-					0 => 'fjk5P',
-					1 => 'oON9n',
-					2 => 'R6yYj',
-					3 => 'hf31w',
-					4 => 'kBtPS',
-					5 => 'DLlJa',
-					6 => 'a7ab4',
+					0 => 'a7ab4',
+					1 => 'lJUNP',
+					2 => 't8j6W',
+					3 => 'ivqB4',
+					4 => 'GB35q',
+					5 => 'D9yTM',
+					6 => 'ZzVXF',
+				),
+				'zfKou' => 
+				array (
+					0 => 'YCS9k',
 				),
 			),
 			'is_sub_of' => 
 			array (
 				'_none_' => 
 				array (
-					0 => 'dIjvm',
-					1 => 'YCS9k',
-					2 => 'fjk5P',
-					3 => 'oON9n',
-				),
-				'oON9n' => 
-				array (
-					0 => 'R6yYj',
-					1 => 'hf31w',
-					2 => 'a7ab4',
-				),
-				'hf31w' => 
-				array (
-					0 => 'kBtPS',
-					1 => 'DLlJa',
+					0 => 'a7ab4',
+					1 => 'lJUNP',
+					2 => 't8j6W',
+					3 => 'ivqB4',
+					4 => 'YCS9k',
+					5 => 'GB35q',
+					6 => 'D9yTM',
+					7 => 'ZzVXF',
 				),
 			),
 		),

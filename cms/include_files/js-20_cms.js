@@ -1,5 +1,6 @@
 // JS for CMS
 
+var locObj;
 /*window.log = function(){
 	log.history = log.history || [];   // store logs to an array for reference
 	log.history.push(arguments);
@@ -127,36 +128,40 @@ function titleToTip(){
 		});
 	});
 }
-function show_info(txt, title, callback){
+function show_info(txt, title, callback, txt_wrap){
 	if('undefined' === typeof(title)){
 		title = 'Information';
 	}
-	$('#dialog').html('<p><span class="ui-icon ui-icon-info" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>').dialog({modal:true,title:title,buttons:{
+	if('undefined' === typeof(txt_wrap) || false !== txt_wrap){
+		txt = '<p><span class="ui-icon ui-icon-info" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
+	}
+	$('#dialog').html(txt).dialog({modal:true,title:title,minHeight:150,minWidth:200,maxHeight:450,maxWidth:650,buttons:{
 		Ok:function(){
 			$(this).dialog('close');
 		}
 		}});
 	if('function' === typeof(callback)){
-		$('#dialog').bind('dialogclose', callback);
+		$('#dialog').one('dialogclose', callback);
 	}
 }
 function show_warning(txt, title, callback){
 	if('undefined' === typeof(title)){
 		title = 'Warning';
 	}
-	$('#dialog').html('<p style="color:maroon;"><span class="ui-icon ui-icon-alert" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>').dialog({modal:true,title:title,buttons:{
-		Ok:function(){
-			$(this).dialog('close');
-		}
-		}});
-	if('function' === typeof(callback)){
-		$('#dialog').bind('dialogclose', callback);
-	}
+	txt = '<p style="color:maroon;"><span class="ui-icon ui-icon-alert" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
+	show_info(txt, title, callback, false);
 }
 
 $(function(){
+	locObj = locationSeach2Obj();
 	$('input[type=file]').bind('change', function() {
 		alert(this.files[0].size);
+	});
+	$('input.email').change(function(){
+		$(this).parents('.form_row').removeClass('mismatch');
+		if(false === check_email_address($(this).val())){
+			$(this).parents('.form_row').addClass('mismatch');
+		}
 	});
 	$('body').append('<div id="ttBox"></div><div id="dialog"></div>');
 	titleToTip();

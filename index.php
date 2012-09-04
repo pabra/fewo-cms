@@ -145,11 +145,11 @@ else
 	#var_dump($conf_lang);
 	#die();
 	$tpl_lang = $cms['avail_page_lang']['value'][$conf_page['lang']]['lang'];
-	$menu = 'Menu: '.pages_menu($tpl_lang, $req_page);
+	$menu = pages_menu($tpl_lang, $req_page);
 	$lang_box = '';
 	if(0 < count($conf_lang['all']))
 	{
-		$lang_box .= 'Lang: <ul>';
+		$lang_box .= '<ul>';
 		foreach($conf_lang['all'] as $k => $v)
 		{
 			if($tpl_lang != $v['lang'])
@@ -168,7 +168,12 @@ else
 	$tpl_page_author = htmlspecialchars( $users['users']['value'][$cms['page_author']['value']]['real_name'] );
 	$tpl_page_description = ($conf_page['description'])? htmlspecialchars($conf_page['description']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_description'] );
 	$tpl_page_keywords = ($conf_page['keywords'])? htmlspecialchars($conf_page['keywords']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_keywords'] );
-	$tpl_page_title = htmlspecialchars($cms['avail_page_lang']['value'][$conf_lang[$tpl_lang]['index']]['page_title']) .' | '. htmlspecialchars($conf_page['title']);
+	$page_title = $conf_page['title'];
+	if(!$page_title)
+	{
+		$page_title = ($conf_page['name_show'])? $conf_page['name_show'] : $conf_page['name'];
+	}
+	$tpl_page_title = htmlspecialchars($cms['avail_page_lang']['value'][$conf_lang[$tpl_lang]['index']]['page_title']) .' | '. htmlspecialchars($page_title);
 	#$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
 	#$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
 	$tpl_page_content = parse_page_content($conf_page['content'], $tpl_lang);

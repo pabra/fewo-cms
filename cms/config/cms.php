@@ -1,4 +1,4 @@
-<?php # Mon, 03 Sep 2012 19:51:40 +0200
+<?php # Wed, 05 Sep 2012 01:06:46 +0200
 
 $cms = array (
 	'admin_language' => 
@@ -22,7 +22,7 @@ $cms = array (
 	),
 	'use_cache' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -32,7 +32,7 @@ $cms = array (
 	),
 	'compress_js' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -42,7 +42,7 @@ $cms = array (
 	),
 	'compress_css' => 
 	array (
-		'value' => 'Off',
+		'value' => 'On',
 		'type' => 'select_one',
 		'options' => 
 		array (
@@ -52,7 +52,7 @@ $cms = array (
 	),
 	'template' => 
 	array (
-		'value' => 'default',
+		'value' => 'doernbrack',
 		'type' => 'select_one',
 		'options' => 
 		array (

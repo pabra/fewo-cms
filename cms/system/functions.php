@@ -261,7 +261,7 @@ function gen_config_field($v, $k)
 			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 			break;
 		case 'textarea':
-			$out .= '<textarea class="'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.$v['value'].'</textarea>'."\n";
+			$out .= '<textarea rows="10" cols="10" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.$v['value'].'</textarea>'."\n";
 			break;
 		case 'text':
 		default:
@@ -1002,7 +1002,9 @@ function get_config_data($file, $var, $index = false, $key = false)
 	}
 	elseif(false === $key && false !== $index)
 	{
-		return $file[$var]['value'][$index];
+		$out = $file[$var]['value'][$index];
+		$out['conf_idx'] = $index;
+		return $out;
 	}
 	else 
 	{
@@ -1375,6 +1377,13 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 		return null;
 	}
 	$reserved = explode('|', $cal_conf['reserved']);
+	foreach($reserved as $k => $v)
+	{
+		if(0 === preg_match('/^[0-9]{2}-[0-9]{2}-[0-9]{2}$/', $v))
+		{
+			unset($reserved[$k]);
+		}
+	}
 	$type = intval($cal_conf['type']);
 	$kw_on_3 = (in_array('kw_t3', $cal_conf['settings']))? true : false;
 	$with_headline = (in_array('with_headline', $cal_conf['settings']))? true : false;
@@ -1387,7 +1396,7 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 	$wd_arr = array('mo','tu','we','th','fr','sa','su');
 	$out = '';
 	$out .= '<a href="'.merge_href('self', array('y'=>$prev_y)).'">&lt;--</a> <a href="'.merge_href('self', array('y'=>date('Y'))).'">'.$year.'</a> <a href="'.merge_href('self', array('y'=>$next_y)).'">--&gt;</a><br/>'."\n";
-	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.'">'."\n";
+	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.' conf_idx:'.$cal_conf['conf_idx'].'">'."\n";
 	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
 	$prev = $start - 86400;
 	# Date-Format:
@@ -1493,7 +1502,7 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 			$class_res = '';
 			$bg_half = '';
 		}
-		$out .= '<div id="d_'.date('y-m-d', $d).'" class="float with_font cal_day content'.$class_we.$class_res.'" title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$bg_half.$day_content.'</div>';
+		$out .= '<div id="'.$cal_conf['name'].'_d_'.date('y-m-d', $d).'" class="d_'.date('y-m-d', $d).' float with_font cal_day content'.$class_we.$class_res.'" title="'.lecho('cal_weekday_'.(('0' === date('w', $d))? 7 : date('w', $d)), $lang).'">'.$bg_half.$day_content.'</div>';
 		#######
 		if($type == 3 && date('w', $d) === '0' && date('j', $d) != date('t', $d)) # Woche ende (Sonntag) ABER NICHT Monatsletzter
 		{
@@ -1521,14 +1530,15 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 		}
 	}
 	$out .= '</div>'."\n";
-	$out .= '<script type="text/javascript">var now='.time().'000;</script>'."\n";
+	$js_reserved = (0 === count($reserved))? false : '\''.implode('\',\'', $reserved).'\'';
+	$out .= '<script type="text/javascript">/* <![CDATA[ */var now='.time().'000, lang="'.$lang.'";$(\'div#res_cal_'.$cal_conf['name'].'\').prop({calendarReserved:['.$js_reserved.']});/* ]]> */</script>'."\n";
 	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
 	{
 		if(in_array('show_form', $cal_conf['form_settings']))
 		{
 			preg_match('/=([a-zA-Z0-9_]+)]/', $cal_conf_index, $conf_idx_str);
-			$out .= '<form class="res_form" id="res_form_'.$cal_conf['name'].'" method="" action="">'."\n";
-			$out .= '<div class="form_row"><div class="label"><label for="reservation_from_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_from', $lang).'</label>/<label for="reservation_to_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_to', $lang).'</label></div><div class="input"><input type="text" class="w3" id="reservation_from_'.$conf_idx_str[1].'" name="reservation_from" /><input type="text" class="w3" id="reservation_to_'.$conf_idx_str[1].'" name="reservation_to" /></div></div>'."\n";
+			$out .= '<form class="res_form" id="res_form_'.$cal_conf['name'].'" method="post" action="">'."\n";
+			$out .= '<div class="form_row"><div class="label"><label for="reservation_from_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_from', $lang).'</label>/<label for="reservation_to_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_to', $lang).'</label></div><div class="input"><input type="text" class="w3 datepicker" id="reservation_from_'.$conf_idx_str[1].'" name="reservation_from" /><input type="text" class="w3 datepicker" id="reservation_to_'.$conf_idx_str[1].'" name="reservation_to" /></div></div>'."\n";
 			$out .= '<div class="form_row"><div class="label"><label for="name_'.$conf_idx_str[1].'">'.lecho('cal_form_name', $lang).'</label></div><div class="input"><input type="text" id="name_'.$conf_idx_str[1].'" name="name" /></div></div>'."\n";
 			if(in_array('need_address', $cal_conf['form_settings']))
 			{
@@ -1538,16 +1548,18 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 			if(in_array('need_country', $cal_conf['form_settings']))
 				$out .= '<div class="form_row"><div class="label"><label for="country_'.$conf_idx_str[1].'">'.lecho('cal_form_country', $lang).'</label></div><div class="input"><input type="text" id="country_'.$conf_idx_str[1].'" name="country" /></div></div>'."\n";
 			if(in_array('need_email', $cal_conf['form_settings']))
-				$out .= '<div class="form_row"><div class="label"><label for="email_'.$conf_idx_str[1].'">'.lecho('cal_form_email', $lang).'</label></div><div class="input"><input type="text" id="email_'.$conf_idx_str[1].'" name="email" /></div></div>'."\n";
+				$out .= '<div class="form_row"><div class="label"><label for="email_'.$conf_idx_str[1].'">'.lecho('cal_form_email', $lang).'</label></div><div class="input"><input type="text" class="email" id="email_'.$conf_idx_str[1].'" name="email" /></div></div>'."\n";
 			if(in_array('need_phone', $cal_conf['form_settings']))
 				$out .= '<div class="form_row"><div class="label"><label for="phone_'.$conf_idx_str[1].'">'.lecho('cal_form_phone', $lang).'</label></div><div class="input"><input type="text" id="phone_'.$conf_idx_str[1].'" name="phone" /></div></div>'."\n";
 			if(in_array('need_legal_accept', $cal_conf['form_settings']))
 			{
 				$legal_txt_name = get_config_data('textblock', 'textblock', $cal_conf['legal_condition'], 'name');
-				$out .= '<div class="form_row"><div class="label"><label for="legal_'.$conf_idx_str[1].'">'.lecho('cal_form_legal', $lang).'</label></div><div class="input"><input type="checkbox" id="legal_'.$conf_idx_str[1].'" name="legal" /><br/>'.lecho('cal_form_legal_t1', $lang).'<a title="'.htmlspecialchars(get_textblock($legal_txt_name, $lang)).'" href="javascript:false;">'.lecho('cal_form_legal_t2', $lang).'</a>.</div></div>'."\n";
+				$out .= '<div class="form_row"><div class="label"><label for="legal_'.$conf_idx_str[1].'">'.lecho('cal_form_legal', $lang).'</label></div><div class="input"><input type="checkbox" id="legal_'.$conf_idx_str[1].'" name="legal" /><br/>'.lecho('cal_form_legal_t1', $lang).'<a id="legal_link_'.$cal_conf['name'].'" href="#">'.lecho('cal_form_legal_t2', $lang).'</a>.</div></div>'."\n";
+				$out .= '<script type="text/javascript">/*<![CDATA[*/$(\'#legal_link_'.$cal_conf['name'].'\').click(function(ev){ev.preventDefault();show_info($(\'#legal_text_'.$cal_conf['name'].'\').html(), \''.lecho('cal_form_legal', $lang).'\');})/*]]>*/</script>'."\n";
+				$out .= '<div id="legal_text_'.$cal_conf['name'].'" style="display:none;">'.get_textblock($legal_txt_name, $lang).'</div>'."\n";
 			}
 			if(in_array('allow_msg', $cal_conf['form_settings']))
-				$out .= '<div class="form_row"><div class="label"><label for="msg_'.$conf_idx_str[1].'">'.lecho('cal_form_msg', $lang).'</label></div><div class="input"><textarea id="msg_'.$conf_idx_str[1].'" name="msg" ></textarea></div></div>'."\n";
+				$out .= '<div class="form_row"><div class="label"><label for="msg_'.$conf_idx_str[1].'">'.lecho('cal_form_msg', $lang).'</label></div><div class="input"><textarea rows="10" cols="10" id="msg_'.$conf_idx_str[1].'" name="msg" ></textarea></div></div>'."\n";
 			if(in_array('need_captcha', $cal_conf['form_settings']))
 			{
 				$captcha = captcha();
@@ -1648,7 +1660,7 @@ function gen_captcha_styles()
 	$str_inx_arr = array_flip($str_arr);
 	if('google' == $do_it_with)
 	{
-		$js = '<script type="text/javascript">WebFontConfig={google:{families:["Ubuntu+Mono::latin"]}};(function(){var a=document.createElement("script");a.src=("https:"==document.location.protocol?"https":"http")+"://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";a.type="text/javascript";a.async="true";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})();</script>';
+		$js = '<script type="text/javascript">/*<![CDATA[*/WebFontConfig={google:{families:["Ubuntu+Mono::latin"]}};(function(){var a=document.createElement("script");a.src=("https:"==document.location.protocol?"https":"http")+"://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js";a.type="text/javascript";a.async="true";var b=document.getElementsByTagName("script")[0];b.parentNode.insertBefore(a,b)})();/*]]>*/</script>';
 		$prev = '<div style="font-family: \'Ubuntu Mono\';font-size:20px;text-shadow:none;color:'.$font_color.';background-color:'.$bg_color.';line-height:18px; width:'.(strlen($str)*10).'px; height:20px; border:1px solid #000;">' . $str . '</div>'."\n";
 		$out = $js . $prev;
 	}

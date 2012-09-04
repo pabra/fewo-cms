@@ -179,8 +179,8 @@ function fieldset_add_listener(){
 				keep = 0;
 			}
 			count_groups = fieldset.find('.idx_group').length;
-			clog('count: '+count_groups);
-			clog('keep: '+keep);
+			//clog('count: '+count_groups);
+			//clog('keep: '+keep);
 			if(count_groups > keep){
 				self.find('.idx_nav.delete').show('slide',{direction:'down'},300);
 			}

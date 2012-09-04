@@ -1,7 +1,7 @@
 /* default styles for CMS */
 body { background-color:#ddd; padding:100px; text-shadow:#ddd 1px 1px 1px; }
-div#dialog, div#ttBox { display:none; position:absolute; }
-div#ttBox { border:1px solid #000; border-radius:5px; max-width:300px; padding:5px; margin:0px; color:#ccc; text-shadow:#000 1px 1px 1px; background-color:#333; background-color:rgba(0,0,0,0.6); }
+div#dialog, div#ttBox { display:none; }
+div#ttBox { position:absolute; border:1px solid #000; border-radius:5px; max-width:300px; padding:5px; margin:0px; color:#ccc; text-shadow:#000 1px 1px 1px; background-color:#333; background-color:rgba(0,0,0,0.6); }
 .even { background-color:#ccc; background-color:rgba(255,255,255,0.2); }
 .odd { background-color:#bbb; background-color:rgba(0,0,0,0.2); }
 fieldset { width:508px; position:relative; margin:3px 0px 3px -1px; padding-bottom:6px; border: 1px solid #333; border-radius:10px; }
@@ -19,7 +19,7 @@ form.login .form_row div.input input { width:115px; }
 /*div.form_row { background-color:blue; }*/
 /*div.form_row div.label { background-color:maroon; }*/
 /*div.form_row div.input { background-color:lime; }*/
-div.form_row { position:relative; width:500px; border:1px solid transparent; margin:5px 0px; }
+div.form_row { position:relative; width:500px; border:1px solid transparent; margin:2px 1px; padding:3px 0px; border-radius:5px; }
 div.form_row:hover { background-color:rgba(0,0,0,0.1); }
 div.form_row div.label { position:relative; display:inline-block; width:285px; text-align:right; vertical-align:top; top:5px;  }
 div.form_row div.input { position:relative; display:inline-block; width:200px; }
@@ -44,13 +44,15 @@ form div.idx_group .idx_nav.delete { left:120px; top:-30px; }
 form div.idx_group div.activate_new_index { position:absolute; top:0px; left:0px; width:100%; height:100%; background-color:#ddd; background-color:rgba(225,225,225,0.7); cursor:pointer; }
 form .changed { background-color:#080; border-color:#080 !important; background-color:rgba(0, 128, 0, 0.05); }
 form .mismatch { background-color:#800; border-color:#800 !important; background-color:rgba(128, 0, 0, 0.05); }
+form .mismatch label { color:maroon; }
+form .mismatch input, form .mismatch textarea, form .mismatch select { color:maroon; border-color:maroon; }
 .idx_nav li { margin:2px; position:relative; padding:4px 0; cursor:pointer; float:left; list-style:none; }
 .idx_nav span.ui-icon { width:16px; float:left; margin:0 4px; }
-input, textarea, select  { border:1px solid #333; width:180px; border-radius:5px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#ccc 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
+input, textarea, select { border:1px solid #333; width:180px; border-radius:5px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#ccc 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
 input.w1, textarea.w1, select.w1 { width:47px; }
 input.w2, textarea.w2, select.w2 { width:121px; }
 input.w3, textarea.w3, select.w3 { width:84px; }
-/*form div.form_row input, form div.form_row textarea, form div.form_row select, form div.form_row span.humanfilter_wrap { /*position:absolute; right:14px; top:2px;*/ }*/
+/*form div.form_row input, form div.form_row textarea, form div.form_row select, form div.form_row span.humanfilter_wrap { position:absolute; right:14px; top:2px; }*/
 select { width:190px; }
 textarea { height:100px; vertical-align:baseline; }
 /*form div.more_row { height:15px; position:relative; }*/
@@ -72,9 +74,9 @@ ul.menu li:hover ul { display:block; }
 ul.menu li { list-style-type:none; float:left; padding-right:15px; position:relative; }
 ul.menu a { font-size:12pt; }
 
-li.active { background-color:rgba(180,42,42,0.4); }
-li.has_active { background-color:rgba(125,42,42,0.4); }
-li.has_sub > a:after { content:"\2022"; }
+/*li.active { background-color:rgba(180,42,42,0.4); }*/
+/*li.has_active { background-color:rgba(125,42,42,0.4); }*/
+/*li.has_sub > a:after { content:"\2022"; }*/
 
 
 

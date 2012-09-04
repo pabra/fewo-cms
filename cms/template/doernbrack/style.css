@@ -1,0 +1,13 @@
+/* Template Style File */
+
+body { background-color:#a1d19b; padding:0px; }
+div#header { background-color:maroon; }
+div#content { background-color:green; }
+div#content { background-color:#aaa; }
+div#footer { background-color:maroon; }
+
+div#header { margin:0px auto; padding:20px; width:800px; }
+div#content { margin:0px auto; padding:20px; width:800px; }
+div#footer { margin:0px auto; padding:20px; width:800px; }
+
+

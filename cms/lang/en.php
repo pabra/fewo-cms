@@ -90,8 +90,8 @@ $lang = array(
 	'cal_form_legal' => 'Legal conditions',
 	'cal_form_legal_t1' => 'By checking this, i accept the ',
 	'cal_form_legal_t2' => 'Terms and conditions',
-	'' => '',
-	'' => '',
+	'cal_form_captcha' => 'Code',
+	'cal_form_captcha_answer' => 'Answer',
 	'' => '',
 );
 
