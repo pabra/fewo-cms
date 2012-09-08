@@ -23,7 +23,7 @@ div.res_cal div.cal_kw { text-align:center; border:1px inset transparent; }
 
 div.res_cal div.res { background-color:#D3883D; } /* #D3883D */
 div.res_cal div.res_half { width:0px; height:0px; line-height:0px; position:absolute; top:0px; left:0px; border-width:18px 18px 0px 0px; border-style:solid; border-color:transparent; z-index:-1; }
-div.res_cal div.res_beg, div.res_cal div.res_end { z-index:1; }
+div.res_cal div.res_beg, div.res_cal div.res_end { z-index:0; }
 html.ie6 div.res_cal div.res_half { border-color:#eee; }
 div.res_cal div.res_half.half_beg { border-right-color:#D3883D !important; }
 div.res_cal div.res_half.helf_end { border-top-color:#D3883D !important; }

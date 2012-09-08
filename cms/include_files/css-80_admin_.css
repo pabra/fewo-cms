@@ -7,6 +7,7 @@ html.ie8 h1 { background-color:#999; }
 html.ie9 h1 { background-color:#999; }*/
 
 div#admin_head_bar { position:fixed; top:0px; left:0px; right:0px; height:70px; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:bottom; }
+html.ie6 div#admin_head_bar { position:absolute; width:expression(window.document.body.clientWidth); }
 div#admin_head_bar.admin { height:108px; background-image:url(cms/include_files/images/head_bar_bg2.png); }
 div#admin_head_bar #head_user_box { position:absolute; top:-2px; right:10px; text-align:right; }
 div#admin_head_bar #head_adv_admin { position:absolute; left:0px; top:53px; right:80px; height:35px; }
@@ -22,6 +23,6 @@ div#admin_head_bar div#head_adv_admin ul.menu { top:0px; left:5px; }
 a, a:active, a:visited { color:#7f5374; text-decoration:none; }
 a:hover { text-decoration:underline; }
 
-html.ie6 div#admin_head_bar { width:100%; }
-html.ie6 div#admin_head_bar #head_adv_admin { width: 90%; }
+/*html.ie6 div#admin_head_bar { width:100%; }*/
+/*html.ie6 div#admin_head_bar #head_adv_admin { width: 90%; }*/
 

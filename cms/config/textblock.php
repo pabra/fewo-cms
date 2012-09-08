@@ -1,4 +1,4 @@
-<?php # Mon, 03 Sep 2012 11:12:46 +0200
+<?php # Fri, 07 Sep 2012 15:22:56 +0200
 
 $textblock = array (
 	'textblock' => 
@@ -8,7 +8,8 @@ $textblock = array (
 			'LT1bZ' => 
 			array (
 				'name' => 'ein_textblock',
-				'text' => 'das ist ein textblock',
+				'text' => '<p>das ist ein textbl&ouml;ck</p>
+<p>&nbsp;&lt;huhu&gt;</p>',
 				'include' => '[[:textblock::]]',
 			),
 			'KiFYL' => 
@@ -36,7 +37,7 @@ $textblock = array (
 			),
 			'text' => 
 			array (
-				'type' => 'textarea',
+				'type' => 'htmlarea',
 			),
 			'include' => 
 			array (

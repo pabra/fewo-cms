@@ -154,9 +154,11 @@ function show_warning(txt, title, callback){
 
 $(function(){
 	locObj = locationSeach2Obj();
-	$('input[type=file]').bind('change', function() {
-		alert(this.files[0].size);
-	});
+	/*$('input[type=file]').bind('change', function() {
+		if('undefined' !== typeof(this.files)){
+			alert(this.files[0].size);
+		}
+	});*/
 	$('input.email').change(function(){
 		$(this).parents('.form_row').removeClass('mismatch');
 		if(false === check_email_address($(this).val())){

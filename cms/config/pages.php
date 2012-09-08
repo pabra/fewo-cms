@@ -1,4 +1,4 @@
-<?php # Wed, 05 Sep 2012 01:05:01 +0200
+<?php # Fri, 07 Sep 2012 17:39:40 +0200
 
 $pages = array (
 	'pages' => 
@@ -13,12 +13,13 @@ $pages = array (
 				'access' => 'public',
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
-				'content' => '<h1>Weinböhla- Natur pur in der Nähe von Dresden</h1>
+				'content' => '<h1>Weinb&ouml;hla- Natur pur in der N&auml;he von Dresden</h1>
+<p><a href="http://colorschemedesigner.com/#2z51TaarGhQhQ" target="_blank">color-scheme</a> und <a href="http://netzfruech.de/tools/color_3.php?color=A6C687&amp;color_c=5" target="_blank">Farbfamilie</a> und <a href="http://stackoverflow.com/questions/5766887/css-div-expanding-to-window-height-with-margin-bottom-fixed" target="_blank">100% height</a></p>
 <p>Ferienbungalow zu vermieten:</p>
-<p>Im Weinanbaugebiet Weinböhla (Nähe Dresden) zwischen Moritzburg und Meißen im Landschaftsschutzgebiet.</p>
-<p>Der Bungalow befindet sich auf einem ca. 2500 Quadratmeter großen und gepflegten Gartengrundstück.</p>
-<p>Vorhanden sind: Wohnraum, Schlafraum, Küche, Dusche, separates Innen-WC, Außen-WC, Heizungen, alle Küchengeräte, Sat– TV, Radio, Gartenmöbel, Grill, Bettwäsche und reichlich Handtücher.</p>
-<p>Besonders geeignet für: Familien mit Kindern, (Schaukel, Sandkasten, Spielzeug); Tiere sind willkommen (viel Auslauf, Grundstück ist komplett umzäunt), auch für Wander– und Radfreunde sehr geeignet.</p>',
+<p>Im Weinanbaugebiet Weinb&ouml;hla (N&auml;he Dresden) zwischen Moritzburg und Mei&szlig;en im Landschaftsschutzgebiet.</p>
+<p>Der Bungalow befindet sich auf einem ca. 2500 Quadratmeter gro&szlig;en und gepflegten Gartengrundst&uuml;ck.</p>
+<p>Vorhanden sind: Wohnraum, Schlafraum, K&uuml;che, Dusche, separates Innen-WC, Au&szlig;en-WC, Heizungen, alle K&uuml;chenger&auml;te, Sat&ndash; TV, Radio, Gartenm&ouml;bel, Grill, Bettw&auml;sche und reichlich Handt&uuml;cher.</p>
+<p>Besonders geeignet f&uuml;r: Familien mit Kindern, (Schaukel, Sandkasten, Spielzeug); Tiere sind willkommen (viel Auslauf, Grundst&uuml;ck ist komplett umz&auml;unt), auch f&uuml;r Wander&ndash; und Radfreunde sehr geeignet.</p>',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -168,7 +169,7 @@ $pages = array (
 			),
 			'content' => 
 			array (
-				'type' => 'textarea',
+				'type' => 'htmlarea',
 			),
 			'description' => 
 			array (

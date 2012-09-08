@@ -129,13 +129,13 @@ else
 		else 
 		{
 			header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-			die('Not Found');
+			die('<a href="/">Not Found</a>');
 		}
 	}
 	if(!isset($pages['pages']['index']['name'][$req_page]))
 	{
 		header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-		die('Not Found');
+		die('<a href="/">Not Found</a>');
 	}
 	else 
 	{
@@ -164,7 +164,8 @@ else
 		}
 		$lang_box .= '</ul>'."\n";
 	}
-	$tpl_page_header = $menu . $lang_box;
+	$tpl_page_menu = $menu;
+	$tpl_page_lang_box = $lang_box;
 	$tpl_page_author = htmlspecialchars( $users['users']['value'][$cms['page_author']['value']]['real_name'] );
 	$tpl_page_description = ($conf_page['description'])? htmlspecialchars($conf_page['description']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_description'] );
 	$tpl_page_keywords = ($conf_page['keywords'])? htmlspecialchars($conf_page['keywords']) : htmlspecialchars( $cms['avail_page_lang']['value'][ $conf_lang[$tpl_lang]['index'] ]['page_keywords'] );
@@ -177,7 +178,7 @@ else
 	#$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
 	#$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
 	$tpl_page_content = parse_page_content($conf_page['content'], $tpl_lang);
-	require_once('cms/template/default/template.php');
+	require_once('cms/template/'.$cms['template']['value'].'/template.php');
 	/*$C = array(
 		'page_title' => 'Das ist der Titelü',
 		'page_content' => var_export($_SERVER['QUERY_STRING'], true) . "\nHÜhü",

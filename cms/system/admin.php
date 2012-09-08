@@ -1,12 +1,14 @@
 <?php
 
+$admin_lang = $cms['admin_language']['value'];
+
 $admin_header = <<< EOT
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<!--[if lt IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie6"> <![endif]-->
-<!--[if IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie7"> <![endif]-->
-<!--[if IE 8 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie8"> <![endif]-->
-<!--[if IE 9 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html xmlns="http://www.w3.org/1999/xhtml" > <!--<![endif]-->
+<!--[if lt IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie6" xml:lang="{$admin_lang}" lang="{$admin_lang}"> <![endif]-->
+<!--[if IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie7" xml:lang="{$admin_lang}" lang="{$admin_lang}"> <![endif]-->
+<!--[if IE 8 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie8" xml:lang="{$admin_lang}" lang="{$admin_lang}"> <![endif]-->
+<!--[if IE 9 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie9" xml:lang="{$admin_lang}" lang="{$admin_lang}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{$admin_lang}" lang="{$admin_lang}"> <!--<![endif]-->
 
 	<head>
 		<title>Admin</title>
@@ -24,6 +26,7 @@ $admin_footer = <<< EOT
 </html>
 EOT;
 
+
 #require_once('cms/config/users.php');
 #header('Content-Type: text/plain; charset=utf-8');
 #echo var_export(isset($users['users']['index']['user_name']['usera']), true);
@@ -31,7 +34,6 @@ EOT;
 #die();
 $glob_var = array();
 $user = false;
-$admin_lang = $cms['admin_language']['value'];
 #$admin_content = '<h1>Admin</h1>'."\n";
 $admin_content .= '<noscript>'.lecho('admin_enable_javascript', $admin_lang).'</noscript>'."\n";
 #merge_config('users', 'users|value|[index=user_name="user"]|email', 'email@host.dom');
@@ -224,6 +226,22 @@ EOJS;
 		$admin_content .= '<h1>'.lecho('cms_config_header', $admin_lang).'</h1>'."\n";
 		$admin_content .= edit_config('cms', array('admin_language','page_author','avail_page_lang'));
 	}
+	elseif($_GET['do'] == 'media')
+	{
+		$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div></div>'."\n";
+		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/$(\'#fileupload\').fileupload({
+			dataType:\'json\',
+			done:function(e,data){
+				$.each(data.result, function(i,f){
+					$(\'<p/>\').text(f.name).appendTo(document.body);
+				});
+			},
+			progressall: function(e,data){
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				$(\'.progress .bar\').css({width: progress + \'%\'});
+			}
+		});/*]]>*/</script>'."\n";
+	}
 	elseif($_GET['do'] == 'textblock')
 	{
 		$admin_content .= '<h1>'.lecho('cms_config_textblock', $admin_lang).'</h1>'."\n";
@@ -283,6 +301,8 @@ EOJS;
 		$admin_content .= <<<EOT
 <form action="{$target}" method="post">
 <div class="form_row"><div class="label"><label for="feld1">irgendwas:</label></div><div class="input"><input type="text" id="feld1" name="irgendein_feld" /></div></div>
+<div class="form_row"><div class="label"><label for="feld2">noch was2:</label></div><div class="input"><textarea id="feld2" name="nochein_feld2" ></textarea></div></div>
+<div class="form_row"><div class="label"><label for="feld3">noch was3:</label></div><div class="input"><textarea id="feld3" name="nochein_feld3" ></textarea></div></div>
 <div class="form_row"><div class="label"><label>captcha:</label></div><div class="input">{$captcha[0]}</div></div>
 <div class="form_row"><div class="label"><label for="answer">Antwort:</label></div><div class="input"><input type="text" name="answer" id="answer" /></div></div>
 {$captcha[2]}

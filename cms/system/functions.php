@@ -260,6 +260,9 @@ function gen_config_field($v, $k)
 		case 'email':
 			$out .= '<input type="text" class="email'.$class.'" name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 			break;
+		case 'htmlarea':
+			$out .= '<textarea rows="10" cols="10" class="tinymce'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.htmlspecialchars($v['value']).'</textarea>'."\n";
+			break;
 		case 'textarea':
 			$out .= '<textarea rows="10" cols="10" class="'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.$v['value'].'</textarea>'."\n";
 			break;
@@ -656,6 +659,10 @@ function config_check_types($conf_val, $new_val)
 		return array('new_val'=>$new_val);
 	}
 	elseif($conf_val['type'] === 'textarea')
+	{
+		return true;
+	}
+	elseif($conf_val['type'] === 'htmlarea')
 	{
 		return true;
 	}

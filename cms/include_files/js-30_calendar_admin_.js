@@ -18,8 +18,8 @@ function send_res(){
 }
 $(function(){
 	'use strict';
-	//var locObj = locationSeach2Obj();
-	if('undefined' !== typeof(locObj.do) && locObj.do === 'reservations'){
+	var locObj = locationSeach2Obj();
+	if('undefined' !== typeof(locObj['do']) && locObj['do'] === 'reservations'){
 		$('.add_timespan_buttonset span').button().parent().buttonset().hide();
 		$('span.add_timespan.mark_unselect').click(function(){
 			select_begin=0;

@@ -1,13 +1,34 @@
 /* Template Style File */
 
-body { background-color:#a1d19b; padding:0px; }
-div#header { background-color:maroon; }
-div#content { background-color:green; }
-div#content { background-color:#aaa; }
-div#footer { background-color:maroon; }
+html, body { margin:0px; padding:0px; height:100%; }
+body { background-image:url(cms/template/doernbrack/images/site_bg.gif); background-repeat:repeat; }
+div#bwrap1 { background-color:#eee; }
+div#header_top { background-color:lime; }
+div#footer { background-color:lime; }
+div#header { background-color:green; }
+div#head_menu { background-color:red; }
+div#head_img { background-color:maroon; }
+div#head_lang_box { background-color:purple; }
+div#content { background-color:#ccc; }
 
-div#header { margin:0px auto; padding:20px; width:800px; }
-div#content { margin:0px auto; padding:20px; width:800px; }
-div#footer { margin:0px auto; padding:20px; width:800px; }
+div#bwrap1 { position:relative; width:850px; margin:0px auto; top:20px; height:93%; }
+div#header_top { height:23px; margin:0px 23px; }
+div#header { margin:0px; padding:0px; height:200px; position:relative; }
+div#head_menu { position:absolute; top:0px; left:0px; height:100%; width:300px; overflow:hidden; }
+div#head_img { position:absolute; top:0px; right:0px; height:100%; width:545px; overflow:hidden; }
+div#head_lang_box { position:absolute; right:20px; top:-20px;  }
+div#content { position:absolute; bottom:23px; top:223px; left:0px; right:0px; padding:10px 20px; overflow:auto; }
+html.ie6 div#content { height:expression(this.parentNode.clientHeight-23-200-23); }
+div#footer { position:absolute; bottom:0px; left:0px; right:0px; height:23px; margin:0px 23px; }
+html.ie6 div#footer { background-color:red; width:expression(this.parentNode.clientWidth-23-23); }
+
+/*div#header { background-color:maroon; }*/
+/*div#content { background-color:green; }*/
+/*div#content { background-color:#aaa; }*/
+/*div#footer { background-color:maroon; }*/
+
+/*div#header { margin:0px auto; padding:20px; width:800px; }*/
+/*div#content { margin:0px auto; padding:20px; width:800px; }*/
+/*div#footer { margin:0px auto; padding:20px; width:800px; }*/
 
 

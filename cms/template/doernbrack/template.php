@@ -1,8 +1,10 @@
 <?php
 
+# <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+# <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
 $template = <<< EOT
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<!--[if lt IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie6" xml:lang="${tpl_lang}" lang="${tpl_lang}"> <![endif]-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><!--[if lt IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie6" xml:lang="${tpl_lang}" lang="${tpl_lang}"> <![endif]-->
 <!--[if IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie7" xml:lang="${tpl_lang}" lang="${tpl_lang}"> <![endif]-->
 <!--[if IE 8 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie8" xml:lang="${tpl_lang}" lang="${tpl_lang}"> <![endif]-->
 <!--[if IE 9 ]> <html xmlns="http://www.w3.org/1999/xhtml" class="ie9" xml:lang="${tpl_lang}" lang="${tpl_lang}"> <![endif]-->
@@ -22,9 +24,17 @@ $template = <<< EOT
 		<script type="text/javascript" src="?javascript_js"></script>
 	</head>
 	<body>
-		<div id="header">${tpl_page_header}</div>
-		<div id="content">${tpl_page_content}</div>
-		<div id="footer">${tpl_page_footer}</div>
+		<div id="bwrap1">
+			<div id="bw_t"></div><div id="bw_tr"></div><div id="bw_r"></div><div id="bw_br"></div><div id="bw_b"></div><div id="bw_bl"></div> <div id="bw_l"></div><div id="bw_tl"></div>
+			<div id="header_top"></div>
+			<div id="header">
+				<div id="head_menu">${tpl_page_menu}</div>
+				<div id="head_img"></div>
+				<div id="head_lang_box">${tpl_page_lang_box}</div>
+			</div>
+			<div id="content">${tpl_page_content}</div>
+			<div id="footer">${tpl_page_footer}</div>
+		</div>
 	</body>
 </html>
 
