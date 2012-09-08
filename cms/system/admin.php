@@ -231,10 +231,15 @@ EOJS;
 		$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div></div>'."\n";
 		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/$(\'#fileupload\').fileupload({
 			dataType:\'json\',
+			add: function (e, data) {
+				data.context = $(\'<p/>\').text(\'Uploading...\').appendTo(document.body);
+				data.submit();
+			},
 			done:function(e,data){
-				$.each(data.result, function(i,f){
-					$(\'<p/>\').text(f.name).appendTo(document.body);
-				});
+				//$.each(data.result, function(i,f){
+				//	$(\'<p/>\').text(f.name).appendTo(document.body);
+				//});
+				data.context.text(\'Upload finished.\');
 			},
 			progressall: function(e,data){
 				var progress = parseInt(data.loaded / data.total * 100, 10);

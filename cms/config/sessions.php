@@ -1,4 +1,4 @@
-<?php # Sat, 08 Sep 2012 15:39:15 +0200
+<?php # Sat, 08 Sep 2012 16:08:33 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -41,7 +41,7 @@ $sessions = array (
 				'sess' => 'a222d275912569753da5b5f06a7be51e',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Sat, 08 Sep 2012 15:39:15 +0200',
+				'time' => 'Sat, 08 Sep 2012 16:08:33 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
