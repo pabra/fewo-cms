@@ -120,7 +120,7 @@ if(!isset($sess_data['role']))
 else 
 {
 	#$glob_var['lang_edit_now'] = 'english';
-	$admin_head_bar .= '<script type="text/javascript">/*<![CDATA[*/var admin_keep_alive='.$sessions['keep_alive']['value'].';admin_lang="'.$admin_lang.'";/*]]>*/</script>'."\n";
+	$admin_head_bar .= '<script type="text/javascript">/*<![CDATA[*/var admin_keep_alive='.($sessions['keep_alive']['value'] - (time()-strtotime($sess_data['time']))).',admin_lang="'.$admin_lang.'";/*]]>*/</script>'."\n";
 	$admin_head_bar .= '<div id="head_user_box">'.$sess_data['user_name'].' '.lecho('admin_logged_in_as', $admin_lang).'<br/><a title="'.lecho('admin_user_pref', $admin_lang).'" href="?admin&amp;do=user_pref">'.$sess_data['real_name'].'</a><br/><a title="'.lecho('admin_log_timer_out', $admin_lang).'" class="ajax" id="keep_alive_timer" href="#do=logout">logout</a></div>'."\n";
 	$admin_head_bar .= '<a href="?admin" style="margin:5px;font-size:24pt;" title="'.lecho('admin_homepage', $admin_lang).'">A</a> '."\n";
 	#$admin_head_bar .= '<a href="?admin&amp;do=pages_order" title="huhu">pages_order</a> '."\n";
@@ -228,22 +228,29 @@ EOJS;
 	}
 	elseif($_GET['do'] == 'media')
 	{
-		$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div></div>'."\n";
+		$admin_content .= get_dir_info('cms/user_files');
+		$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div><div id="file_feedback"></div></div>'."\n";
 		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/$(\'#fileupload\').fileupload({
 			dataType:\'json\',
+			limitConcurrentUploads:3,
 			add: function (e, data) {
-				data.context = $(\'<p/>\').text(\'Uploading...\').appendTo(document.body);
-				data.submit();
+				data.context = $(\'<p/>\').html(\'&nbsp;&nbsp;\'+data.files[0].name + \' Uploading...\').addClass(\'progress\').prepend(\'<span class="bar"></div>\').appendTo(\'#file_feedback\');
+				//data.submit();
+				$(this).fileupload(\'process\', data).done(function () {
+					data.submit();
+				});
 			},
-			done:function(e,data){
-				//$.each(data.result, function(i,f){
-				//	$(\'<p/>\').text(f.name).appendTo(document.body);
-				//});
-				data.context.text(\'Upload finished.\');
+			done: function(e,data){
+				var self = data.context;
+				data.context.html(\'&nbsp;&nbsp;\'+data.files[0].name + \' Upload finished.\').show(1).delay(1000).hide(300, function(){ $(this).remove(); });
+			},
+			progress: function(e,data){
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				data.context.find(\'.bar\').css({width: progress + \'%\'});
 			},
 			progressall: function(e,data){
 				var progress = parseInt(data.loaded / data.total * 100, 10);
-				$(\'.progress .bar\').css({width: progress + \'%\'});
+				$(\'div.progress .bar\').css({width: progress + \'%\'}).html(\'&nbsp;&nbsp;\'+progress+\'%\');
 			}
 		});/*]]>*/</script>'."\n";
 	}

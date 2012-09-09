@@ -735,7 +735,7 @@ function write_config($file, $value)
 	{
 		die("${file_name} not writeable or present.\n");
 	}
-	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>");
+	file_put_contents($file_name, '<?php # '.date('r')."\n\n\$$file = ".preg_replace('/^( +)/me', "str_repeat(\"\t\", (strlen('$1')/2))", var_export($value, true)).";\n\n?>", LOCK_EX);
 	@chmod($file_name, 0666);
 	$$file = $value;
 	$clear_cache_on_change = array('cms','pages','users','textblock','res_cal');
@@ -869,7 +869,10 @@ function check_session()
 		$sess_data = array();
 		return false;
 	}
-	merge_config('sessions', array(array('var'=>'sessions', 'index'=>$sess_key, 'key'=>'time', 'value'=>date('r'))));
+	if(time() - strtotime($sess_data['time']) > 60)
+	{
+		merge_config('sessions', array(array('var'=>'sessions', 'index'=>$sess_key, 'key'=>'time', 'value'=>date('r'))));
+	}
 	$sess_data = $sessions['sessions']['value'][$sess_key];
 	return true;
 }
@@ -1152,6 +1155,19 @@ function lecho($t, $l, $m='cms')
 		}
 	}
 	return '[['.$t.']]';
+}
+function get_dir_info($dir)
+{
+	if(!is_dir($dir))
+	{
+		return '';
+	}
+	if('/' !== substr($dir, -1))
+		$dir .= '/';
+	$files = glob($dir.'*');
+	#print_r($files);
+	#die();
+	return implode("<br/>\n", $files);
 }
 function get_include_file($f)
 {

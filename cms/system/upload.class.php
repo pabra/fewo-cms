@@ -22,7 +22,7 @@ class UploadHandler
             'param_name' => 'files',
             // Set the following option to 'POST', if your server does not support
             // DELETE requests. This is a parameter sent to the client:
-            'delete_type' => 'DELETE',
+            'delete_type' => 'POST',
             // The php.ini settings upload_max_filesize and post_max_size
             // take precedence over the following max_file_size setting:
             'max_file_size' => null,
@@ -33,6 +33,8 @@ class UploadHandler
             // Image resolution restrictions:
             'max_width' => null,
             'max_height' => null,
+            #'max_width' => 850,
+            #'max_height' => 650,
             'min_width' => 1,
             'min_height' => 1,
             // Set the following option to false to enable resumable uploads:
@@ -52,6 +54,13 @@ class UploadHandler
                     'jpeg_quality' => 95
                 ),
                 */
+                'default' => array(
+                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/cms/user_files/',
+                    'upload_url' => $this->getFullUrl().'/cms/user_files/',
+                    'max_width' => 1100,
+                    'max_height' => 1000,
+                    'jpeg_quality' => 85,
+                ),
                 /*'thumbnail' => array(
                     'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/thumbnails/',
                     'upload_url' => $this->getFullUrl().'/thumbnails/',

@@ -24,9 +24,10 @@ $(function(){
 		clog($(this).attr('action').match(/do=[a-zA-Z0-9_-]+/));
 		$.post('ajax.php?'+$(this).attr('action').match(/do=[a-zA-Z0-9_-]+/), form_post_data, function(data){
 			clog(data);
-			form_fields.prop({disabled:false});
 			if(false === data.status){
 				show_warning(data.msg);
+				form_fields.prop({disabled:false});
+				form.find('input[type=password]').val('');
 				/*$('#dialog').attr('title', 'Fehler').text(data.msg).dialog({
 					modal:true,
 					buttons: {
@@ -36,9 +37,11 @@ $(function(){
 					}
 					});*/
 			} else {
-				clog('goto: '+form.find('[name=req_page]').val());
-				clog(form);
-				window.location = '?'+form.find('[name=req_page]').val();
+				//clog('goto: '+form.find('[name=req_page]').val());
+				//clog(form);
+				//window.location = '?'+form.find('[name=req_page]').val();
+				//window.location = window.location;
+				window.location = window.location.href.replace(/#.*$/, '');
 			}
 		});
 	});
