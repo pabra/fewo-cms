@@ -73,6 +73,7 @@ if(true === $use_cache && false !== $req_page)
 }
 #var_dump($_GET);
 require_once('cms/system/functions.php');
+require_once('cms/system/phpThumb/phpThumb.config.php');
 #var_dump(get_browser_lang($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 #die();
 

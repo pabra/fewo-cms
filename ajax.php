@@ -163,6 +163,11 @@ if(isset($sess_data['role']))
 				header('HTTP/1.1 405 Method Not Allowed');
 		}
 	}
+	elseif($_GET['do'] == 'get_dir_content')
+	{
+		$get_dir = ($_POST['get_dir'])? $_POST['get_dir'] : './';
+		echo json_encode( get_dir_content($get_dir) );
+	}
 	if('logout' === $_POST['do'])
 	{
 		check_logout();

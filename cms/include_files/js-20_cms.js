@@ -92,6 +92,9 @@ function titleToTip(){
 		};
 	$('[title]').each(function(k,v){
 		$(this).prop({ttBoxTitle:$(this).attr('title')}).removeAttr('title');
+		if('undefined' !== typeof($(this).attr('onmouseover')) && -1 !== $(this).attr('onmouseover').indexOf('titleToTip')){
+			$(this).removeAttr('onmouseover');
+		}
 		$(this).mouseenter(function(ev){
 			var self = $(this), posX, posY;
 			if('undefined' === typeof(self.prop('ttBoxMovTime'))){

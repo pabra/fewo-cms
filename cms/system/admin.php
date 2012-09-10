@@ -168,6 +168,7 @@ else
 			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_pages', $admin_lang).' ('.intval($count['count']['pages']).')</label></div><div class="input"><input id="clear_cache_pages" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
 			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_js', $admin_lang).' ('.intval($count['count']['js']).')</label></div><div class="input"><input id="clear_cache_js" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
 			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_css', $admin_lang).' ('.intval($count['count']['css']).')</label></div><div class="input"><input id="clear_cache_css" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
+			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_thumb', $admin_lang).' ('.intval($count['count']['thumb']).')</label></div><div class="input"><input id="clear_cache_thumb" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
 			$admin_content .= '<div class="form_row"><div class="label"><label class="main">'.lecho('admin_clear_cache_all', $admin_lang).' ('.intval($count['count']['all']).')</label></div><div class="input"><input id="clear_cache_all" type="button" value="'.lecho('button_click', $admin_lang).'" /></div></div>';
 			$admin_content .= '</form>';
 			$admin_content .= <<<EOJS
@@ -228,9 +229,16 @@ EOJS;
 	}
 	elseif($_GET['do'] == 'media')
 	{
-		$admin_content .= get_dir_info('cms/user_files');
-		$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div><div id="file_feedback"></div></div>'."\n";
-		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/$(\'#fileupload\').fileupload({
+		$admin_content .= '<div id="dir_content">'.get_dir_content('cms/user_files', $admin_lang).'</div>'."\n";
+		#$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div><div id="file_feedback"></div></div>'."\n";
+		$admin_content .= '<div class="form_row no_hover"><div class="progress label"><div class="bar"></div><label for="fileupload">'.lecho('fileupload_label_files', $admin_lang).'</label></div><div class="input">
+			<span class="fileinput-button">'.lecho('fileupload_add_files', $admin_lang).'<input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" />
+			</span>
+		</div><div id="file_feedback"></div></div>'."\n";
+		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/
+			var get_to = false;
+			$(\'.fileinput-button\').button({icons:{primary:\'ui-icon-plusthick\'}});
+			$(\'#fileupload\').fileupload({
 			dataType:\'json\',
 			limitConcurrentUploads:3,
 			add: function (e, data) {
@@ -243,6 +251,12 @@ EOJS;
 			done: function(e,data){
 				var self = data.context;
 				data.context.html(\'&nbsp;&nbsp;\'+data.files[0].name + \' Upload finished.\').show(1).delay(1000).hide(300, function(){ $(this).remove(); });
+				window.clearTimeout(get_to);
+				get_to = window.setTimeout(function(){
+					$.post(\'ajax.php?do=get_dir_content\', {get_dir:\'cms/user_files\'}, function(data){
+						$(\'#dir_content\').html(data);
+					});
+				}, 1000);
 			},
 			progress: function(e,data){
 				var progress = parseInt(data.loaded / data.total * 100, 10);
@@ -308,6 +322,7 @@ EOJS;
 		#$admin_content .= 'admin content<br/>'."\n";
 		#$admin_content .= gen_captcha_styles();
 		$admin_content .= get_textblock('agb_de', $admin_lang);
+		$admin_content .= '<img src="'.phpThumbURL('src=../../user_files/emilie_01.jpg&w=50').'"><br/>'."\n";;
 		$captcha = captcha();
 		$target = merge_href();
 		$admin_content .= <<<EOT

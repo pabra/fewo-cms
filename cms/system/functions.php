@@ -1156,7 +1156,64 @@ function lecho($t, $l, $m='cms')
 	}
 	return '[['.$t.']]';
 }
-function get_dir_info($dir)
+function formatBytes($bytes, $precision = 2) {
+	$units = array('&nbsp;B', 'KB', 'MB', 'GB', 'TB');
+	$bytes = max($bytes, 0);
+	$pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+	$pow = min($pow, count($units) - 1);
+	$bytes /= pow(1024, $pow);
+	return round($bytes, $precision) . ' ' . $units[$pow];
+}
+function formatTime($time, $lang = 'de', $precision = 0, $unit_len='short', $unit_pref='') {
+	$unit = '';
+	if($unit_pref == 's' || abs($time) < 60)
+	{
+		$unit = 's';
+	}
+	elseif($unit_pref == 'm' || abs($time) < (60 * 60))
+	{
+		$time /= 60;
+		$unit = 'm';
+	}
+	elseif($unit_pref == 'h' || abs($time) < (60 * 60 * 24))
+	{
+		$time /= 60*60;
+		$unit = 'h';
+	}
+	elseif($unit_pref == 'd' || abs($time) < (60 * 60 * 24 * 7))
+	{
+		$time /= 60*60*24;
+		$unit = 'd';
+	}
+	elseif($unit_pref == 'w' || abs($time) < (60 * 60 * 24 * 7 * 4))
+	{
+		$time /= 60*60*24*7;
+		$unit = 'w';
+	}
+	elseif($unit_pref == 'M' || abs($time) < (60 * 60 * 24 * 30.42 * 12))
+	{
+		$time /= 60*60*24*30.42;
+		$unit = 'M';
+	}
+	else
+	{
+		$time /= 60*60*24*365;
+		$unit = 'Y';
+	}
+	$time = round($time, $precision);
+	$unit_1 = array('s' => 'second',  'm' => 'minute',  'h' => 'hour',  'd' => 'day',  'w' => 'week',  'M' => 'month',  'Y' => 'year');
+	$unit_2 = array('s' => 'seconds', 'm' => 'minutes', 'h' => 'hours', 'd' => 'days', 'w' => 'weeks', 'M' => 'months', 'Y' => 'years');
+	if($unit_len == 'long')
+	{
+		if($time <= 1)
+			$unit = $unit_1[$unit];
+		else 
+			$unit = $unit_2[$unit];
+		$unit = lecho('time_unit_'.$unit, $lang);
+	}
+	return $time . ' ' . $unit;
+}
+function get_dir_content($dir, $lang = 'de')
 {
 	if(!is_dir($dir))
 	{
@@ -1167,7 +1224,16 @@ function get_dir_info($dir)
 	$files = glob($dir.'*');
 	#print_r($files);
 	#die();
-	return implode("<br/>\n", $files);
+	$out = '';
+	foreach($files as $k => $v)
+	{
+		$bnv = basename($v);
+		$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
+		#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
+		#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
+		$out .= '<span><img src="cms/include_files/images/mime/type_'.strtolower(substr($bnv, strrpos($bnv, '.')+1)).'.png" />'. $bnv . '</span> <span onmouseover="titleToTip()" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span> <span onmouseover="titleToTip()" title="'.date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span><br/>'."\n";
+	}
+	return $out;
 }
 function get_include_file($f)
 {
@@ -1289,9 +1355,31 @@ function clear_cache($what='pages')
 {
 	$status = null;
 	$txt = 'wrong type of cache to delete ('.$what.')';
-	$files = glob('cms/cache/*.php');
+	$files = glob('cms/cache/*');
+	$thumb_files = glob('cms/cache/thumb/*');
 	$count = array();
 	$i = 0;
+	if('thumb' === substr($what, -5) || 'count' === $what)
+	{
+		if(is_array($thumb_files) && 0 < count($thumb_files))
+		{
+			foreach($thumb_files as $k => $v)
+			{
+				if(is_file($v))
+				{
+					if('count' !== $what)
+					{
+						unlink($v);
+					}
+					$i++;
+				}
+			}
+		}
+		$status = true;
+		$txt = $i. ' files removed.';
+		$count['thumb'] = $i;
+		$i = 0;
+	}
 	if('pages' === substr($what, -5) || 'count' === $what)
 	{
 		if(is_array($files) && 0 < count($files))
@@ -1299,10 +1387,11 @@ function clear_cache($what='pages')
 			foreach($files as $k => $v)
 			{
 				$bn = basename($v);
-				if(0 !== strpos($bn, 'javascript_js') 
-					&& 0 !== strpos($bn, 'javascript_admin_js') 
-					&& 0 !== strpos($bn, 'style_css') 
-					&& 0 !== strpos($bn, 'style_admin_css') )
+				if('.php' === substr($bn, -4)
+					&& false === strpos($bn, 'javascript_js') 
+					&& false === strpos($bn, 'javascript_admin_js') 
+					&& false === strpos($bn, 'style_css') 
+					&& false === strpos($bn, 'style_admin_css') )
 				{
 					if('count' !== $what)
 					{
@@ -1348,7 +1437,8 @@ function clear_cache($what='pages')
 			{
 				$bn = basename($v);
 				if(0 === strpos($bn, 'javascript_js') 
-					|| 0 === strpos($bn, 'javascript_admin_js') )
+					|| 0 === strpos($bn, 'javascript_admin_js')
+					|| 1 === preg_match('/^[a-z0-9]+\.gz/', $bn) )
 				{
 					if('count' !== $what)
 					{
@@ -1365,15 +1455,20 @@ function clear_cache($what='pages')
 	}
 	if('all' === substr($what, -3) || 'count' === $what)
 	{
+		$files = array_merge($files, $thumb_files);
 		if(is_array($files) && 0 < count($files))
 		{
 			foreach($files as $k => $v)
 			{
-				if('count' !== $what)
+				#$bn = basename($v);
+				if(true === is_file($v))
 				{
-					unlink($v);
+					if('count' !== $what)
+					{
+						unlink($v);
+					}
+					$i++;
 				}
-				$i++;
 			}
 		}
 		$status = true;

@@ -36,7 +36,25 @@ $lang = array(
 	'config_calendar_settings_first_last_resday_half' => 'half-day reservation',
 	'' => '',
 	'' => '',
+	# fileupload
+	'fileupload_label_files' => 'Files:',
+	'fileupload_add_files' => 'add files...',
 	'' => '',
+	#time_units
+	'time_unit_second' => 'second',
+	'time_unit_minute' => 'minute',
+	'time_unit_hour' => 'hour',
+	'time_unit_day' => 'day',
+	'time_unit_week' => 'week',
+	'time_unit_month' => 'month',
+	'time_unit_year' => 'year',
+	'time_unit_seconds' => 'seconds',
+	'time_unit_minutes' => 'minutes',
+	'time_unit_hours' => 'hours',
+	'time_unit_days' => 'days',
+	'time_unit_weeks' => 'weeks',
+	'time_unit_months' => 'months',
+	'time_unit_years' => 'years',
 	# help config
 	'help_config_admin_language' => 'the language for the admin area',
 	# reservation calendar

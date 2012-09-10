@@ -1,4 +1,4 @@
-<?php # Sun, 09 Sep 2012 11:13:06 +0200
+<?php # Mon, 10 Sep 2012 11:17:37 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -10,12 +10,25 @@ $sessions = array (
 	array (
 		'value' => 
 		array (
-			'ex0gA' => 
+			'LibG0' => 
 			array (
-				'sess' => '82a7a1be06c3001d3f80d75fddb56329',
+				'sess' => '4a18600a4f810bac997c6b353b1a1a98',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Sun, 09 Sep 2012 11:13:06 +0200',
+				'time' => 'Mon, 10 Sep 2012 11:08:39 +0200',
+				'user_index' => 'hOpQ5',
+				'user_name' => 'user_2',
+				'real_name' => 'Super User',
+				'email' => 'def@gh.ij',
+				'role' => 'superuser',
+				'use_role' => 'admin',
+			),
+			'o3MB9' => 
+			array (
+				'sess' => '58a239621b7956f2ef4f397d567ef7b8',
+				'ua' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0',
+				'ip' => '127.0.0.1',
+				'time' => 'Mon, 10 Sep 2012 11:17:37 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
@@ -73,7 +86,8 @@ $sessions = array (
 		array (
 			'sess' => 
 			array (
-				'82a7a1be06c3001d3f80d75fddb56329' => 'ex0gA',
+				'4a18600a4f810bac997c6b353b1a1a98' => 'LibG0',
+				'58a239621b7956f2ef4f397d567ef7b8' => 'o3MB9',
 			),
 		),
 	),

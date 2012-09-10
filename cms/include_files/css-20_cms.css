@@ -12,6 +12,8 @@ form.login .form_row div.label, form.login .form_row div.input { width:150px; }
 form.login .form_row div.input input { width:115px; }
 .progress { position:relative; border:1px solid #E07C66; border-radius:15px; }
 .progress .bar { position:absolute; display:block; top:0px; left:0px; height:100%; width:0%; text-align:left; background-color:#eee; border-radius:15px; z-index:-1; }
+.fileinput-button { overflow:hidden; margin-left:10px; }
+.fileinput-button input { position:absolute; top:0; right:0; margin:0; border:solid transparent; opacity:0; filter:alpha(opacity=0); -moz-transform:translate(-300px, 0) scale(4); direction:ltr; cursor:pointer; border-width:0 0 100px 200px; }
 #file_feedback { width:287px; }
 #file_feedback .progress { margin:2px 0px; }
 /*form div.form_row { width:500px; position:relative; height:30px; border-radius:5px; border:1px solid transparent; }*/
@@ -35,6 +37,7 @@ div.form_row div.input .mceLayout { margin-left:-285px; margin-top:25px; height:
 div.form_row div.input textarea:focus { margin-left:-285px; height:150px; width:466px; }
 
 /**/
+.no_hover:hover { background:none !important; }
 form div.idx_group { position:relative; width:auto; margin:0px; padding:0px; border-radius:0px; }
 /*form div label.main { text-align:right; position:absolute; right:186px; top:0px; width:300px; padding:6px 0px; }*/
 form div.form_row span.ui-icon-info { position:absolute; right:-1px; top:-1px; display:none; cursor:pointer; }
