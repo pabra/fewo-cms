@@ -9,18 +9,23 @@ var locObj;
 	}
 };*/
 Object.size = function(obj){
+	'use strict';
 	var size = 0, key;
 	for(key in obj){
-		if (obj.hasOwnProperty(key)) size++;
+		if (obj.hasOwnProperty(key)){
+			size++;
+		}
 	}
 	return size;
 };
 function clog(l){
+	'use strict';
 	if('undefined' !== typeof(console)){
 		console.log(l);
 	}
 }
 function locationSeach2Obj(t){
+	'use strict';
 	var vars,
 		obj = {},
 		tmp,
@@ -32,11 +37,13 @@ function locationSeach2Obj(t){
 	}
 	vars =  vars.replace(/^\??/, '').split('&');
 	for(i in vars){
-		if(vars[i] === ''){
-			continue;
+		if(vars.hasOwnProperty(i)){
+			if(vars[i] === ''){
+				continue;
+			}
+			tmp = vars[i].split('=');
+			obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
 		}
-		tmp = vars[i].split('=');
-		obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
 	}
 	return obj;
 }
@@ -75,7 +82,7 @@ function titleToTip(){
 	'use strict';
 	var ttbto,ttbtom, ttbow,ttboh, docW=$(document).width(), docH=$(document).height(), ttB=$('#ttBox'), offX=-10, offY=-15, ttbevpos={}, 
 		toPosX=function(evX){
-			if(evX -7 + ttbow > docW -3){
+			if(evX - $(window).scrollLeft() -7 + ttbow > docW -3){
 				evX = docW -3 - ttbow;
 			} else {
 				evX = evX -7;
@@ -83,7 +90,7 @@ function titleToTip(){
 			return evX;
 		},
 		toPosY=function(evY){
-			if(evY -10 -ttboh < 3){
+			if(evY - $(window).scrollTop() -10 -ttboh < 3){
 				evY = evY + 20;
 			} else {
 				evY = evY -10 - ttboh;
@@ -131,31 +138,46 @@ function titleToTip(){
 		});
 	});
 }
-function show_info(txt, title, callback, txt_wrap){
+function show_info(txt, title, callback, txt_wrap, buttons){
+	'use strict';
 	if('undefined' === typeof(title)){
 		title = 'Information';
 	}
 	if('undefined' === typeof(txt_wrap) || false !== txt_wrap){
 		txt = '<p><span class="ui-icon ui-icon-info" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
 	}
-	$('#dialog').html(txt).dialog({modal:true,title:title,minHeight:150,minWidth:200,maxHeight:450,maxWidth:650,buttons:{
-		Ok:function(){
-			$(this).dialog('close');
-		}
-		}});
+	if('undefined' === typeof(buttons)){
+		buttons = { Ok:function(){ $(this).dialog('close'); } };
+	}
+	$('#dialog').html(txt).dialog({modal:true,title:title,minHeight:150,minWidth:200,maxHeight:450,maxWidth:650,buttons:buttons});
 	if('function' === typeof(callback)){
 		$('#dialog').one('dialogclose', callback);
 	}
 }
 function show_warning(txt, title, callback){
+	'use strict';
 	if('undefined' === typeof(title)){
 		title = 'Warning';
 	}
 	txt = '<p style="color:maroon;"><span class="ui-icon ui-icon-alert" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
 	show_info(txt, title, callback, false);
 }
+function show_confirm(txt, title, callback){
+	'use strict';
+	$('#dialog').prop({choice:false});
+	var buttons = {
+		Ok: function(){ $('#dialog').prop({choice:true}); $(this).dialog('close'); },
+		No: function(){ $(this).dialog('close'); }
+		};
+	if('undefined' === typeof(title)){
+		title = '?';
+	}
+	txt = '<p><span class="ui-icon ui-icon-help" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
+	show_info(txt, title, callback, false, buttons);
+}
 
 $(function(){
+	'use strict';
 	locObj = locationSeach2Obj();
 	/*$('input[type=file]').bind('change', function() {
 		if('undefined' !== typeof(this.files)){

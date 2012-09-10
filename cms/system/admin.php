@@ -231,13 +231,44 @@ EOJS;
 	{
 		$admin_content .= '<div id="dir_content">'.get_dir_content('cms/user_files', $admin_lang).'</div>'."\n";
 		#$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div><div id="file_feedback"></div></div>'."\n";
-		$admin_content .= '<div class="form_row no_hover"><div class="progress label"><div class="bar"></div><label for="fileupload">'.lecho('fileupload_label_files', $admin_lang).'</label></div><div class="input">
-			<span class="fileinput-button">'.lecho('fileupload_add_files', $admin_lang).'<input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" />
-			</span>
-		</div><div id="file_feedback"></div></div>'."\n";
+		$admin_content .= '<div class="form_row no_hover"><div class="progress label"><div class="bar"></div><label for="fileupload">'.lecho('fileupload_label_files', $admin_lang).'</label></div><div style="white-space:nowrap;" class="input">'
+			.'<span class="fileinput-button">'.lecho('fileupload_add_files', $admin_lang).'<input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=user_content" multiple="multiple" /></span>'
+			.'<span class="filedeleteall-button">'.lecho('fileupload_delete_selected', $admin_lang).'</span>'
+			.'<span class="fileselectall-button">'.lecho('fileupload_select_all', $admin_lang).'</span>'
+			.'</div><div id="file_feedback"></div></div>'."\n";
 		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/
 			var get_to = false;
 			$(\'.fileinput-button\').button({icons:{primary:\'ui-icon-plusthick\'}});
+			$(\'.filedeleteall-button\').button({icons:{primary:\'ui-icon-trash\'}}).click(function(){
+				var sel_files = $(\'.dircontent_manage input.select_file:checked\');
+				//clog(sel_files);
+				if(0 < sel_files.length){
+					show_confirm(\'Delete \'+sel_files.length+\' files?\', \'Delete\', function(){ clog($(\'#dialog\').prop(\'choice\')); });
+				}
+			});
+			$(\'.fileselectall-button\').button({icons:{primary:\'ui-icon-circlesmall-close\'}}).toggle(
+				function(){ $(\'.dircontent_manage input.select_file\').prop({checked:true}).change(); },
+				function(){ $(\'.dircontent_manage input.select_file\').prop({checked:false}).change(); }
+			);
+			$(\'.dircontent_manage .rename_file\').click(function(){
+				var fn_el = $(this).parents(\'.dircontent_row\').find(\'.filename\'),
+					fn_name = fn_el.text(),
+					rep_in = $(\'<input/>\').attr({type:\'text\', value:fn_name}).css({fontFamily:\'monospace\'}).focusout(function(){
+						var spel = $(\'<span/>\').text(fn_name).addClass(\'filename\');
+						if($(this).val() === $(this).prop(\'defaultValue\')){
+							$(this).replaceWith(spel);
+						}
+					});
+				clog(fn_name);
+				fn_el.replaceWith(rep_in);
+				rep_in.focus().select();
+			});
+			$(\'.dircontent_manage input.select_file\').change(function(){
+				if($(this).prop(\'checked\')){
+					$(this).css({display:\'inline\'});
+				} else {
+					$(this).css({display:\'\'});
+				}});
 			$(\'#fileupload\').fileupload({
 			dataType:\'json\',
 			limitConcurrentUploads:3,
@@ -322,7 +353,6 @@ EOJS;
 		#$admin_content .= 'admin content<br/>'."\n";
 		#$admin_content .= gen_captcha_styles();
 		$admin_content .= get_textblock('agb_de', $admin_lang);
-		$admin_content .= '<img src="'.phpThumbURL('src=../../user_files/emilie_01.jpg&w=50').'"><br/>'."\n";;
 		$captcha = captcha();
 		$target = merge_href();
 		$admin_content .= <<<EOT

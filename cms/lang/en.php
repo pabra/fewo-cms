@@ -38,7 +38,13 @@ $lang = array(
 	'' => '',
 	# fileupload
 	'fileupload_label_files' => 'Files:',
-	'fileupload_add_files' => 'add files...',
+	'fileupload_add_files' => 'add files',
+	'fileupload_delete_selected' => 'delete selected',
+	'fileupload_select_all' => 'de/select all',
+	'fileupload_delete' => 'delete file',
+	'fileupload_rename' => 'rename file',
+	'' => '',
+	'dircontent_modified' => 'unmodified since:',
 	'' => '',
 	#time_units
 	'time_unit_second' => 'second',

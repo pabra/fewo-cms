@@ -7,6 +7,7 @@ require_once('cms/system/functions.php');
 $admin_lang = $cms['admin_language']['value'];
 header('Content-Type: application/json; charset=utf-8');
 $return = array();
+#print_r($_SERVER);
 #die();
 
 if($_GET['do'] == 'lecho' && $_GET['text'] && $_GET['lang'])
@@ -59,6 +60,7 @@ if($_COOKIE['sess'])
 }
 if(isset($sess_data['role']))
 {
+	require_once('cms/system/phpThumb/phpThumb.config.php');
 	if($_GET['do'] == 'send_config' && $_POST)
 	{
 		#die(print_r($_POST, true));
@@ -127,7 +129,7 @@ if(isset($sess_data['role']))
 			echo json_encode(array('status'=>true, 'txt'=>'ok'));
 		}
 	}
-	elseif($_GET['do'] == 'file_upload')
+	elseif($_GET['do'] == 'user_content')
 	{
 		require('cms/system/upload.class.php');
 		$upload_handler = new UploadHandler();

@@ -1213,6 +1213,71 @@ function formatTime($time, $lang = 'de', $precision = 0, $unit_len='short', $uni
 	}
 	return $time . ' ' . $unit;
 }
+function get_thumb($img, $opt=array())
+{
+	$def_opt = array(
+		'w' => 300,
+		'h' => 200,
+		'iar' => 1,
+		'f' => 'self',
+	);
+	if(1 == $opt['iar'])
+		$def_opt['zc'] = 1;
+	$opt = array_merge($def_opt, $opt);
+	if(!is_file($img))
+		return false;
+	$img_size = getimagesize($img);
+	if(null === $img_size)
+		return false;
+	$img_bn = basename($img);
+	$img_ext = strtolower( substr($img_bn, strrpos($img_bn, '.')+1) );
+	if('jpg' == $img_ext)
+		$img_ext = 'jpeg';
+	$opt['f'] = ('self' == $opt['f'])? $img_ext : $opt['f'];
+	$opt['w'] = (0 === $opt['w'])? round($img_size[0] / ($img_size[1] / intval($opt['h']))) : $opt['w'];
+	$opt['h'] = (0 === $opt['h'])? round($img_size[1] / ($img_size[0] / intval($opt['w']))) : $opt['h'];
+	$out_w = $img_size[0];
+	$out_h = $img_size[1];
+	if(1 == $opt['zc'])
+	{
+		unset($opt['iar']);
+	}
+	else 
+	{
+		if($img_size[0] > $opt['w'])
+		{
+			$out_w = $opt['w'];
+			$out_h = round($img_size[1] / ($img_size[0] / intval($opt['w'])));
+		}
+		if($img_size[1] > $opt['h'] && $out_h > $opt['h'])
+		{
+			$out_w = round($img_size[0] / ($img_size[1] / intval($opt['h'])));
+			$out_h = $opt['h'];
+		}
+		$opt['w'] = $out_w;
+		$opt['h'] = $out_h;
+	}
+	$img_title = '';
+	if($opt['title'])
+	{
+		$img_title = ' title="'.htmlspecialchars($opt['title']).'"';
+		unset($opt['title']);
+	}
+	$img_opt = array();
+	ksort($opt);
+	foreach($opt as $k => $v)
+		$img_opt[] = "{$k}={$v}";
+	#$img_src = phpThumbURL('src=../../../'. rawurlencode($img).'&'.implode('&', $img_opt));
+	$img_src = phpThumbURL('src='.str_replace('../cms/', '', '../../../'.dirname($img)).'/'.rawurlencode(basename($img)).'&'.implode('&', $img_opt));
+	return array(
+		'src'=>$img_src,
+		'w'=>$opt['w'],
+		'h'=>$opt['h'],
+		'wh'=>'width="'.$opt['w'].'" height="'.$opt['h'].'"',
+		'img'=>'<img src="'.htmlspecialchars($img_src).'" alt=""'.$img_title.' width="'.$opt['w'].'" height="'.$opt['h'].'" />'
+	);
+	#phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext)
+}
 function get_dir_content($dir, $lang = 'de')
 {
 	if(!is_dir($dir))
@@ -1228,10 +1293,35 @@ function get_dir_content($dir, $lang = 'de')
 	foreach($files as $k => $v)
 	{
 		$bnv = basename($v);
+		$bnext = strtolower( substr($bnv, strrpos($bnv, '.')+1) );
+		if('jpg' === $bnext)
+			$bnext = 'jpeg';
+		$prev_title = '';
+		if('jpeg' === $bnext || 'gif' === $bnext || 'png' === $bnext)
+		{
+			$img_size = getimagesize($v);
+			#$img_thumb = get_thumb($v, array('w'=>200,'h'=>200,'iar'=>1));
+			$img_thumb = get_thumb($v);
+			#var_dump(get_thumb($v));
+			#var_dump($img_size);
+			#$prev_title = ' title="&lt;img src=&quot;'.htmlspecialchars( phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext) ).'&quot; onload=&quot;clog(this);$(this).removeAttr(&apos;height&apos;); &quot; width=&quot;300&quot; height=&quot;300&quot;/&gt;"';
+			$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] ).'"';
+			#$prev_title = ' title="'.rawurlencode($v).'"';
+		}
+		$mime_img = (is_file('cms/include_files/images/mime/type_'.$bnext.'.png'))? 'cms/include_files/images/mime/type_'.$bnext.'.png' : 'cms/include_files/images/mime/type_misc.png';
 		$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
 		#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
 		#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
-		$out .= '<span><img src="cms/include_files/images/mime/type_'.strtolower(substr($bnv, strrpos($bnv, '.')+1)).'.png" />'. $bnv . '</span> <span onmouseover="titleToTip()" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span> <span onmouseover="titleToTip()" title="'.date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span><br/>'."\n";
+		$out .= '<div class="dircontent_row">'
+			.'<span class="dircontent_name"'.$prev_title.'><img src="'.$mime_img.'" /> <span class="filename">'. $bnv . '</span></span>'
+			.'<span class="dircontent_size" onmouseover="titleToTip()" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
+			.'<span class="dircontent_time" onmouseover="titleToTip()" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
+			.'<span class="dircontent_manage">'
+				.'<input class="select_file" type="checkbox" />'
+				.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'
+				.'<span class="rename_file ui-icon ui-icon-pencil" title="'.lecho('fileupload_rename', $lang).'">rename</span>'
+				.'</span>'
+			.'</div>'."\n";
 	}
 	return $out;
 }
