@@ -46,6 +46,7 @@ $PHPTHUMB_CONFIG['cache_disable_warning'] = false; // If [cache_directory] is no
 
 $PHPTHUMB_CONFIG['cache_directory_depth'] = 0; // If this larger than zero, cache structure will be broken into a broad directory structure based on cache filename. For example "cache_src012345..." will be stored in "/0/01/012/0123/cache_src012345..." when (cache_directory_depth = 4)
 
+$PHPTHUMB_CONFIG['expire_header'] = 86400; // send expires and cache-control header; any positive integer will set the expiration in seconds in the future; 0 will not send the header; -1 will send expiration long in the past so that the browser will allways request the image
 
 // * Cache culling: phpThumb can automatically limit the contents of the cache directory
 //   based on last-access date and/or number of files and/or total filesize.

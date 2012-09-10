@@ -86,6 +86,19 @@ function RedirectToCachedFile() {
 			header($_SERVER['SERVER_PROTOCOL'].' 304 Not Modified');
 			exit;
 		}
+		if(0 !== $PHPTHUMB_CONFIG['expire_header'])
+		{
+			if(-1 === $PHPTHUMB_CONFIG['expire_header'])
+			{
+				header('Cache-Control: no-cache');
+				header('Expires: ' . gmdate('D, d M Y H:i:s', 123).' GMT');
+			}
+			else
+			{
+				header('Cache-Control: max-age=' . intval($PHPTHUMB_CONFIG['expire_header']));
+				header('Expires: ' . gmdate('D, d M Y H:i:s', time()+intval($PHPTHUMB_CONFIG['expire_header'])).' GMT');
+			}
+		}
 
 		if ($getimagesize = @GetImageSize($phpThumb->cache_filename)) {
 			header('Content-Type: '.phpthumb_functions::ImageTypeToMIMEtype($getimagesize[2]));

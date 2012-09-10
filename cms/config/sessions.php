@@ -1,4 +1,4 @@
-<?php # Mon, 10 Sep 2012 11:17:37 +0200
+<?php # Mon, 10 Sep 2012 11:48:15 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -15,7 +15,7 @@ $sessions = array (
 				'sess' => '4a18600a4f810bac997c6b353b1a1a98',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Mon, 10 Sep 2012 11:08:39 +0200',
+				'time' => 'Mon, 10 Sep 2012 11:47:44 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
@@ -28,7 +28,7 @@ $sessions = array (
 				'sess' => '58a239621b7956f2ef4f397d567ef7b8',
 				'ua' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0',
 				'ip' => '127.0.0.1',
-				'time' => 'Mon, 10 Sep 2012 11:17:37 +0200',
+				'time' => 'Mon, 10 Sep 2012 11:48:15 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
