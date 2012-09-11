@@ -1,6 +1,6 @@
 // JS for CMS
 
-var locObj;
+var locObj, docLang;
 /*window.log = function(){
 	log.history = log.history || [];   // store logs to an array for reference
 	log.history.push(arguments);
@@ -120,6 +120,9 @@ function titleToTip(){
 					posY = ev.pageY;
 				}
 				ttB.css({top:toPosY(posY), left:toPosX(posX)}).fadeIn(150);
+				ttB.find('img').load(function(){
+					$(this).css({ backgroundImage:'none' });
+				});
 				//$('#ttBox').html(self.prop('ttBoxTitle')).css({top:posY -$('#ttBox').outerHeight() +offY, left:posX +offX}).fadeIn(150);
 				//clog(ev.pageX);
 			}, 300);
@@ -178,6 +181,7 @@ function show_confirm(txt, title, callback){
 
 $(function(){
 	'use strict';
+	docLang = $('html').attr('lang');
 	locObj = locationSeach2Obj();
 	/*$('input[type=file]').bind('change', function() {
 		if('undefined' !== typeof(this.files)){

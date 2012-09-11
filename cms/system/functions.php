@@ -1305,7 +1305,7 @@ function get_dir_content($dir, $lang = 'de')
 			#var_dump(get_thumb($v));
 			#var_dump($img_size);
 			#$prev_title = ' title="&lt;img src=&quot;'.htmlspecialchars( phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext) ).'&quot; onload=&quot;clog(this);$(this).removeAttr(&apos;height&apos;); &quot; width=&quot;300&quot; height=&quot;300&quot;/&gt;"';
-			$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] ).'"';
+			$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] . '<br/>'.$img_size[0].' x '.$img_size[1] ).'"';
 			#$prev_title = ' title="'.rawurlencode($v).'"';
 		}
 		$mime_img = (is_file('cms/include_files/images/mime/type_'.$bnext.'.png'))? 'cms/include_files/images/mime/type_'.$bnext.'.png' : 'cms/include_files/images/mime/type_misc.png';
@@ -1314,8 +1314,8 @@ function get_dir_content($dir, $lang = 'de')
 		#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
 		$out .= '<div class="dircontent_row">'
 			.'<span class="dircontent_name"'.$prev_title.'><img src="'.$mime_img.'" /> <span class="filename">'. $bnv . '</span></span>'
-			.'<span class="dircontent_size" onmouseover="titleToTip()" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
-			.'<span class="dircontent_time" onmouseover="titleToTip()" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
+			.'<span class="dircontent_size" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
+			.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
 			.'<span class="dircontent_manage">'
 				.'<input class="select_file" type="checkbox" />'
 				.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'

@@ -87,7 +87,7 @@ ul.menu li { list-style-type:none; float:left; padding-right:15px; position:rela
 ul.menu a { font-size:12pt; }
 
 .dircontent_row:hover { background-color:rgba(255,255,255,0.2); }
-.dircontent_name { width:350px; display:inline-block; white-space:nowrap; overflow:hidden; font-family:monospace; font-weight:bold; }
+.dircontent_name { width:450px; display:inline-block; white-space:nowrap; overflow:hidden; font-family:monospace; font-weight:bold; }
 .dircontent_size { width:75px; display:inline-block; text-align:right; font-family:monospace; }
 .dircontent_time { display:inline-block; width:45px; text-align:right; font-family:monospace; }
 .dircontent_manage { display:inline-block; margin-left:10px; vertical-align:top; }

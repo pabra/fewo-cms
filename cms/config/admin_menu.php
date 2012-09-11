@@ -1,4 +1,4 @@
-<?php # Thu, 30 Aug 2012 00:27:46 +0200
+<?php # Tue, 11 Sep 2012 10:07:32 +0200
 
 $admin_menu = array (
 	'menu_user' => 
@@ -22,18 +22,6 @@ $admin_menu = array (
 				'name' => 'media',
 				'link' => '?admin&do=media',
 				'is_sub_of' => '_none_',
-			),
-			'rJ9JV' => 
-			array (
-				'name' => 'images',
-				'link' => '?admin&do=media&what=images',
-				'is_sub_of' => 'ESXV6',
-			),
-			's6Noe' => 
-			array (
-				'name' => 'files',
-				'link' => '?admin&do=media&what=files',
-				'is_sub_of' => 'ESXV6',
 			),
 			'crfxF' => 
 			array (
@@ -82,11 +70,6 @@ $admin_menu = array (
 					2 => 'ESXV6',
 					3 => 'crfxF',
 					4 => 'YGolI',
-				),
-				'ESXV6' => 
-				array (
-					0 => 'rJ9JV',
-					1 => 's6Noe',
 				),
 			),
 		),

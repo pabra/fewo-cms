@@ -258,6 +258,7 @@ class UploadHandler
             preg_match('/^image\/(gif|jpe?g|png)/', $type, $matches)) {
             $file_name .= '.'.$matches[1];
         }
+        $file_name = preg_replace('/[^a-zA-Z0-9 üöäÜÖÄß\(\)._-]/', '', $file_name);
         if ($this->options['discard_aborted_uploads']) {
             while(is_file($this->options['upload_dir'].$file_name)) {
                 $file_name = $this->upcount_name($file_name);

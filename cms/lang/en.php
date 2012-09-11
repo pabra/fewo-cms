@@ -45,6 +45,8 @@ $lang = array(
 	'fileupload_rename' => 'rename file',
 	'' => '',
 	'dircontent_modified' => 'unmodified since:',
+	'dircontent_confirm_delete' => 'Delete files?',
+	'dircontent_confirm_del_files' => 'Files to delete: ',
 	'' => '',
 	#time_units
 	'time_unit_second' => 'second',

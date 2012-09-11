@@ -165,10 +165,20 @@ if(isset($sess_data['role']))
 				header('HTTP/1.1 405 Method Not Allowed');
 		}
 	}
-	elseif($_GET['do'] == 'get_dir_content')
+	elseif($_GET['do'] == 'user_files_delete')
 	{
-		$get_dir = ($_POST['get_dir'])? $_POST['get_dir'] : './';
-		echo json_encode( get_dir_content($get_dir) );
+		foreach($_POST['delete_files'] as $k => $v)
+		{
+			if(is_file('cms/user_files/'.$v))
+			{
+				#echo "delete: $v\n";
+				unlink('cms/user_files/'.$v);
+			}
+		}
+	}
+	elseif($_GET['do'] == 'user_files_list')
+	{
+		echo json_encode( get_dir_content('cms/user_files/') );
 	}
 	if('logout' === $_POST['do'])
 	{
