@@ -165,12 +165,51 @@ if(isset($sess_data['role']))
 				header('HTTP/1.1 405 Method Not Allowed');
 		}
 	}
+	elseif($_GET['do'] == 'user_files_rename')
+	{
+		if(! $_POST['from'] || !$_POST['to'])
+			die( false );
+		$from_file = 'cms/user_files/'.str_replace('/', '', $_POST['from']);
+		$to_file = 'cms/user_files/'.str_replace('/', '', $_POST['to']);
+		if(!is_file($from_file) || is_file($to_file))
+			die( false );
+		$f_ext = strtolower(substr(basename($from_file), strrpos(basename($from_file), '.')+1 ));
+		if('jpg' === $f_ext 
+			|| 'jpeg' === $f_ext
+			|| 'gif' === $f_ext
+			|| 'png' === $f_ext)
+		{
+			$src_hash = md5(realpath($from_file));
+			$f_thu = glob('cms/cache/thumb/*'.$src_hash.'*');
+			foreach($f_thu as $tf)
+			{
+				#echo "delete thumb: $tf\n";
+				unlink($tf);
+			}
+		}
+		echo rename($from_file, $to_file);
+	}
 	elseif($_GET['do'] == 'user_files_delete')
 	{
 		foreach($_POST['delete_files'] as $k => $v)
 		{
+			$v = str_replace('/', '', $v);
 			if(is_file('cms/user_files/'.$v))
 			{
+				$f_ext = strtolower(substr($v, strrpos($v, '.')+1 ));
+				if('jpg' === $f_ext 
+					|| 'jpeg' === $f_ext
+					|| 'gif' === $f_ext
+					|| 'png' === $f_ext)
+				{
+					$src_hash = md5(realpath('cms/user_files/'.$v));
+					$f_thu = glob('cms/cache/thumb/*'.$src_hash.'*');
+					foreach($f_thu as $tf)
+					{
+						#echo "delete thumb: $tf\n";
+						unlink($tf);
+					}
+				}
 				#echo "delete: $v\n";
 				unlink('cms/user_files/'.$v);
 			}

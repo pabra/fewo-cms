@@ -2,7 +2,7 @@
 body { background-color:#ddd; padding:100px; text-shadow:#ddd 1px 1px 1px; }
 div#dialog, div#ttBox { display:none; }
 div#ttBox { position:absolute; border:1px outset #777; border-radius:5px; max-width:300px; padding:5px; margin:0px; color:#ccc; text-shadow:#000 1px 1px 1px; background-color:#333; background-color:rgba(0,0,0,0.6); }
-div#ttBox > img { border:1px inset #777; border-radius:5px; background-image:url(cms/include_files/images/loading.gif); background-repeat:no-repeat; background-position:center; }
+div#ttBox > img { border:1px inset #777; border-radius:5px; background-image:url(cms/include_files/images/loader.gif); background-repeat:no-repeat; background-position:center; }
 .even { background-color:#ccc; background-color:rgba(255,255,255,0.2); }
 .odd { background-color:#bbb; background-color:rgba(0,0,0,0.2); }
 fieldset { width:508px; position:relative; margin:3px 0px 3px -1px; padding-bottom:6px; border: 1px solid #333; border-radius:10px; }
@@ -87,10 +87,12 @@ ul.menu li { list-style-type:none; float:left; padding-right:15px; position:rela
 ul.menu a { font-size:12pt; }
 
 .dircontent_row:hover { background-color:rgba(255,255,255,0.2); }
+.dircontent_row span { vertical-align:middle; }
 .dircontent_name { width:450px; display:inline-block; white-space:nowrap; overflow:hidden; font-family:monospace; font-weight:bold; }
+.dircontent_name .mime_img { display:inline-block; width:24px; text-align:center; }
 .dircontent_size { width:75px; display:inline-block; text-align:right; font-family:monospace; }
 .dircontent_time { display:inline-block; width:45px; text-align:right; font-family:monospace; }
-.dircontent_manage { display:inline-block; margin-left:10px; vertical-align:top; }
+.dircontent_manage { display:inline-block; margin-left:10px; }
 .dircontent_manage * { display:none; }
 .dircontent_row:hover .dircontent_manage * { display:inline-block; }
 /*.dircontent_manage .ui-icon { display:inline-block; }*/

@@ -123,19 +123,59 @@ $(function(){
 	if(1 === $('#fileupload').length){
 		var get_to = false, delete_files = [], 
 			dircontent_binder  = function(){
-				$('.dircontent_manage .rename_file').click(function(){
-					var fn_el = $(this).parents('.dircontent_row').find('.filename'),
-						fn_name = fn_el.text(),
-						rep_in = $('<input/>').attr({type:'text', value:fn_name}).css({fontFamily:'monospace'}).focusout(function(){
-							var spel = $('<span/>').text(fn_name).addClass('filename');
-							$(this).val( $.trim( $(this).val().replace(/[^a-zA-Z0-9 üöäÜÖÄß\(\)._-]/g, '').replace(/^[^a-zA-Z0-9_üöäÜÖÄ\(\)]+/g, '') ) );
-							if(0 === $(this).val().length || $(this).val() === $(this).prop('defaultValue')){
-								$(this).replaceWith(spel);
+				var fRenTidy = function(t){
+					return $.trim( t.replace(/[^a-zA-Z0-9 üöäÜÖÄß\(\)._-]/g, '')
+							.replace(/^[^a-zA-Z0-9_üöäÜÖÄ\(\)]+/g, '')
+							.replace(/\s*\.\s*/g, '.')
+							.replace(/\s+/g, ' ')
+							);
+				},
+				fRenUndo = function(elInput, elSpan){
+					elInput.replaceWith(elSpan);
+				},
+				fRenDouble = function(t){
+					var double = false;
+					$('.dircontent_row .filename').each(function(k,v){
+						if(t === $(v).text()){
+							double = true;
+						}
+					});
+					return double;
+				},
+				fRenTryRename = function(elInput, elSpan){
+					elInput.val( fRenTidy(elInput.val()) );
+					if(elInput.val() === elSpan.text()){
+						fRenUndo(elInput, elSpan);
+					} else {
+						if(true === fRenDouble(elInput.val())){
+							fRenUndo(elInput, elSpan);
+						} else {
+							//clog('rename');
+							$.post('ajax.php?do=user_files_rename', {from:elSpan.text(), to:elInput.val()}, function(data){
+								refresh_dir_content();
+							});
+						}
+					}
+				},
+				fRenInput = function(el){
+					var repIn = $('<input/>')
+						.attr({type:'text', value:fRenTidy(el.text()) })
+						.css({fontFamily:'monospace',marginLeft:'-7px',width:300})
+						.focusout(function(){
+							fRenUndo($(this), el);
+						})
+						.keydown(function(ev){
+							if(13 === ev.which){
+								fRenTryRename($(this), el);
+							} else if(27 === ev.which){
+								fRenUndo($(this), el);
 							}
 						});
-					clog(fn_name);
-					fn_el.replaceWith(rep_in);
-					rep_in.focus().select();
+					el.replaceWith(repIn);
+					repIn.focus().select();
+				};
+				$('.dircontent_manage .rename_file').click(function(){
+					fRenInput( $(this).parents('.dircontent_row').find('.filename') );
 				});
 				$('.dircontent_manage .delete_file').click(function(){
 					delete_files = [];
