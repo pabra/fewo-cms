@@ -1290,41 +1290,44 @@ function get_dir_content($dir, $lang = 'de')
 	#print_r($files);
 	#die();
 	$out = '';
-	foreach($files as $k => $v)
+	if(is_array($files) && 0 < count($files))
 	{
-		$bnv = basename($v);
-		$bnext = strtolower( substr($bnv, strrpos($bnv, '.')+1) );
-		if('jpg' === $bnext)
-			$bnext = 'jpeg';
-		$prev_title = '';
-		$mime_img = (is_file('cms/include_files/images/mime/type_'.$bnext.'.png'))? 'cms/include_files/images/mime/type_'.$bnext.'.png' : 'cms/include_files/images/mime/type_misc.png';
-		$mime_img = '<img src="'.$mime_img.'" />';
-		if('jpeg' === $bnext || 'gif' === $bnext || 'png' === $bnext)
+		foreach($files as $k => $v)
 		{
-			$img_size = getimagesize($v);
-			#$img_thumb = get_thumb($v, array('w'=>200,'h'=>200,'iar'=>1));
-			$img_thumb = get_thumb($v);
-			#var_dump(get_thumb($v));
-			#var_dump($img_size);
-			#$prev_title = ' title="&lt;img src=&quot;'.htmlspecialchars( phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext) ).'&quot; onload=&quot;clog(this);$(this).removeAttr(&apos;height&apos;); &quot; width=&quot;300&quot; height=&quot;300&quot;/&gt;"';
-			$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] . '<br/>'.$img_size[0].' x '.$img_size[1] ).'"';
-			#$prev_title = ' title="'.rawurlencode($v).'"';
-			$mime_img = get_thumb($v, array('w'=>24,'h'=>16,'iar'=>1));
-			$mime_img = $mime_img['img'];
+			$bnv = basename($v);
+			$bnext = strtolower( substr($bnv, strrpos($bnv, '.')+1) );
+			if('jpg' === $bnext)
+				$bnext = 'jpeg';
+			$prev_title = '';
+			$mime_img = (is_file('cms/include_files/images/mime/type_'.$bnext.'.png'))? 'cms/include_files/images/mime/type_'.$bnext.'.png' : 'cms/include_files/images/mime/type_misc.png';
+			$mime_img = '<img src="'.$mime_img.'" />';
+			if('jpeg' === $bnext || 'gif' === $bnext || 'png' === $bnext)
+			{
+				$img_size = getimagesize($v);
+				#$img_thumb = get_thumb($v, array('w'=>200,'h'=>200,'iar'=>1));
+				$img_thumb = get_thumb($v);
+				#var_dump(get_thumb($v));
+				#var_dump($img_size);
+				#$prev_title = ' title="&lt;img src=&quot;'.htmlspecialchars( phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext) ).'&quot; onload=&quot;clog(this);$(this).removeAttr(&apos;height&apos;); &quot; width=&quot;300&quot; height=&quot;300&quot;/&gt;"';
+				$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] . '<br/>'.$img_size[0].' x '.$img_size[1] ).'"';
+				#$prev_title = ' title="'.rawurlencode($v).'"';
+				$mime_img = get_thumb($v, array('w'=>24,'h'=>16,'iar'=>1));
+				$mime_img = $mime_img['img'];
+			}
+			$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
+			#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
+			#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
+			$out .= '<div class="dircontent_row">'
+				.'<span class="dircontent_name"'.$prev_title.'><span class="mime_img">'.$mime_img.'</span> <span class="filename">'. $bnv . '</span></span>'
+				.'<span class="dircontent_size" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
+				.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
+				.'<span class="dircontent_manage">'
+					.'<input class="select_file" type="checkbox" />'
+					.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'
+					.'<span class="rename_file ui-icon ui-icon-pencil" title="'.lecho('fileupload_rename', $lang).'">rename</span>'
+					.'</span>'
+				.'</div>'."\n";
 		}
-		$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
-		#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
-		#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
-		$out .= '<div class="dircontent_row">'
-			.'<span class="dircontent_name"'.$prev_title.'><span class="mime_img">'.$mime_img.'</span> <span class="filename">'. $bnv . '</span></span>'
-			.'<span class="dircontent_size" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
-			.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
-			.'<span class="dircontent_manage">'
-				.'<input class="select_file" type="checkbox" />'
-				.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'
-				.'<span class="rename_file ui-icon ui-icon-pencil" title="'.lecho('fileupload_rename', $lang).'">rename</span>'
-				.'</span>'
-			.'</div>'."\n";
 	}
 	return $out;
 }
@@ -1548,7 +1551,8 @@ function clear_cache($what='pages')
 	}
 	if('all' === substr($what, -3) || 'count' === $what)
 	{
-		$files = array_merge($files, $thumb_files);
+		if(is_array($thumb_files) && 0 < count($thumb_files))
+			$files = array_merge($files, $thumb_files);
 		if(is_array($files) && 0 < count($files))
 		{
 			foreach($files as $k => $v)
