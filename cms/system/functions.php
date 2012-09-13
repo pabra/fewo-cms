@@ -782,6 +782,7 @@ function check_email_address($email)
 function parse_page_content($t, $lang='de')
 {
 	#$out = $t;
+	#require_once('cms/system/simple_html_dom.php');
 	while(0 !== preg_match_all('#\[\[:([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):\]\]#', $t, $match))
 	{
 		foreach($match[1] as $k => $v)
@@ -798,8 +799,10 @@ function parse_page_content($t, $lang='de')
 			}
 			elseif('anderes_plugin' == $v)
 			{
-				$replace = 'anderes_plugin';
+				$replace = 'anderes Plugin';
 			}
+			#$indicator = '<br id="i'.md5(microtime(true)).'" />';
+			#$t = str_replace($match[0][$k], $indicator, $t);
 			$t = str_replace($match[0][$k], $replace, $t);
 		}
 	}
@@ -1353,7 +1356,7 @@ function get_dir_content($dir, $lang = 'de')
 				#$prev_title = ' title="'.rawurlencode($v).'"';
 				#$mime_img = get_thumb($fp, array('w'=>33,'h'=>22,'iar'=>1,'fltr[]'=>'ric|4|4','f'=>'png'));
 				$mime_img = get_thumb($fp, array('w'=>33,'h'=>22,'iar'=>1));
-				$mime_img = '<span class="tiny_img" style="background-image:url('.$mime_img['src'].');">&nbsp;</span>';
+				$mime_img = '<span class="tiny_img" style="background-image:url('.htmlspecialchars($mime_img['src']).');">&nbsp;</span>';
 			}
 			#$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
 			#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
@@ -1363,9 +1366,10 @@ function get_dir_content($dir, $lang = 'de')
 				.'<span class="dircontent_size" title="'.number_format($fs, 0, ',', '.').' Byte">'.formatBytes($fs).'</span>'
 				.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-$fmt, $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', $fmt).'">' . formatTime(time()-$fmt, $lang) . '</span>'
 				.'<span class="dircontent_manage">'
-					.'<input class="select_file" type="checkbox" />'
+					.'<input class="select_file" title="'.htmlspecialchars( lecho('fileupload_select', $lang) ).'" type="checkbox" />'
 					.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'
 					.'<span class="rename_file ui-icon ui-icon-pencil" title="'.lecho('fileupload_rename', $lang).'">rename</span>'
+					.'<a class="download_file ui-icon ui-icon-arrowreturnthick-1-s" target="_blank" href="'.htmlspecialchars($v['dirname'].'/'.$v['basename']).'" title="'.lecho('fileupload_download', $lang).'">download</a>'
 					.'</span>'
 				.'</div>'."\n";
 		}
@@ -1787,7 +1791,7 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 	}
 	$out .= '</div>'."\n";
 	$js_reserved = (0 === count($reserved))? false : '\''.implode('\',\'', $reserved).'\'';
-	$out .= '<script type="text/javascript">/* <![CDATA[ */var now='.time().'000, lang="'.$lang.'";$(\'div#res_cal_'.$cal_conf['name'].'\').prop({calendarReserved:['.$js_reserved.']});/* ]]> */</script>'."\n";
+	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']=\''. implode('|', $reserved) .'\'.split(\'|\');/*]]>*/</script>'."\n";
 	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
 	{
 		if(in_array('show_form', $cal_conf['form_settings']))

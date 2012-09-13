@@ -90,6 +90,7 @@ function titleToTip(){
 	'use strict';
 	var ttbto,ttbtom, ttbow,ttboh, docW=$(document).width(), docH=$(document).height(), ttB=$('#ttBox'), offX=-10, offY=-15, ttbevpos={}, 
 		toPosX=function(evX){
+			docW=$(document).width();
 			if(evX - $(window).scrollLeft() -7 + ttbow > docW -3){
 				evX = docW -3 - ttbow;
 			} else {

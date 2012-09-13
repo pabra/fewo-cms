@@ -1,10 +1,35 @@
-<?php # Fri, 07 Sep 2012 17:39:40 +0200
+<?php # Thu, 13 Sep 2012 17:54:40 +0200
 
 $pages = array (
 	'pages' => 
 	array (
 		'value' => 
 		array (
+			'YCS9k' => 
+			array (
+				'name' => 'Startpage',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'zfKou',
+				'is_sub_of' => '_none_',
+				'content' => 'the same procedure as every year - just in english...',
+				'description' => '',
+				'keywords' => '',
+			),
+			'Do9WY' => 
+			array (
+				'name' => 'Reservations',
+				'name_show' => '',
+				'title' => '',
+				'access' => 'public',
+				'lang' => 'zfKou',
+				'is_sub_of' => '_none_',
+				'content' => '<p>Here you can see the availability.</p>
+<div>[[:res_cal:kalender_1:]]</div>',
+				'description' => '',
+				'keywords' => '',
+			),
 			'a7ab4' => 
 			array (
 				'name' => 'Startseite',
@@ -65,18 +90,6 @@ $pages = array (
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
 				'content' => 'Bilder Bilder Bilder',
-				'description' => '',
-				'keywords' => '',
-			),
-			'YCS9k' => 
-			array (
-				'name' => 'Startpage',
-				'name_show' => '',
-				'title' => '',
-				'access' => 'public',
-				'lang' => 'zfKou',
-				'is_sub_of' => '_none_',
-				'content' => 'the same procedure as every year - just in english...',
 				'description' => '',
 				'keywords' => '',
 			),
@@ -184,11 +197,12 @@ $pages = array (
 		array (
 			'name' => 
 			array (
+				'Startpage' => 'YCS9k',
+				'Reservations' => 'Do9WY',
 				'Startseite' => 'a7ab4',
 				'Tipps' => 'lJUNP',
 				'Anfahrt' => 't8j6W',
 				'Fotos' => 'ivqB4',
-				'Startpage' => 'YCS9k',
 				'Belegungsplan' => 'GB35q',
 				'Kontakt' => 'D9yTM',
 				'Impressum' => 'ZzVXF',
@@ -198,6 +212,11 @@ $pages = array (
 		array (
 			'lang' => 
 			array (
+				'zfKou' => 
+				array (
+					0 => 'YCS9k',
+					1 => 'Do9WY',
+				),
 				'pz28x' => 
 				array (
 					0 => 'a7ab4',
@@ -208,23 +227,20 @@ $pages = array (
 					5 => 'D9yTM',
 					6 => 'ZzVXF',
 				),
-				'zfKou' => 
-				array (
-					0 => 'YCS9k',
-				),
 			),
 			'is_sub_of' => 
 			array (
 				'_none_' => 
 				array (
-					0 => 'a7ab4',
-					1 => 'lJUNP',
-					2 => 't8j6W',
-					3 => 'ivqB4',
-					4 => 'YCS9k',
-					5 => 'GB35q',
-					6 => 'D9yTM',
-					7 => 'ZzVXF',
+					0 => 'YCS9k',
+					1 => 'Do9WY',
+					2 => 'a7ab4',
+					3 => 'lJUNP',
+					4 => 't8j6W',
+					5 => 'ivqB4',
+					6 => 'GB35q',
+					7 => 'D9yTM',
+					8 => 'ZzVXF',
 				),
 			),
 		),

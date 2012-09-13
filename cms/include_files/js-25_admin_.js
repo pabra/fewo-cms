@@ -20,10 +20,10 @@ $(function(){
 		});
 		form_post_data = $(this).serialize(); // 'json='+escape($(this).serializeArray());
 		form_fields.prop({disabled:true});
-		clog(form_post_data);
-		clog($(this).attr('action').match(/do=[a-zA-Z0-9_-]+/));
+		//clog(form_post_data);
+		//clog($(this).attr('action').match(/do=[a-zA-Z0-9_-]+/));
 		$.post('ajax.php?'+$(this).attr('action').match(/do=[a-zA-Z0-9_-]+/), form_post_data, function(data){
-			clog(data);
+			//clog(data);
 			if(false === data.status){
 				show_warning(data.msg);
 				form_fields.prop({disabled:false});
@@ -47,9 +47,9 @@ $(function(){
 	});
 	$('a.ajax').click(function(ev){
 		ev.preventDefault();
-		clog($(this).attr('href').substr(1));
+		//clog($(this).attr('href').substr(1));
 		$.post('ajax.php', $(this).attr('href').substr(1), function(data){
-			clog(data);
+			//clog(data);
 			//window.location.reload();
 			window.location = window.location;
 		});
@@ -62,66 +62,88 @@ $(function(){
 	$('div.idx_group:not(:last)').mouseenter(function(ev){
 		$(this).find('.idx_nav.move_down').show('slide',{direction:'down'},300);
 	});*/
-	fieldset_add_listener();
-	$('form.config .idx_group .activate_new_index').parents('.idx_group').unbind('mouseenter');
-	$('form.config .idx_group .activate_new_index').click(function(){
-		var group = $(this).parents('.idx_group');
-		$(this).mouseleave().remove();
+	if(0 < $('form.config').length){
 		fieldset_add_listener();
-		group.find('input, textarea, select').change();
-	});
-	$('form.config input.include_code').each(function(k,v){
-		var self = $(this),
-			id_field = self.parents('.idx_group').find('input[type=text]:first'),
-			inc_code_file_var = self.attr('id').split(':'),
-			inc_code = ['[[:'+inc_code_file_var[0]+':',':]]'];
-		self.val(inc_code[0]+id_field.val()+inc_code[1]);
-		id_field.change(function(){
-			//clog(self);
-			//clog(id_field);
+		$('form.config .idx_group .activate_new_index').parents('.idx_group').unbind('mouseenter');
+		$('form.config .idx_group .activate_new_index').click(function(){
+			var group = $(this).parents('.idx_group');
+			$(this).mouseleave().remove();
+			fieldset_add_listener();
+			group.find('input, textarea, select').change();
+		});
+		$('form.config input.include_code').each(function(k,v){
+			var self = $(this),
+				id_field = self.parents('.idx_group').find('input[type=text]:first'),
+				inc_code_file_var = self.attr('id').split(':'),
+				inc_code = ['[[:'+inc_code_file_var[0]+':',':]]'];
 			self.val(inc_code[0]+id_field.val()+inc_code[1]);
-		});
-	});
-	$('form.config').submit(function(ev){
-		var send_obj = {}, mis_matched = $('form.config .mismatch');
-		ev.preventDefault();
-		if(0 < mis_matched.length){
-			mis_matched.effect('shake', 100);
-			return false;
-		}
-		$('form.config .changed').each(function(k, v){
-			var send_el = $(v).find('input, textarea, select').first();
-			clog(v);
-			if($(v).hasClass('select_more')){
-				send_el = $(v).find('input.select_more_value').first();
-			} else if($(v).hasClass('no_parent')){
-				send_el = $(v);
-			}
-			send_obj[send_el.prop('name')] = send_el.val();
-		});
-		//$.each
-		clog(send_obj.length);
-		if(0 === Object.size(send_obj)){
-			//$('#dialog').attr({title:'nothing to do'}).text('Here is nothing to do.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
-			//$('#dialog').attr('title', 'nothing changed').html('No changed values to submit.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
-			show_info('No changed values to submit.','nothing changed');
-		} else {
-			clog(send_obj);
-			$.post('ajax.php?do=send_config', send_obj, function(data){
-				clog(data);
-				if(true === data.status){
-					window.location.reload();
-				} else {
-					//$('#dialog').attr('title', 'Error').html(data.txt).dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
-					show_warning(data.txt, 'Error');
-				}
+			id_field.change(function(){
+				//clog(self);
+				//clog(id_field);
+				self.val(inc_code[0]+id_field.val()+inc_code[1]);
 			});
-		}
-	});
+		});
+		$('form.config').submit(function(ev){
+			var send_obj = {}, mis_matched = $('form.config .mismatch');
+			ev.preventDefault();
+			if(0 < mis_matched.length){
+				mis_matched.effect('shake', 100);
+				return false;
+			}
+			$('form.config .changed').each(function(k, v){
+				var send_el = $(v).find('input, textarea, select').first(),
+					modul_match = false, tmp_str;
+				//clog(v);
+				if($(v).hasClass('select_more')){
+					send_el = $(v).find('input.select_more_value').first();
+				} else if($(v).hasClass('no_parent')){
+					send_el = $(v);
+				}
+				if(send_el.hasClass('tinymce')){
+					modul_match =  send_el.val().match(/\[\[:([a-zA-Z0-9_]+):([a-zA-Z0-9_]+):\]\]/g);
+					if(modul_match){
+						//clog('match');
+						$.each(modul_match, function(k,v){
+							//clog(v);
+							tmp_str = $('<div class="modul_match" />').append(send_el.val().replace(v, '<br id="modulMatchPlaceHolder" />'));
+							if(1 === tmp_str
+									.find('#modulMatchPlaceHolder')
+									.parent('p')
+									.find('#modulMatchPlaceHolder:only-child')
+									.length){
+								tmp_str.find('#modulMatchPlaceHolder').parent('p').replaceWith('<div>'+v+'</div>');
+								//clog(tmp_str.html());
+								send_el.val( tmp_str.html() );
+							}
+						});
+					}
+				}
+				send_obj[send_el.prop('name')] = send_el.val();
+			});
+			//$.each
+			//clog(send_obj.length);
+			if(0 === Object.size(send_obj)){
+				//$('#dialog').attr({title:'nothing to do'}).text('Here is nothing to do.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+				//$('#dialog').attr('title', 'nothing changed').html('No changed values to submit.').dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+				show_info('No changed values to submit.','nothing changed');
+			} else {
+				//clog(send_obj);
+				$.post('ajax.php?do=send_config', send_obj, function(data){
+					//clog(data);
+					if(true === data.status){
+						window.location.reload();
+					} else {
+						//$('#dialog').attr('title', 'Error').html(data.txt).dialog({modal:true, buttons:{ok:function(){$(this).dialog('close');}}});
+						show_warning(data.txt, 'Error');
+					}
+				});
+			}
+		});
+	}
 	
 	// dircontent
 	if(1 === $('#dir_content').length){
-		var get_to = false, delete_files = [], 
+		var get_to = false, prog_hide_to = false, delete_files = [], 
 			dircontent_binder  = function(){
 				var fRenTidy = function(t){
 					return $.trim( t.replace(/[^a-zA-Z0-9 üöäÜÖÄß\(\)._-]/g, '')
@@ -174,11 +196,12 @@ $(function(){
 				fRenInput = function(el){
 					var repIn = $('<input/>')
 						.attr({type:'text', value:fRenTidy(el.text()) })
-						.css({fontFamily:'monospace',fontWeight:'bold',fontSize:'10pt',marginLeft:'-4px',width:400,padding:'1px 2px',height:'18px'})
+						.css({fontFamily:'monospace',fontWeight:'bold',fontSize:'10pt',marginLeft:'-4px',width:400,padding:'0px 2px',height:'18px'})
 						.focusout(function(){
 							fRenUndo($(this), el);
 						})
 						.keydown(function(ev){
+							ev.stopPropagation();
 							if(13 === ev.which){
 								fRenTryRename($(this), el);
 							} else if(27 === ev.which){
@@ -216,6 +239,9 @@ $(function(){
 					delete_files.push(file_name);
 					clog(delete_files);
 					delete_confirm();
+				});
+				$('.dircontent_manage .download_file').click(function(ev){
+					ev.stopPropagation();
 				});
 				$('.dircontent_manage input.select_file').click(function(ev){
 					ev.stopPropagation();
@@ -269,6 +295,11 @@ $(function(){
 			function(){ $('.dircontent_manage input.select_file').prop({checked:true}).change(); },
 			function(){ $('.dircontent_manage input.select_file').prop({checked:false}).change(); }
 		);
+		$(document).keydown(function(ev){
+			if(46 === ev.which){
+				$('.jqful_del').click();
+			}
+		});
 		$('.buttonset').buttonset();
 		//$('div.form_row, div.input').css({width:'auto'});
 		//$('input[type=file]').css({display:'inline'});
@@ -278,7 +309,7 @@ $(function(){
 			limitConcurrentUploads:3,
 			add: function (e, data) {
 				$('.jqful_label').show();
-				data.context = $('<p/>').html('&nbsp;&nbsp;'+data.files[0].name + ' Uploading...').addClass('progress').prepend('<span class="bar"></div>').appendTo('#file_feedback');
+				data.context = $('<p/>').html('&nbsp;&nbsp;'+data.files[0].name + ' Uploading...').addClass('progress').prepend('<span class="bar"></div>').appendTo('.jqful_feedback');
 				//data.submit();
 				$(this).fileupload('process', data).done(function () {
 					data.submit();
@@ -290,7 +321,8 @@ $(function(){
 				data.context.html('&nbsp;&nbsp;'+data.files[0].name + ' Upload finished.').show(1).delay(1000).hide(300, function(){ $(this).remove(); });
 				window.clearTimeout(get_to);
 				get_to = window.setTimeout(function(){
-					$('.jqful_label').hide(300);
+					//$('.jqful_label').hide(300);
+					//clog(data);
 					refresh_dir_content();
 				}, 1000);
 			},
@@ -301,9 +333,16 @@ $(function(){
 			progressall: function(e,data){
 				var progress = parseInt(data.loaded / data.total * 100, 10);
 				$('div.progress .bar').css({width: progress + '%'}).html('&nbsp;&nbsp;'+progress+'%');
+				if(100 === progress){
+					window.clearTimeout(prog_hide_to);
+					window.setTimeout(function(){
+						$('.jqful_label').hide(300);
+					}, 1000);
+				}
 			}
 		});
 		dircontent_binder();
+		$('.select_file').change();
 	}
 	/*$('form.config').on('reset', function(ev){
 		ev.preventDefault();

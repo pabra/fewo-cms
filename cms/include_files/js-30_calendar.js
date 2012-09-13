@@ -79,11 +79,115 @@ function let_select(){
 		.bind('mouseleave', cal_handler_leave)
 		.bind('click', cal_handler_click);
 }
+function strToDate(s){
+	'use strict';
+	var parsed = s.match(/([0-9]{1,4})([-.\/])([01]?[0-9])\2([0-9]{1,4})/),
+		nDate = false,
+		fullYear = function(y){
+			if(y < 40){
+				return y + 2000;
+			}
+			if(y < 100){
+				return y + 1900;
+			}
+			return y;
+		};
+	if(!parsed){
+		return false;
+	}
+	parsed[1] = parseInt(parsed[1], 10);
+	parsed[3] = parseInt(parsed[3], 10);
+	parsed[4] = parseInt(parsed[4], 10);
+	if('.' === parsed[2]){
+		parsed[4] = fullYear(parsed[4]);
+		nDate = new Date(parsed[4], (parsed[3] -1), parsed[1]);
+		if(nDate.getDate() === parsed[1] &&
+				(nDate.getMonth() +1) === parsed[3] &&
+				nDate.getFullYear() === parsed[4]){
+			return nDate;
+		} else {
+			return false;
+		}
+	} else {
+		parsed[1] = fullYear(parsed[1]);
+		nDate = new Date(parsed[1], (parsed[3] -1), parsed[4]);
+		if(nDate.getDate() === parsed[4] &&
+				(nDate.getMonth() +1) === parsed[3] &&
+				nDate.getFullYear() === parsed[1]){
+			return nDate;
+		} else {
+			return false;
+		}
+	}
+}
+function dateToStr(d, f){
+	'use strict';
+	var i = 0, l, c, o = '';
+	if('function' !== typeof(d.getDate)){
+		return false;
+	}
+	if('undefined' === typeof(f)){
+		f = 'y-m-d';
+	}
+	l = f.length;
+	for(i=0; i<l; i++){
+		c = f.substr(i, 1);
+		switch(c){
+			case 'y':
+				o += (''+d.getFullYear()).substr(-2);
+				break;
+			case 'Y':
+				o += (''+d.getFullYear());
+				break;
+			case 'm':
+				o += ('0'+(d.getMonth() +1)).substr(-2);
+				break;
+			case 'd':
+				o += ('0'+ d.getDate()).substr(-2);
+				break;
+			default:
+				o += c;
+				break;
+		}
+	}
+	return o;
+}
+function walkDays(d, w, f){
+	'use strict';
+	var saveInt = 43200000;
+	if('string' === typeof(d)){
+		d = strToDate(d);
+	}
+	if('function' !== typeof(d.getDate)){
+		return false;
+	}
+	if('undefined' === typeof(w)){
+		w = 1;
+	} else {
+		w = parseInt(w, 10);
+	}
+	d.setDate(d.getDate() + w);
+	if('undefined' !== typeof(f) && 'oDate' === f){
+		return d;
+	} else {
+		return dateToStr(d, f);
+	}
+}
 $(function(){
+	'use strict';
+	var a = '12-01-01', b = '09-12-31', i=0;
+	while(i !== 1385 && a !==b){
+		i++;
+		a = walkDays(a, -1);
+		//clog(i);
+		clog(a);
+	}
+	clog(i);
+	clog(a);
 	if(0 !== $('.res_form').length){
 		$.datepicker.setDefaults( $.datepicker.regional[ "en-GB" ] );
-		if('de' === lang){
-			$.datepicker.setDefaults( $.datepicker.regional[ "de" ] );
+		if('de' === docLang){
+			$.datepicker.setDefaults( $.datepicker.regional.de );
 		}
 		$('.datepicker').datepicker({
 			onSelect:function(d,dObj){
