@@ -231,73 +231,20 @@ EOJS;
 	{
 		$admin_content .= '<div id="dir_content">'.get_dir_content('cms/user_files', $admin_lang).'</div>'."\n";
 		#$admin_content .= '<div class="form_row"><div class="progress label"><div class="bar"></div><label for="fileupload">File:</label></div><div class="input"><input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=file_upload" multiple="multiple" /></div><div id="file_feedback"></div></div>'."\n";
-		$admin_content .= '<div class="form_row no_hover"><div class="progress label"><div class="bar"></div><label for="fileupload">'.lecho('fileupload_label_files', $admin_lang).'</label></div><div style="white-space:nowrap;" class="input">'
-			.'<span class="fileinput-button">'.lecho('fileupload_add_files', $admin_lang).'<input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=user_content" multiple="multiple" /></span>'
-			.'<span class="filedeleteall-button">'.lecho('fileupload_delete_selected', $admin_lang).'</span>'
-			.'<span class="fileselectall-button">'.lecho('fileupload_select_all', $admin_lang).'</span>'
-			.'</div><div id="file_feedback"></div></div>'."\n";
-#		$admin_content .= '<script type="text/javascript">/*<![CDATA[*/
-#			var get_to = false;
-#			$(\'.fileinput-button\').button({icons:{primary:\'ui-icon-plusthick\'}});
-#			$(\'.filedeleteall-button\').button({icons:{primary:\'ui-icon-trash\'}}).click(function(){
-#				var sel_files = $(\'.dircontent_manage input.select_file:checked\');
-#				//clog(sel_files);
-#				if(0 < sel_files.length){
-#					show_confirm(\'Delete \'+sel_files.length+\' files?\', \'Delete\', function(){ clog($(\'#dialog\').prop(\'choice\')); });
-#				}
-#			});
-#			$(\'.fileselectall-button\').button({icons:{primary:\'ui-icon-circlesmall-close\'}}).toggle(
-#				function(){ $(\'.dircontent_manage input.select_file\').prop({checked:true}).change(); },
-#				function(){ $(\'.dircontent_manage input.select_file\').prop({checked:false}).change(); }
-#			);
-#			$(\'.dircontent_manage .rename_file\').click(function(){
-#				var fn_el = $(this).parents(\'.dircontent_row\').find(\'.filename\'),
-#					fn_name = fn_el.text(),
-#					rep_in = $(\'<input/>\').attr({type:\'text\', value:fn_name}).css({fontFamily:\'monospace\'}).focusout(function(){
-#						var spel = $(\'<span/>\').text(fn_name).addClass(\'filename\');
-#						if($(this).val() === $(this).prop(\'defaultValue\')){
-#							$(this).replaceWith(spel);
-#						}
-#					});
-#				clog(fn_name);
-#				fn_el.replaceWith(rep_in);
-#				rep_in.focus().select();
-#			});
-#			$(\'.dircontent_manage input.select_file\').change(function(){
-#				if($(this).prop(\'checked\')){
-#					$(this).css({display:\'inline\'});
-#				} else {
-#					$(this).css({display:\'\'});
-#				}});
-#			$(\'#fileupload\').fileupload({
-#			dataType:\'json\',
-#			limitConcurrentUploads:3,
-#			add: function (e, data) {
-#				data.context = $(\'<p/>\').html(\'&nbsp;&nbsp;\'+data.files[0].name + \' Uploading...\').addClass(\'progress\').prepend(\'<span class="bar"></div>\').appendTo(\'#file_feedback\');
-#				//data.submit();
-#				$(this).fileupload(\'process\', data).done(function () {
-#					data.submit();
-#				});
-#			},
-#			done: function(e,data){
-#				var self = data.context;
-#				data.context.html(\'&nbsp;&nbsp;\'+data.files[0].name + \' Upload finished.\').show(1).delay(1000).hide(300, function(){ $(this).remove(); });
-#				window.clearTimeout(get_to);
-#				get_to = window.setTimeout(function(){
-#					$.post(\'ajax.php?do=get_dir_content\', {get_dir:\'cms/user_files\'}, function(data){
-#						$(\'#dir_content\').html(data);
-#					});
-#				}, 1000);
-#			},
-#			progress: function(e,data){
-#				var progress = parseInt(data.loaded / data.total * 100, 10);
-#				data.context.find(\'.bar\').css({width: progress + \'%\'});
-#			},
-#			progressall: function(e,data){
-#				var progress = parseInt(data.loaded / data.total * 100, 10);
-#				$(\'div.progress .bar\').css({width: progress + \'%\'}).html(\'&nbsp;&nbsp;\'+progress+\'%\');
-#			}
-#		});/*]]>*/</script>'."\n";
+		#$admin_content .= '<div class="form_row no_hover" style="width:auto;"><div class="progress label"><div class="bar"></div><label for="fileupload">'.lecho('fileupload_label_files', $admin_lang).'</label></div><div style="white-space:nowrap;width:auto;" class="input">'
+		#	.'<span class="fileinput-button">'.lecho('fileupload_add_files', $admin_lang).'<input id="fileupload" type="file" name="files[]" data-url="ajax.php?do=user_content" multiple="multiple" /></span>'
+		#	.'<span class="filedeleteall-button">'.lecho('fileupload_delete_selected', $admin_lang).'</span>'
+		#	.'<span class="fileselectall-button">'.lecho('fileupload_select_all', $admin_lang).'</span>'
+		#	.'</div><div id="file_feedback"></div></div>'."\n";
+		$admin_content .= '<div class="jqful_row">'
+			.'<div class="buttonset">'
+				.'<div class="jqful_add">'.lecho('fileupload_add_files', $admin_lang).'<div class="jqful_input_wrap"><input id="jqful_input" type="file" name="files[]" data-url="ajax.php?do=user_content" multiple="multiple" /></div></div>'
+				.'<div class="jqful_del">'.lecho('fileupload_delete_selected', $admin_lang).'</div>'
+				.'<div class="jqful_sel">'.lecho('fileupload_select_all', $admin_lang).'</div>'
+			.'</div>'
+			.'<div class="jqful_label progress"><div class="bar"></div><label for="jqful_input">'.lecho('fileupload_label_files', $admin_lang).'</label></div>'
+			.'<div class="jqful_feedback"></div>'
+			.'</div>'."\n";
 	}
 	elseif($_GET['do'] == 'textblock')
 	{

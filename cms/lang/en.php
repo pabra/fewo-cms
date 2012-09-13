@@ -47,6 +47,10 @@ $lang = array(
 	'dircontent_modified' => 'unmodified since:',
 	'dircontent_confirm_delete' => 'Delete files?',
 	'dircontent_confirm_del_files' => 'Files to delete: ',
+	'dircontent_category_image' => 'Images',
+	'dircontent_category_media' => 'Audio/Video',
+	'dircontent_category_document' => 'Documents',
+	'dircontent_category_other' => 'Other',
 	'' => '',
 	#time_units
 	'time_unit_second' => 'second',

@@ -1,6 +1,6 @@
 // JS for CMS
 
-var locObj, docLang;
+var locObj, docLang, noToolTips=false;
 /*window.log = function(){
 	log.history = log.history || [];   // store logs to an array for reference
 	log.history.push(arguments);
@@ -78,6 +78,14 @@ function check_email_address(email)
 	}
 	return true;
 }
+function disableToolTips(){
+	var ttB = $('#ttBox');
+	noToolTips = true;
+	ttB.fadeOut(150, function(){ ttB.empty().css({top:5, left:5}); });
+}
+function enableToolTips(){
+	noToolTips = false;
+}
 function titleToTip(){
 	'use strict';
 	var ttbto,ttbtom, ttbow,ttboh, docW=$(document).width(), docH=$(document).height(), ttB=$('#ttBox'), offX=-10, offY=-15, ttbevpos={}, 
@@ -103,6 +111,9 @@ function titleToTip(){
 			$(this).removeAttr('onmouseover');
 		}
 		$(this).mouseenter(function(ev){
+			if(true === noToolTips){
+				return false;
+			}
 			var self = $(this), posX, posY;
 			if('undefined' === typeof(self.prop('ttBoxMovTime'))){
 				self.prop({ttBoxMovTime:0});

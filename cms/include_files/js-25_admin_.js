@@ -120,7 +120,7 @@ $(function(){
 	});
 	
 	// dircontent
-	if(1 === $('#fileupload').length){
+	if(1 === $('#dir_content').length){
 		var get_to = false, delete_files = [], 
 			dircontent_binder  = function(){
 				var fRenTidy = function(t){
@@ -132,6 +132,16 @@ $(function(){
 				},
 				fRenUndo = function(elInput, elSpan){
 					elInput.replaceWith(elSpan);
+					fRenSpanListener(elSpan);
+					window.setTimeout(function(){
+						enableToolTips();
+					}, 300);
+				},
+				fRenSpanListener = function(el){
+					el.click(function(ev){
+						ev.stopPropagation();
+						fRenInput( $(this) );
+					});
 				},
 				fRenDouble = function(t){
 					var double = false;
@@ -151,8 +161,12 @@ $(function(){
 							fRenUndo(elInput, elSpan);
 						} else {
 							//clog('rename');
+							if(!elInput.val().match(/\.[^.]+$/) && elSpan.text().match(/\.[^.]+$/)){
+								elInput.val( elInput.val() + elSpan.text().match(/\.[^.]+$/)[0] );
+							}
 							$.post('ajax.php?do=user_files_rename', {from:elSpan.text(), to:elInput.val()}, function(data){
 								refresh_dir_content();
+								enableToolTips();
 							});
 						}
 					}
@@ -160,7 +174,7 @@ $(function(){
 				fRenInput = function(el){
 					var repIn = $('<input/>')
 						.attr({type:'text', value:fRenTidy(el.text()) })
-						.css({fontFamily:'monospace',marginLeft:'-7px',width:300})
+						.css({fontFamily:'monospace',fontWeight:'bold',fontSize:'10pt',marginLeft:'-4px',width:400,padding:'1px 2px',height:'18px'})
 						.focusout(function(){
 							fRenUndo($(this), el);
 						})
@@ -171,22 +185,46 @@ $(function(){
 								fRenUndo($(this), el);
 							}
 						});
+					disableToolTips();
 					el.replaceWith(repIn);
 					repIn.focus().select();
 				};
-				$('.dircontent_manage .rename_file').click(function(){
+				$('.dircontent_row').click(function(){
+					if(true === noToolTips){
+						return false;
+					}
+					//$(this).parents('.dircontent_row').find('.select_file').click();
+					//$(this).find('.select_file').click();
+					if(true === $(this).find('.select_file').prop('checked')){
+						$(this).find('.select_file').prop({checked:false});
+					} else {
+						$(this).find('.select_file').prop({checked:true});
+					}
+					$(this).find('.select_file').change();
+				});
+				$('.dircontent_manage .rename_file').click(function(ev){
+					ev.stopPropagation();
 					fRenInput( $(this).parents('.dircontent_row').find('.filename') );
 				});
-				$('.dircontent_manage .delete_file').click(function(){
+				$('.dircontent_row .filename').each(function(k,v){
+					fRenSpanListener( $(v) );
+				});
+				$('.dircontent_manage .delete_file').click(function(ev){
+					ev.stopPropagation();
 					delete_files = [];
 					var file_name = $(this).parents('.dircontent_row').find('.filename').text();
 					delete_files.push(file_name);
 					clog(delete_files);
 					delete_confirm();
 				});
-				$('.dircontent_manage input.select_file').change(function(){
+				$('.dircontent_manage input.select_file').click(function(ev){
+					ev.stopPropagation();
+					$(this).change();
+				});
+				$('.dircontent_manage input.select_file').change(function(ev){
+					ev.stopPropagation();
 					if($(this).prop('checked')){
-						$(this).css({display:'inline'});
+						$(this).css({display:'inline-block'});
 					} else {
 						$(this).css({display:''});
 					}});
@@ -213,8 +251,8 @@ $(function(){
 						}
 					});
 			};
-		$('.fileinput-button').button({icons:{primary:'ui-icon-plusthick'}});
-		$('.filedeleteall-button').button({icons:{primary:'ui-icon-trash'}}).click(function(){
+		$('.jqful_add').button({icons:{primary:'ui-icon-plusthick'}});
+		$('.jqful_del').button({icons:{primary:'ui-icon-trash'}}).click(function(){
 			var sel_files = $('.dircontent_manage input.select_file:checked');
 			delete_files = [];
 			//clog(sel_files);
@@ -227,21 +265,24 @@ $(function(){
 				delete_confirm();
 			}
 		});
-		$('.fileselectall-button').button({icons:{primary:'ui-icon-circlesmall-close'}}).toggle(
+		$('.jqful_sel').button({icons:{primary:'ui-icon-circlesmall-close'}}).toggle(
 			function(){ $('.dircontent_manage input.select_file').prop({checked:true}).change(); },
 			function(){ $('.dircontent_manage input.select_file').prop({checked:false}).change(); }
 		);
+		$('.buttonset').buttonset();
 		//$('div.form_row, div.input').css({width:'auto'});
-		$('input[type=file]').css({display:'inline'});
+		//$('input[type=file]').css({display:'inline'});
 		//$('div.input').buttonset();
-		$('#fileupload').fileupload({
+		$('#jqful_input').fileupload({
 			dataType:'json',
 			limitConcurrentUploads:3,
 			add: function (e, data) {
+				$('.jqful_label').show();
 				data.context = $('<p/>').html('&nbsp;&nbsp;'+data.files[0].name + ' Uploading...').addClass('progress').prepend('<span class="bar"></div>').appendTo('#file_feedback');
 				//data.submit();
 				$(this).fileupload('process', data).done(function () {
 					data.submit();
+					$(window).scrollTop(10000);
 				});
 			},
 			done: function(e,data){
@@ -249,6 +290,7 @@ $(function(){
 				data.context.html('&nbsp;&nbsp;'+data.files[0].name + ' Upload finished.').show(1).delay(1000).hide(300, function(){ $(this).remove(); });
 				window.clearTimeout(get_to);
 				get_to = window.setTimeout(function(){
+					$('.jqful_label').hide(300);
 					refresh_dir_content();
 				}, 1000);
 			},

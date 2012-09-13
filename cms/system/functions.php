@@ -1280,47 +1280,88 @@ function get_thumb($img, $opt=array())
 }
 function get_dir_content($dir, $lang = 'de')
 {
+	global $array_sort_keys_list;
 	if(!is_dir($dir))
 	{
 		return '';
 	}
 	if('/' !== substr($dir, -1))
 		$dir .= '/';
+	$file_categories = array(
+		'jpg'	=> 'image',
+		'jpeg'	=> 'image',
+		'gif'	=> 'image',
+		'png'	=> 'image',
+		'mp3'	=> 'media',
+		'ogg'	=> 'media',
+		'wav'	=> 'media',
+		'mp4'	=> 'media',
+		'mpg'	=> 'media',
+		'mpeg'	=> 'media',
+		'avi'	=> 'media',
+		'pdf'	=> 'document',
+		'doc'	=> 'document',
+		'docx'	=> 'document',
+		'odt'	=> 'document',
+		'xls'	=> 'document',
+		'xlsx'	=> 'document',
+		'ods'	=> 'document',
+		'*'	=> 'other',
+		'order' => array('image','media','document','other'),
+	);
+	$files_in_cat = array();
 	$files = glob($dir.'*');
-	#print_r($files);
-	#die();
 	$out = '';
 	if(is_array($files) && 0 < count($files))
 	{
 		foreach($files as $k => $v)
 		{
-			$bnv = basename($v);
-			$bnext = strtolower( substr($bnv, strrpos($bnv, '.')+1) );
-			if('jpg' === $bnext)
-				$bnext = 'jpeg';
-			$prev_title = '';
-			$mime_img = (is_file('cms/include_files/images/mime/type_'.$bnext.'.png'))? 'cms/include_files/images/mime/type_'.$bnext.'.png' : 'cms/include_files/images/mime/type_misc.png';
-			$mime_img = '<img src="'.$mime_img.'" />';
-			if('jpeg' === $bnext || 'gif' === $bnext || 'png' === $bnext)
+			if(is_file($v))
 			{
-				$img_size = getimagesize($v);
+				$pinfo = pathinfo($v);
+				$l_ext = strtolower($pinfo['extension']);
+				$pinfo['extension'] = ('jpg' === $l_ext)? 'jpeg' : $l_ext;
+				$tmp_cat = (isset($file_categories[$pinfo['extension']]))? $file_categories[$pinfo['extension']] : $file_categories['*'];
+				$files_in_cat[$tmp_cat][] = $pinfo;
+			}
+		}
+	}
+	$array_sort_keys_list = $file_categories['order'];
+	uksort($files_in_cat, 'array_sort_keys');
+	#var_dump($files_in_cat);
+	#die();
+	foreach($files_in_cat as $cat => $a)
+	{
+		$out .= '<span class="dircontent_category">'.lecho('dircontent_category_'.$cat, $lang).'</span>'."\n";
+		foreach($a as $k => $v)
+		{
+			$fp = $v['dirname'].'/'.$v['basename'];
+			$fs = filesize($fp);
+			$fmt = filemtime($fp);
+			$prev_title = '';
+			#$mime_img = (is_file('cms/include_files/images/mime/type_'.$v['extension'].'.png'))? 'cms/include_files/images/mime/type_'.$v['extension'].'.png' : 'cms/include_files/images/mime/type_misc.png';
+			$mime_img = '<span class="mime_img mime_img_'.$v['extension'].'">&nbsp;</span>';
+			if('jpeg' === $v['extension'] || 'gif' === $v['extension'] || 'png' === $v['extension'])
+			{
+				$img_size = getimagesize($fp);
 				#$img_thumb = get_thumb($v, array('w'=>200,'h'=>200,'iar'=>1));
-				$img_thumb = get_thumb($v);
+				$img_thumb = get_thumb($fp);
 				#var_dump(get_thumb($v));
 				#var_dump($img_size);
 				#$prev_title = ' title="&lt;img src=&quot;'.htmlspecialchars( phpThumbURL('src=../../../'. rawurlencode($v).'&w=300&h=300&f='.$bnext) ).'&quot; onload=&quot;clog(this);$(this).removeAttr(&apos;height&apos;); &quot; width=&quot;300&quot; height=&quot;300&quot;/&gt;"';
 				$prev_title = ' title="'.htmlspecialchars( $img_thumb['img'] . '<br/>'.$img_size[0].' x '.$img_size[1] ).'"';
 				#$prev_title = ' title="'.rawurlencode($v).'"';
-				$mime_img = get_thumb($v, array('w'=>24,'h'=>16,'iar'=>1));
-				$mime_img = $mime_img['img'];
+				#$mime_img = get_thumb($fp, array('w'=>33,'h'=>22,'iar'=>1,'fltr[]'=>'ric|4|4','f'=>'png'));
+				$mime_img = get_thumb($fp, array('w'=>33,'h'=>22,'iar'=>1));
+				$mime_img = '<span class="tiny_img" style="background-image:url('.$mime_img['src'].');">&nbsp;</span>';
 			}
-			$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
+			#$out .= (0 === $k)? '<strong>'.$dir.'</strong><br/>'."\n" : '';
 			#$out .= '<span title="'.$k.'" onmouseover="titleToTip();">'. basename($v) . '</span><br/>'."\n";
 			#$out .= '<span title="'.$k.'" >'. basename($v) . '</span><br/>'."\n";
 			$out .= '<div class="dircontent_row">'
-				.'<span class="dircontent_name"'.$prev_title.'><span class="mime_img">'.$mime_img.'</span> <span class="filename">'. $bnv . '</span></span>'
-				.'<span class="dircontent_size" title="'.number_format(filesize($v), 0, ',', '.').' Byte">'.formatBytes(filesize($v)).'</span>'
-				.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-filemtime($v), $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', filemtime($v)).'">' . formatTime(time()-filemtime($v), $lang) . '</span>'
+				.'<span class="dircontent_name"'.$prev_title.'><span class="mime">'.$mime_img.'</span> <span class="filename">'. htmlspecialchars($v['basename']) . '</span></span>'
+				.'<span class="dircontent_size" title="'.number_format($fs, 0, ',', '.').' Byte">'.formatBytes($fs).'</span>'
+				.'<span class="dircontent_time" title="'.lecho('dircontent_modified', $lang) .'&lt;br/&gt;'. formatTime(time()-$fmt, $lang, 0, 'long') .'&lt;br/&gt;' . date('d.m.y h:i:s', $fmt).'">' . formatTime(time()-$fmt, $lang) . '</span>'
 				.'<span class="dircontent_manage">'
 					.'<input class="select_file" type="checkbox" />'
 					.'<span class="delete_file ui-icon ui-icon-trash" title="'.lecho('fileupload_delete', $lang).'">delete</span>'
