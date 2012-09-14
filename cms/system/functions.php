@@ -1016,6 +1016,8 @@ function get_config_data($file, $var, $index = false, $key = false)
 	elseif(false === $key && false !== $index)
 	{
 		$out = $file[$var]['value'][$index];
+		if(null === $out)
+			return $out;
 		$out['conf_idx'] = $index;
 		return $out;
 	}
@@ -1620,7 +1622,7 @@ function clear_cache($what='pages')
 	}
 	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
 }
-function reservation_calendar($cal_conf_index, $lang='de', $year=false)
+function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_only=false)
 {
 	if(false === $year || !$year)
 	{
@@ -1649,13 +1651,21 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 	$with_headline = (in_array('with_headline', $cal_conf['settings']))? true : false;
 	$month_name_length = (in_array('short_month_names', $cal_conf['settings']))? 'short' : 'long'; # long / short
 	$res_first_last_half = (in_array('first_last_resday_half', $cal_conf['settings']))? true : false;
-	$year = ($year < date('Y') -1)? date('Y') -1 : $year;
-	$year = ($year > date('Y') +2)? date('Y') +2 : $year;
-	$prev_y = $year -1;
-	$next_y = $year +1;
+	$year_allowed_from = date('Y') -1;
+	$year_allowed_to = date('Y') +2;
+	$year = ($year < $year_allowed_from)? $year_allowed_from : $year;
+	$year = ($year > $year_allowed_to)? $year_allowed_to : $year;
 	$wd_arr = array('mo','tu','we','th','fr','sa','su');
 	$out = '';
-	$out .= '<a href="'.merge_href('self', array('y'=>$prev_y)).'">&lt;--</a> <a href="'.merge_href('self', array('y'=>date('Y'))).'">'.$year.'</a> <a href="'.merge_href('self', array('y'=>$next_y)).'">--&gt;</a><br/>'."\n";
+	if(false === $cal_only)
+	{
+		#$out .= '<a href="'.merge_href('self', array('y'=>$prev_y)).'">&lt;--</a> <a href="'.merge_href('self', array('y'=>date('Y'))).'">'.$year.'</a> <a href="'.merge_href('self', array('y'=>$next_y)).'">--&gt;</a><br/>'."\n";
+		$out .= '<div class="buttonset cal_nav" id="cal_idx_'.$cal_conf['conf_idx'].'">'
+			.'<span class="cal_button cal_button_prevy" title="'.lecho('cal_nav_prev', $lang).'">previous</span>'
+			.'<span class="cal_button cal_button_thisy" title="'.lecho('cal_nav_this', $lang).'">this</span>'
+			.'<span class="cal_button cal_button_nexty" title="'.lecho('cal_nav_next', $lang).'">next</span>'
+			.'</div>'."\n";
+	}
 	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.' conf_idx:'.$cal_conf['conf_idx'].'">'."\n";
 	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
 	$prev = $start - 86400;
@@ -1790,8 +1800,12 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false)
 		}
 	}
 	$out .= '</div>'."\n";
+	if(true === $cal_only)
+	{
+		return $out;
+	}
 	$js_reserved = (0 === count($reserved))? false : '\''.implode('\',\'', $reserved).'\'';
-	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']=\''. implode('|', $reserved) .'\'.split(\'|\');/*]]>*/</script>'."\n";
+	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']={halfDay:'.((in_array('first_last_resday_half', $cal_conf['settings']))? 'true' : 'false' ).',days:\''. implode('|', $reserved) .'\'.split(\'|\')};var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
 	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
 	{
 		if(in_array('show_form', $cal_conf['form_settings']))

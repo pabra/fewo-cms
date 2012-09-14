@@ -16,7 +16,7 @@ $req_page = false;
 $keys_of_get = array_keys($_GET);
 if(isset($keys_of_get[0]))
 {
-	$req_page = preg_replace('/[^a-zA-Z0-9_-]/', '', $keys_of_get[0]);
+	$req_page = preg_replace('/[^a-zA-Z0-9:|_-]/', '', $keys_of_get[0]);
 	unset($_GET[$keys_of_get[0]]);
 	if(0 < count($_GET))
 	{
@@ -36,38 +36,41 @@ else
 if(true === $use_cache && false !== $req_page)
 {
 	#$cache_hash = substr(preg_replace('/[^a-zA-Z0-9&=_-]/', '', $_SERVER['QUERY_STRING']), 0, 80);
-	$cache_hash = $req_page.'|'.$show_lang;
+	$cache_hash = $req_page;
 	$cache_file = 'cms/cache/'.$cache_hash.'.php';
 	$cache_file_gzip = 'cms/cache/'.$cache_hash.'.gz.php';
 	$browser_gzip = (false !== strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))? true : false;
 	if(is_file($cache_file))
 	{
 		$cache_modified = filemtime($cache_file);
-		if(strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $cache_modified)
+		if(date('Y') === date('Y', $cache_modified)) # don't deliver cache prom past year
 		{
-			header('HTTP/1.1 304 Not Modified');
-			die();
-		}
-		header('Cache-Control: max-age='.$cache_expire);
-		header('Expires: ' . date('r', time()+$cache_expire));
-		header('Last-Modified: ' . date('r', $cache_modified));
-		header('Accept-Ranges: none');
-		if(true === $gzip_cache && true === $browser_gzip && true === is_file($cache_file_gzip))
-		{
-			include($cache_file_gzip);
-			header('Content-Type: '.$cache_ct);
-			header('Content-Encoding: gzip');
-			header('Content-Length: '.$cache_length);
-			header('X-Cache: GZ HIT');
-			die($cache);
-		}
-		else
-		{
-			include($cache_file);
-			header('Content-Type: '.$cache_ct);
-			header('Content-Length: '.$cache_length);
-			header('X-Cache: HIT');
-			die($cache);
+			if(strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $cache_modified)
+			{
+				header('HTTP/1.1 304 Not Modified');
+				die();
+			}
+			header('Cache-Control: max-age='.$cache_expire);
+			header('Expires: ' . date('r', time()+$cache_expire));
+			header('Last-Modified: ' . date('r', $cache_modified));
+			header('Accept-Ranges: none');
+			if(true === $gzip_cache && true === $browser_gzip && true === is_file($cache_file_gzip))
+			{
+				include($cache_file_gzip);
+				header('Content-Type: '.$cache_ct);
+				header('Content-Encoding: gzip');
+				header('Content-Length: '.$cache_length);
+				header('X-Cache: GZ HIT');
+				die($cache);
+			}
+			else
+			{
+				include($cache_file);
+				header('Content-Type: '.$cache_ct);
+				header('Content-Length: '.$cache_length);
+				header('X-Cache: HIT');
+				die($cache);
+			}
 		}
 	}
 }
@@ -76,18 +79,39 @@ require_once('cms/system/functions.php');
 require_once('cms/system/phpThumb/phpThumb.config.php');
 #var_dump(get_browser_lang($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 #die();
+$conf_lang = array('all'=>array());
+foreach($cms['avail_page_lang']['value'] as $k => $v)
+{
+	if('On' === $v['visible'])
+	{
+		if(!isset($conf_lang['default']))
+		{
+			$conf_lang['default'] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
+		}
+		$conf_lang['all'][] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
+		$conf_lang[$v['lang']] = array('index'=>$k, 'name'=>$v['lang_name']);
+	}
+}
+
 
 $page_content_type = 'text/html; charset=utf-8';
 if($req_page == 'style_css' || $req_page == 'style_admin_css'){
 	$page_content_type = 'text/css; charset=utf-8';
-	$page_out = 'body {background-color:#eee; padding:100px;}';
 	$page_out = get_include_file($req_page);
 }
 elseif($req_page == 'javascript_js' || $req_page == 'javascript_admin_js')
 {
 	$page_content_type = 'application/x-javascript; charset=utf-8';
-	$page_out = "$(function(){alert('huhu');});";
 	$page_out = get_include_file($req_page);
+}
+elseif(preg_match('/^res_cal:([a-zA-Z0-9]+):([0-9]{4}):([a-z]{2})$/', $req_page, $match))
+{
+	#$page_content_type = 'application/x-javascript; charset=utf-8';
+	#$page_out = get_include_file($req_page);
+	if(!isset($conf_lang[$match[3]]))
+		$match[3] = $conf_lang['default']['lang'];
+	$page_out = "Reservierungskalender {$match[1]} Jahr {$match[2]} Sprache {$match[3]}<br/>\n";
+	$page_out = reservation_calendar($match[1], $match[3], $match[2], true);
 }
 elseif($req_page == 'sitemap_xml')
 {
@@ -103,19 +127,6 @@ elseif($req_page == 'admin')
 }
 else 
 {
-	$conf_lang = array('all'=>array());
-	foreach($cms['avail_page_lang']['value'] as $k => $v)
-	{
-		if('On' === $v['visible'])
-		{
-			if(!isset($conf_lang['default']))
-			{
-				$conf_lang['default'] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
-			}
-			$conf_lang['all'][] = array('index'=>$k, 'lang'=>$v['lang'], 'name'=>$v['lang_name']);
-			$conf_lang[$v['lang']] = array('index'=>$k, 'name'=>$v['lang_name']);
-		}
-	}
 	require_once('cms/config/pages.php');
 	if(false === $req_page)
 	{
@@ -178,7 +189,8 @@ else
 	$tpl_page_title = htmlspecialchars($cms['avail_page_lang']['value'][$conf_lang[$tpl_lang]['index']]['page_title']) .' | '. htmlspecialchars($page_title);
 	#$tpl_page_content = var_export($_SERVER['QUERY_STRING'], true) . "<br/>\nHÜhü<br/>\nlang: ${show_lang}<br/>\n";
 	#$tpl_page_content .= "geforderte Seite: $req_page<br/>\n";
-	$tpl_page_content = parse_page_content($conf_page['content'], $tpl_lang);
+	$tpl_page_content = '<noscript><div id="no_js_warning">'.lecho('enable_javascript', $tpl_lang).'</div></noscript>'."\n";
+	$tpl_page_content .= parse_page_content($conf_page['content'], $tpl_lang);
 	require_once('cms/template/'.$cms['template']['value'].'/template.php');
 	/*$C = array(
 		'page_title' => 'Das ist der Titelü',

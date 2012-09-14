@@ -10,6 +10,8 @@ div.res_cal div.res_half { background-color:#abc; }
 div.res_cal div.res_beg, div.res_cal div.res_end { background-color:transparent; }
 div.res_cal div.headline div.float { border:1px inset transparent; }
 
+.cal_nav.buttonset { margin:10px 0px; }
+
 div.res_cal div.cal_index_month { border:1px inset transparent !important; }
 div.res_cal.t1 div.month_long, div.res_cal.t2 div.month_long { border:1px solid transparent; width:80px; }
 div.res_cal.t1 div.month_short, div.res_cal.t2 div.month_short { border:1px solid transparent; width:35px; }
@@ -28,8 +30,9 @@ html.ie6 div.res_cal div.res_half { border-color:#eee; }
 div.res_cal div.res_half.half_beg { border-right-color:#D3883D !important; }
 div.res_cal div.res_half.helf_end { border-top-color:#D3883D !important; }
 
-div.res_cal div.content.cal_select { border:1px solid lime; }
-div.res_cal div.content.cal_select_begin { border:1px solid green; }
-div.res_cal div.content.cal_select_end { border:1px solid green; }
+div.res_cal div.content.cal_selectable { cursor:pointer; }
+div.res_cal div.content.cal_select, div.res_cal div.content.cal_selectable:hover { border:1px inset lime; }
+div.res_cal div.content.cal_select_begin { border:1px inset green; }
+div.res_cal div.content.cal_select_end { border:1px inset green; }
 
 

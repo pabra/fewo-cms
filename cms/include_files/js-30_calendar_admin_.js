@@ -6,15 +6,15 @@ function send_res(){
 	reserved.sort();
 	var p_data = {};
 	p_data['res_cal:calendar:'+cal_idx+':reserved'] = reserved.join('|').replace(/^\|+/, '').replace(/\|+$/, '').replace(/\|[|]+/g, '');
-	clog(p_data);
-	/*$.post('ajax.php?do=send_config', p_data, function(data){
+	//clog(p_data);
+	$.post('ajax.php?do=send_config', p_data, function(data){
 		//clog(data);
 		if(true === data.status){
 			//window.location = window.location;
 			//window.location = window.location.href.replace(/#.*$/, '');
 			window.location = window.location.href.replace(/&res_(?:beg|end)=[0-9d_-]+/g, '');
 		}
-	});*/
+	});
 }
 $(function(){
 	'use strict';

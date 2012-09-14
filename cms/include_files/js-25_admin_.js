@@ -145,7 +145,8 @@ $(function(){
 	if(1 === $('#dir_content').length){
 		var get_to = false, prog_hide_to = false, delete_files = [], 
 			dircontent_binder  = function(){
-				var fRenTidy = function(t){
+				var reEnableToolTip_to = false,
+				fRenTidy = function(t){
 					return $.trim( t.replace(/[^a-zA-Z0-9 üöäÜÖÄß\(\)._-]/g, '')
 							.replace(/^[^a-zA-Z0-9_üöäÜÖÄ\(\)]+/g, '')
 							.replace(/\s*\.\s*/g, '.')
@@ -155,7 +156,7 @@ $(function(){
 				fRenUndo = function(elInput, elSpan){
 					elInput.replaceWith(elSpan);
 					fRenSpanListener(elSpan);
-					window.setTimeout(function(){
+					reEnableToolTip_to = window.setTimeout(function(){
 						enableToolTips();
 					}, 300);
 				},
@@ -208,6 +209,7 @@ $(function(){
 								fRenUndo($(this), el);
 							}
 						});
+					window.clearTimeout(reEnableToolTip_to);
 					disableToolTips();
 					el.replaceWith(repIn);
 					repIn.focus().select();

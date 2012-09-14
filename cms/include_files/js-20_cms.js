@@ -78,9 +78,12 @@ function check_email_address(email)
 	}
 	return true;
 }
-function disableToolTips(){
+function disableToolTips(doWhat){
+	if('undefined' === typeof(doWhat)){
+		doWhat = 'disable';
+	}
 	var ttB = $('#ttBox');
-	noToolTips = true;
+	noToolTips = ('disable'===doWhat)? true : noToolTips;
 	ttB.fadeOut(150, function(){ ttB.empty().css({top:5, left:5}); });
 }
 function enableToolTips(){

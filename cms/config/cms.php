@@ -1,4 +1,4 @@
-<?php # Thu, 13 Sep 2012 09:21:11 +0200
+<?php # Fri, 14 Sep 2012 18:44:25 +0200
 
 $cms = array (
 	'admin_language' => 

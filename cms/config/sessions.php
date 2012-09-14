@@ -1,4 +1,4 @@
-<?php # Thu, 13 Sep 2012 23:49:27 +0200
+<?php # Fri, 14 Sep 2012 22:13:18 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -10,18 +10,31 @@ $sessions = array (
 	array (
 		'value' => 
 		array (
-			'Rbc71' => 
+			'XkQEq' => 
 			array (
-				'sess' => '503300f51496c8b80baecd62a50ff0be',
+				'sess' => 'c9e617fda36825e4be3f62fe3503b497',
 				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
 				'ip' => '127.0.0.1',
-				'time' => 'Thu, 13 Sep 2012 23:49:27 +0200',
+				'time' => 'Fri, 14 Sep 2012 14:00:00 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
 				'email' => 'def@gh.ij',
 				'role' => 'superuser',
-				'use_role' => 'user',
+				'use_role' => 'admin',
+			),
+			'W9Zcg' => 
+			array (
+				'sess' => 'ab3170f7cf3184fcd4736b9c14a29a40',
+				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/12.04 Chromium/18.0.1025.168 Chrome/18.0.1025.168 Safari/535.19',
+				'ip' => '127.0.0.1',
+				'time' => 'Fri, 14 Sep 2012 22:13:18 +0200',
+				'user_index' => 'hOpQ5',
+				'user_name' => 'user_2',
+				'real_name' => 'Super User',
+				'email' => 'def@gh.ij',
+				'role' => 'superuser',
+				'use_role' => 'admin',
 			),
 		),
 		'type' => 'array',
@@ -73,7 +86,8 @@ $sessions = array (
 		array (
 			'sess' => 
 			array (
-				'503300f51496c8b80baecd62a50ff0be' => 'Rbc71',
+				'c9e617fda36825e4be3f62fe3503b497' => 'XkQEq',
+				'ab3170f7cf3184fcd4736b9c14a29a40' => 'W9Zcg',
 			),
 		),
 	),

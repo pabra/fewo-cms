@@ -1,13 +1,13 @@
 var cal_handler_enter = function(){
 	'use strict';
-	$(this).addClass('cal_select');
+	//$(this).addClass('cal_select');
 	if(0!==select_begin && 0===select_end){
 		select_range(select_begin, id2int($(this).attr('id')), $(this).parents('.res_cal').first().attr('id').replace(/^res_cal_/, ''));
 	}
 },
 cal_handler_leave = function(){
 	'use strict';
-	$(this).removeClass('cal_select');
+	//$(this).removeClass('cal_select');
 	if(0!==select_begin && 0===select_end){
 		$('div.res_cal div.cal_select').removeClass('cal_select');
 	}
@@ -37,6 +37,8 @@ cal_handler_click = function(){
 				$('#reservation_to_'+cal_name).datepicker('setDate', d_date);
 			}
 			//clog(d_arr);
+			clog(select_begin);
+			clog(select_end);
 			select_begin=0;
 			select_end=0;
 			$('div.res_cal .cal_select').removeClass('cal_select cal_select_begin cal_select_end');
@@ -74,10 +76,83 @@ function let_select(){
 	select_begin = 0;
 	select_end = 0;
 	$('div.res_cal div.content')
-		.css({cursor:'pointer'})
+		.addClass('cal_selectable')
 		.bind('mouseenter', cal_handler_enter)
 		.bind('mouseleave', cal_handler_leave)
 		.bind('click', cal_handler_click);
+}
+function bind_nav_buttons()
+{
+	$('.cal_nav.buttonset').each(function(k,v){
+		var this_idx = $(this).attr('id').replace('cal_idx_', ''),
+			this_year = strToDate( $('.res_cal[class~="conf_idx:'+this_idx+'"] .content:first').attr('id').match(/_d_([0-9-]+)$/)[1] ).getFullYear(),
+			disable_prev = (this_year <= res_cal_year_from)? true : false,
+			disable_next = (this_year >= res_cal_year_to)? true : false,
+			button_prev = $(this).find('.cal_button_prevy'),
+			button_next = $(this).find('.cal_button_nexty'),
+			button_this = $(this).find('.cal_button_thisy');
+		//clog(this_year);
+		button_prev.prop({gotoYear: (this_year -1)});
+		button_next.prop({gotoYear: (this_year +1)});
+		button_this.prop({gotoYear: res_cal_current_year});
+		if(!$(this).hasClass('ui-buttonset')){
+			button_prev.button({
+				icons:{ primary: 'ui-icon-circle-triangle-w' },
+				text: false,
+				disabled: disable_prev
+			});
+			button_next.button({
+				icons:{ primary: 'ui-icon-circle-triangle-e' },
+				text: false,
+				disabled: disable_next
+			});
+			button_this.button({
+				icons:{ primary: 'ui-icon-circle-triangle-s' }/*,
+				label: this_year*/
+			});
+			//$(this).buttonset();
+		}
+		button_prev.button('option',{disabled:disable_prev});
+		button_next.button('option',{disabled:disable_next});
+		button_this.button('option',{disabled:false, label:this_year});
+		$(this).find('.cal_button').unbind('click').click(function(){
+			var gotoYear = $(this).prop('gotoYear'),
+				direction = (gotoYear < this_year)? {dOut:'right',dIn:'left'} : {dIn:'right',dOut:'left'};
+			if(gotoYear !== this_year && gotoYear >= res_cal_year_from && gotoYear <= res_cal_year_to){
+				//clog('goto: '+gotoYear);
+				$(this).parent().find('.cal_button').removeClass('ui-state-hover').button('option',{disabled:true});
+				disableToolTips('hide');
+				$.get('?res_cal:'+this_idx+':'+gotoYear+':'+docLang, function(data){
+					//data = $(data);
+					//data.find('.res_cal').css({display:'hidden'});
+					//clog(data);
+					$('.res_cal[class~="conf_idx:'+this_idx+'"]').replaceWith( data );
+					/*$('.res_cal[class~="conf_idx:'+this_idx+'"]')
+						.wrap('<div class="wrap" />')
+						.parent()
+						.toggle('blind',{direction:'horizontal'},500, function(){
+							//clog(this);
+							$(this).children().replaceWith(data);
+							$(this).toggle('blind',{direction:'horizontal'},500, function(){
+								//clog(this);
+								$(this).children().unwrap();
+								bind_nav_buttons();
+								titleToTip();
+								let_select();
+							});
+						});*/
+					/*$('.res_cal[class~="conf_idx:'+this_idx+'"]').toggle('slide',{direction:direction},300, function(){
+						$(this).children().replaceWith( $(data).children() );
+						//clog(this);
+						$(this).toggle('slide',{},300);
+					});*/
+					bind_nav_buttons();
+					titleToTip();
+					let_select();
+				});
+			}
+		});
+	});
 }
 function strToDate(s){
 	'use strict';
@@ -154,7 +229,6 @@ function dateToStr(d, f){
 }
 function walkDays(d, w, f){
 	'use strict';
-	var saveInt = 43200000;
 	if('string' === typeof(d)){
 		d = strToDate(d);
 	}
@@ -175,15 +249,10 @@ function walkDays(d, w, f){
 }
 $(function(){
 	'use strict';
-	var a = '12-01-01', b = '09-12-31', i=0;
-	while(i !== 1385 && a !==b){
-		i++;
-		a = walkDays(a, -1);
-		//clog(i);
-		clog(a);
+	if(0 < $('.res_cal').length){
+		bind_nav_buttons();
+		let_select();
 	}
-	clog(i);
-	clog(a);
 	if(0 !== $('.res_form').length){
 		$.datepicker.setDefaults( $.datepicker.regional[ "en-GB" ] );
 		if('de' === docLang){
@@ -195,7 +264,5 @@ $(function(){
 				clog(cal_name);
 			}
 		});
-		let_select();
 	}
 });
-
