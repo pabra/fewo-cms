@@ -1666,6 +1666,9 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 			.'<span class="cal_button cal_button_nexty" title="'.lecho('cal_nav_next', $lang).'">next</span>'
 			.'</div>'."\n";
 	}
+	#$out .= '<div id="js_res_cal" class="res_cal conf_idx:'.$cal_conf['conf_idx'].'"></div>'."\n";
+	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.' conf_idx:'.$cal_conf['conf_idx'].'"></div>'."\n";
+	/*
 	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.' conf_idx:'.$cal_conf['conf_idx'].'">'."\n";
 	$start = mktime(5, 1, 1, 1, 1, $year); # 1Tag: 86.400
 	$prev = $start - 86400;
@@ -1687,7 +1690,8 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 		for($i=0; $i<37; $i++)
 		{
 			$class_we = ($i % 7 === 6 || $i % 7 === 5)? ' is_we' : '';
-			$out .= '<div class="float with_font cal_day empty'.$class_we.'">'.lecho('cal_head_'.$wd_arr[($i % 7)], $lang).'</div>';
+			#$out .= '<div class="float with_font cal_day empty'.$class_we.'">'.lecho('cal_head_'.$wd_arr[($i % 7)], $lang).'</div>';
+			$out .= '<div class="float with_font '.$class_we.'">'.lecho('cal_head_'.$wd_arr[($i % 7)], $lang).'</div>';
 		}
 		$out .= '</div>'."\n";
 	}
@@ -1800,12 +1804,14 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 		}
 	}
 	$out .= '</div>'."\n";
+	*/
 	if(true === $cal_only)
 	{
 		return $out;
 	}
 	$js_reserved = (0 === count($reserved))? false : '\''.implode('\',\'', $reserved).'\'';
-	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']={halfDay:'.((in_array('first_last_resday_half', $cal_conf['settings']))? 'true' : 'false' ).',days:\''. implode('|', $reserved) .'\'.split(\'|\')};var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
+	##$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']={halfDay:'.((in_array('first_last_resday_half', $cal_conf['settings']))? 'true' : 'false' ).',days:\''. implode('|', $reserved) .'\'.split(\'|\')};var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
+	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']='.json_encode($cal_conf).';var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
 	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
 	{
 		if(in_array('show_form', $cal_conf['form_settings']))

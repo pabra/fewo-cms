@@ -151,7 +151,9 @@ function titleToTip(){
 			if($.now() > self.prop('ttBoxMovTime')){
 				ttbevpos = {x:ev.pageX, y:ev.pageY};
 				self.prop({ttBoxMovTime: ($.now() + 25) });
-				ttB.css({top:toPosY(ev.pageY), left:toPosX(ev.pageX)});
+				if('none' !== ttB.css('display')){
+					ttB.css({top:toPosY(ev.pageY), left:toPosX(ev.pageX)});
+				}
 			}
 		});
 	});

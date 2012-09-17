@@ -1,4 +1,4 @@
-<?php # Thu, 13 Sep 2012 17:54:40 +0200
+<?php # Mon, 17 Sep 2012 00:11:10 +0200
 
 $pages = array (
 	'pages' => 
@@ -39,7 +39,7 @@ $pages = array (
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
 				'content' => '<h1>Weinb&ouml;hla- Natur pur in der N&auml;he von Dresden</h1>
-<p><a href="http://colorschemedesigner.com/#2z51TaarGhQhQ" target="_blank">color-scheme</a> und <a href="http://netzfruech.de/tools/color_3.php?color=A6C687&amp;color_c=5" target="_blank">Farbfamilie</a> und <a href="http://stackoverflow.com/questions/5766887/css-div-expanding-to-window-height-with-margin-bottom-fixed" target="_blank">100% height</a></p>
+<p><a href="http://colorschemedesigner.com/#2z51TaarGhQhQ" target="_blank">color-scheme</a> und <a href="http://netzfruech.de/tools/color_3.php?color=A6C687&amp;color_c=5" target="_blank">Farbfamilie</a> und <a href="http://stackoverflow.com/questions/5766887/css-div-expanding-to-window-height-with-margin-bottom-fixed" target="_blank">100% height</a>&nbsp;und <a href="http://jsfiddle.net/8RugM/2/" target="_blank">KW-JS-Fiddle</a></p>
 <p>Ferienbungalow zu vermieten:</p>
 <p>Im Weinanbaugebiet Weinb&ouml;hla (N&auml;he Dresden) zwischen Moritzburg und Mei&szlig;en im Landschaftsschutzgebiet.</p>
 <p>Der Bungalow befindet sich auf einem ca. 2500 Quadratmeter gro&szlig;en und gepflegten Gartengrundst&uuml;ck.</p>

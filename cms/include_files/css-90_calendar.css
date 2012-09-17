@@ -2,31 +2,31 @@ div.res_cal div.float { height:18px; width:18px; overflow:hidden; display:inline
 html.ie6 div.res_cal div.float { zoom:1; display:inline; }
 div.res_cal .brfl { clear:both; }
 div.res_cal div.row { white-space:nowrap; }
-div.res_cal div.cal_day { border:1px outset #EEE;  text-align:center; }
+div.res_cal div.cal_day { border:1px outset #ddd; border-radius:5px; text-align:center; }
 div.res_cal div.cal_day.empty { border-style:inset; }
 div.res_cal div.is_we { font-weight:bold; }
 div.res_cal div.with_font { padding-top:2px; height:16px; font-size:0.9em; background-color:#abc; }
-div.res_cal div.res_half { background-color:#abc; }
+div.res_cal div.res_half, div.res_cal div.row { background-color:#abc; }
 div.res_cal div.res_beg, div.res_cal div.res_end { background-color:transparent; }
-div.res_cal div.headline div.float { border:1px inset transparent; }
+div.res_cal div.headline div.float { text-align:center; border:1px inset transparent; }
 
 .cal_nav.buttonset { margin:10px 0px; }
 
 div.res_cal div.cal_index_month { border:1px inset transparent !important; }
 div.res_cal.t1 div.month_long, div.res_cal.t2 div.month_long { border:1px solid transparent; width:80px; }
 div.res_cal.t1 div.month_short, div.res_cal.t2 div.month_short { border:1px solid transparent; width:35px; }
-html.ie6 div.res_cal.t1 div.month_short, html.ie6 div.res_cal.t2 div.month_short, html.ie6 div.res_cal.t1 div.month_long, html.ie6 div.res_cal.t2 div.month_long { border-color:#eee; }
+html.ie6 div.res_cal.t1 div.month_short, html.ie6 div.res_cal.t2 div.month_short, html.ie6 div.res_cal.t1 div.month_long, html.ie6 div.res_cal.t2 div.month_long { border-color:#ddd; }
 
-div.res_cal div.month { display:inline-block; vertical-align:top; border:1px inset #eee; }
+div.res_cal div.month { display:inline-block; vertical-align:top; border:1px inset #ddd; }
 html.ie6 div.res_cal div.month { zoom:1; display:inline; }
-div.res_cal div.month_head { text-align:center; font-weight:bold; border:1px inset #EEE; }
+div.res_cal div.month_head { text-align:center; font-weight:bold; border:1px inset #ddd; }
 div.res_cal div.row.quarter { margin:5px 0px; }
 div.res_cal div.cal_kw { text-align:center; border:1px inset transparent; }
 
 div.res_cal div.res { background-color:#D3883D; } /* #D3883D */
 div.res_cal div.res_half { width:0px; height:0px; line-height:0px; position:absolute; top:0px; left:0px; border-width:18px 18px 0px 0px; border-style:solid; border-color:transparent; z-index:-1; }
 div.res_cal div.res_beg, div.res_cal div.res_end { z-index:0; }
-html.ie6 div.res_cal div.res_half { border-color:#eee; }
+html.ie6 div.res_cal div.res_half { border-color:#ddd; }
 div.res_cal div.res_half.half_beg { border-right-color:#D3883D !important; }
 div.res_cal div.res_half.helf_end { border-top-color:#D3883D !important; }
 

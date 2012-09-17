@@ -52,6 +52,137 @@ cal_handler_click = function(){
 		}
 	}
 }, select_begin = 0, select_end = 0;
+function js_res_cal(){
+	'use strict';
+	$('.res_cal').each(function(k,v){
+		var oCal = $(this),
+			cal_name = $(this).attr('id').replace('res_cal_', ''),
+			cal_idx = $(this).attr('class').match(/conf_idx:([a-zA-Z0-9]+)/)[1],
+			cal_type = ('|'+(oCal.attr('class').split(' ').join('|'))+'|').match(/\|t([0-9])\|/)[1],
+			monthNames = (-1 === $.inArray('short_month_names', reservations[cal_name].settings))? 'monthNames' : 'monthNamesShort',
+			monthNameClass = ('monthNamesShort' === monthNames)? 'month_short' : 'month_long',
+			year = 2012,
+			month = 1,
+			day = 1,
+			oMonth = !0,
+			oDay = !0,
+			oQdRow = !0,
+			oWeekRow = !0,
+			oDate = !0,
+			insertDays = !0,
+			i = !0,
+			regioDate = $.datepicker.regional[docLang],
+			regioMonth = regioDate[monthNames],
+			insertEmptyDay = function(c){
+				var i = 0, tmp = '';
+				c = parseInt(c, 10);
+				if(0 === c){
+					return;
+				}
+				oDay = $('<div/>').append( $('<div/>').html('&nbsp;').addClass('float with_font cal_day empty') ).html();
+				for(i=0; i<c; i++){
+					tmp += oDay ;
+				}
+				return tmp;
+			},
+			dayFormat = function(){
+				var thisDay = strToDate(''+year+'-'+month+'-'+day),
+					thisDayStr = dateToStr(thisDay);
+				oDay = $('<div/>').addClass('float with_font cal_day').html('&nbsp;');
+				if(false === thisDay){
+					oDay.addClass('empty');
+				} else {
+					if(thisDay.getDay() === 0 || thisDay.getDay() === 6){
+						oDay.addClass('is_we');
+					}
+					if(-1 !== $.inArray('with_headline', reservations[cal_name].settings) && cal_type === '1'){
+						oDay.html('&nbsp;');
+					} else {
+						oDay.text( dateToStr(thisDay, 'd') );
+					}
+					oDay.attr({
+							title: $.datepicker.formatDate('DD, dd. MM yy', thisDay ),
+							id:cal_name+'_d_'+thisDayStr
+						})
+						.addClass('content d_'+thisDayStr);
+				}
+				//oDay.click(function(){ alert($(this).text()); });
+				return oDay;
+			};
+		oCal.empty();
+		if('3' === cal_type){
+			for(month=1; month<=12; month++){
+				if(1 === month %3){
+					oQdRow = $('<div/>').addClass('row');
+				}
+				oMonth = $('<div/>').addClass('month').append( $('<div/>').addClass('month_head').text(regioMonth[month-1]) );
+				if(-1 !== $.inArray('with_headline', reservations[cal_name].settings)){
+					for(i=1; i<=7; i++){
+						oMonth.append( $('<div/>').text( regioDate.dayNamesMin[(i%7 === 0)? 0 : i%7] ).addClass('float with_font'+((i%7 === 6 || i%7 === 0)? ' is_we' : '')) );
+					}
+				}
+				for(day=1; day<=31; day++){
+					oDate = strToDate(''+year+'-'+month+'-'+day);
+					if(1 === day){
+						insertDays = strToDate(''+year+'-'+month+'-'+day).getDay() -1;
+						insertDays = (-1 === insertDays)? 6 : insertDays;
+						oWeekRow = $('<div/>').addClass('row');
+						oWeekRow.append( insertEmptyDay( insertDays ) );
+					} else if(1 === strToDate(''+year+'-'+month+'-'+day).getDay()){
+						oWeekRow = $('<div/>').addClass('row');
+					}
+					if(day < 28 || false !== strToDate(''+year+'-'+month+'-'+day)){
+						oWeekRow.append( dayFormat() );
+					} else {
+					
+					}
+				}
+				if(0 === month %3){
+					oCal.append( oQdRow );
+				}
+			}
+		} else {
+			if(-1 !== $.inArray('with_headline', reservations[cal_name].settings)){
+				if('1' === cal_type){
+					oMonth = $('<div/>').addClass('row headline');
+					oMonth.append( $('<div/>').addClass('float '+monthNameClass) );
+					for(day=1; day<=31; day++){
+						oMonth.append( $('<div/>').text( ('0'+day).match(/[0-9]{2}$/) ).addClass('float with_font') );
+					}
+					oCal.append(oMonth);
+				} else if('2' === cal_type){
+					oMonth = $('<div/>').addClass('row headline');
+					oMonth.append( $('<div/>').addClass('float '+monthNameClass) );
+					for(i=1; i<=37; i++){
+						oMonth.append( $('<div/>').text( regioDate.dayNamesMin[(i%7 === 0)? 0 : i%7] ).addClass('float with_font'+((i%7 === 6 || i%7 === 0)? ' is_we' : '')) );
+					}
+					oCal.append(oMonth);
+				}
+			}
+			for(month=1; month<=12; month++){
+				oMonth = $('<div/>').addClass('row');
+				oMonth.append( $('<div/>').addClass('float with_font cal_index_month '+monthNameClass).text( regioMonth[month-1] ) );
+				for(day=1; day<=31; day++){
+					if('2' === cal_type && 1 === day){
+						insertDays = strToDate(''+year+'-'+month+'-'+day).getDay() -1;
+						insertDays = (-1 === insertDays)? 6 : insertDays;
+						oMonth.append( insertEmptyDay( insertDays ) );
+					}
+					oMonth.append( dayFormat() );
+					if('2' === cal_type && 31 === day){
+						insertDays = 37 - 31 - insertDays;
+						oMonth.append( insertEmptyDay( insertDays ) );
+					}
+				}
+				oCal.append( oMonth );
+			}
+		}
+		$('#js_res_cal').html(oCal);
+		titleToTip();
+		bind_nav_buttons();
+		let_select();
+	});
+}
 function id2int(s){
 	'use strict';
 	return parseInt(s.replace(/^[a-zA-Z0-9_-]+_d_/, '').replace(/-/g, ''), 10);
@@ -81,8 +212,8 @@ function let_select(){
 		.bind('mouseleave', cal_handler_leave)
 		.bind('click', cal_handler_click);
 }
-function bind_nav_buttons()
-{
+function bind_nav_buttons(){
+	'use strict';
 	$('.cal_nav.buttonset').each(function(k,v){
 		var this_idx = $(this).attr('id').replace('cal_idx_', ''),
 			this_year = strToDate( $('.res_cal[class~="conf_idx:'+this_idx+'"] .content:first').attr('id').match(/_d_([0-9-]+)$/)[1] ).getFullYear(),
@@ -197,7 +328,7 @@ function strToDate(s){
 }
 function dateToStr(d, f){
 	'use strict';
-	var i = 0, l, c, o = '';
+	var i = 0, l, c, o = '', tmp='';
 	if('function' !== typeof(d.getDate)){
 		return false;
 	}
@@ -209,16 +340,19 @@ function dateToStr(d, f){
 		c = f.substr(i, 1);
 		switch(c){
 			case 'y':
-				o += (''+d.getFullYear()).substr(-2);
+				tmp = ''+d.getFullYear();
+				o += tmp.substr(tmp.length -2);
 				break;
 			case 'Y':
 				o += (''+d.getFullYear());
 				break;
 			case 'm':
-				o += ('0'+(d.getMonth() +1)).substr(-2);
+				tmp = '0'+(d.getMonth() +1);
+				o += tmp.substr(tmp.length -2);
 				break;
 			case 'd':
-				o += ('0'+ d.getDate()).substr(-2);
+				tmp = '0'+ d.getDate();
+				o += tmp.substr(tmp.length -2);
 				break;
 			default:
 				o += c;
@@ -247,11 +381,33 @@ function walkDays(d, w, f){
 		return dateToStr(d, f);
 	}
 }
+function dateKW(d){
+	'use strict';
+	if('string' === typeof(d)){
+		d = strToDate(d);
+	}
+	if('function' !== typeof(d.getDate)){
+		return false;
+	}
+	var fow = walkDays(d, ((d.getDay() === 0)? 6 : (d.getDay() -1)) *(-1), 'oDate');
+	if(fow.getMonth() === 11 && fow.getDate() >= 29){
+		return 1;
+	}
+	var foy = strToDate(d.getFullYear()+'-1-1');
+	var fofw = walkDays(foy, ((foy.getDay() === 0)? 6 : (foy.getDay() -1)) *(-1), 'oDate');
+	var fkw = (fofw.getDate() === 1 || fofw.getDate() >= 29)? 1 : 0;
+	var dbw = (fow.getTime() - fofw.getTime()) /1000 /60/60/24;
+	var wbw = dbw / 7;
+	return Math.round(wbw + fkw); 
+}
 $(function(){
 	'use strict';
 	if(0 < $('.res_cal').length){
-		bind_nav_buttons();
-		let_select();
+		//js_res_cal();
+		$('#content').prepend( $('<button/>').text('klick').click(function(){ js_res_cal(); }) );
+		//titleToTip();
+		//bind_nav_buttons();
+		//let_select();
 	}
 	if(0 !== $('.res_form').length){
 		$.datepicker.setDefaults( $.datepicker.regional[ "en-GB" ] );
