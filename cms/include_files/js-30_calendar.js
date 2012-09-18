@@ -128,13 +128,14 @@ function js_res_cal(){
 						insertDays = (-1 === insertDays)? 6 : insertDays;
 						oWeekRow = $('<div/>').addClass('row');
 						oWeekRow.append( insertEmptyDay( insertDays ) );
-					} else if(1 === strToDate(''+year+'-'+month+'-'+day).getDay()){
+					} else if(false !== oDate && 1 === oDate.getDay()){
 						oWeekRow = $('<div/>').addClass('row');
 					}
-					if(day < 28 || false !== strToDate(''+year+'-'+month+'-'+day)){
+					if(day < 28 || false !== oDate){
 						oWeekRow.append( dayFormat() );
-					} else {
-					
+					} else if(false === oDate{
+						oMonth.append(oWeekRow);
+						
 					}
 				}
 				if(0 === month %3){
@@ -178,9 +179,9 @@ function js_res_cal(){
 			}
 		}
 		$('#js_res_cal').html(oCal);
-		titleToTip();
-		bind_nav_buttons();
-		let_select();
+		//titleToTip();
+		//bind_nav_buttons();
+		//let_select();
 	});
 }
 function id2int(s){
