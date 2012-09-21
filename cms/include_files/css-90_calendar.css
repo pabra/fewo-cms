@@ -1,3 +1,4 @@
+div.res_cal { display:inline-block; background-color:#abc; padding:5px; border-radius:15px; border:1px solid #333;}
 div.res_cal div.float { height:18px; width:18px; overflow:hidden; display:inline-block; margin:0px; padding:0px; position:relative; }
 html.ie6 div.res_cal div.float { zoom:1; display:inline; }
 div.res_cal .brfl { clear:both; }
@@ -6,7 +7,7 @@ div.res_cal div.cal_day { border:1px outset #ddd; border-radius:5px; text-align:
 div.res_cal div.cal_day.empty { border-style:inset; }
 div.res_cal div.is_we { font-weight:bold; }
 div.res_cal div.with_font { padding-top:2px; height:16px; font-size:0.9em; background-color:#abc; }
-div.res_cal div.res_half, div.res_cal div.row { background-color:#abc; }
+/*div.res_cal div.res_half, div.res_cal div.row { background-color:#abc; }*/
 div.res_cal div.res_beg, div.res_cal div.res_end { background-color:transparent; }
 div.res_cal div.headline div.float { text-align:center; border:1px inset transparent; }
 
@@ -17,10 +18,11 @@ div.res_cal.t1 div.month_long, div.res_cal.t2 div.month_long { border:1px solid 
 div.res_cal.t1 div.month_short, div.res_cal.t2 div.month_short { border:1px solid transparent; width:35px; }
 html.ie6 div.res_cal.t1 div.month_short, html.ie6 div.res_cal.t2 div.month_short, html.ie6 div.res_cal.t1 div.month_long, html.ie6 div.res_cal.t2 div.month_long { border-color:#ddd; }
 
-div.res_cal div.month { display:inline-block; vertical-align:top; border:1px inset #ddd; }
+div.res_cal div.month { display:inline-block; vertical-align:top; border-radius:5px; margin:0px 5px;}
 html.ie6 div.res_cal div.month { zoom:1; display:inline; }
-div.res_cal div.month_head { text-align:center; font-weight:bold; border:1px inset #ddd; }
+div.res_cal div.month_head { text-align:center; font-weight:bold; border:0px inset #ddd; border-radius:5px; margin:5px 0px;}
 div.res_cal div.row.quarter { margin:5px 0px; }
+div.res_cal.t3 > .row { padding:5px; }
 div.res_cal div.cal_kw { text-align:center; border:1px inset transparent; }
 
 div.res_cal div.res { background-color:#D3883D; } /* #D3883D */

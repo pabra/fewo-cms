@@ -71,6 +71,7 @@ function js_res_cal(){
 			oDate = !0,
 			insertDays = !0,
 			i = !0,
+			tmp = !0,
 			regioDate = $.datepicker.regional[docLang],
 			regioMonth = regioDate[monthNames],
 			insertEmptyDay = function(c){
@@ -117,27 +118,43 @@ function js_res_cal(){
 				}
 				oMonth = $('<div/>').addClass('month').append( $('<div/>').addClass('month_head').text(regioMonth[month-1]) );
 				if(-1 !== $.inArray('with_headline', reservations[cal_name].settings)){
-					for(i=1; i<=7; i++){
-						oMonth.append( $('<div/>').text( regioDate.dayNamesMin[(i%7 === 0)? 0 : i%7] ).addClass('float with_font'+((i%7 === 6 || i%7 === 0)? ' is_we' : '')) );
+					oWeekRow = $('<div/>').addClass('row headline');
+					if(-1 !== $.inArray('kw_t3', reservations[cal_name].settings)){
+						oWeekRow.append( $('<div/>').text( regioDate.weekHeader ).addClass('float with_font')  );
 					}
+					for(i=1; i<=7; i++){
+						oWeekRow.append( $('<div/>').text( regioDate.dayNamesMin[(i%7 === 0)? 0 : i%7] ).addClass('float with_font'+((i%7 === 6 || i%7 === 0)? ' is_we' : '')) );
+					}
+					oMonth.append( oWeekRow );
 				}
 				for(day=1; day<=31; day++){
 					oDate = strToDate(''+year+'-'+month+'-'+day);
-					if(1 === day){
-						insertDays = strToDate(''+year+'-'+month+'-'+day).getDay() -1;
-						insertDays = (-1 === insertDays)? 6 : insertDays;
+					if(1 === day || 1 === oDate.getDay()){
 						oWeekRow = $('<div/>').addClass('row');
-						oWeekRow.append( insertEmptyDay( insertDays ) );
-					} else if(false !== oDate && 1 === oDate.getDay()){
-						oWeekRow = $('<div/>').addClass('row');
+						if(-1 !== $.inArray('kw_t3', reservations[cal_name].settings)){
+							tmp = '0'+dateKW(oDate);
+							oWeekRow.append( $('<div/>').addClass('float with_font cal_kw').text( tmp.substr( tmp.length -2) ) );
+						}
 					}
-					if(day < 28 || false !== oDate){
-						oWeekRow.append( dayFormat() );
-					} else if(false === oDate{
-						oMonth.append(oWeekRow);
-						
+					if(1 === day){
+						insertDays = oDate.getDay() -1;
+						insertDays = (-1 === insertDays)? 6 : insertDays;
+						oWeekRow.append( insertEmptyDay( insertDays ) );
+					}
+					oWeekRow.append( dayFormat() );
+					if(oDate.getDay() === 0){
+						//oWeekRow.append( insertEmptyDay( 15 ));
+						oMonth.append( oWeekRow );
+					}
+					if(day > 27 && oDate.getMonth() !== walkDays(oDate, 1, 'oDate').getMonth()){
+						//clog( year+'-'+month+'-'+day + ': '+oDate.getDay());
+						walkDays(oDate, 1, 'oDate');
+						oWeekRow.append( insertEmptyDay( ((oDate.getDay() === 0)? 0 : 7 - oDate.getDay() ) ) );
+						oMonth.append( oWeekRow );
+						day = 31;
 					}
 				}
+				oQdRow.append( oMonth );
 				if(0 === month %3){
 					oCal.append( oQdRow );
 				}
@@ -179,6 +196,15 @@ function js_res_cal(){
 			}
 		}
 		$('#js_res_cal').html(oCal);
+		reservations[cal_name].reserved = reservations[cal_name].reserved.split('|');
+		$.each(reservations[cal_name].reserved, function(k,v){
+			var inRes = false;
+			if(false === inRes && -1 !== v.indexOf('-10')){
+				inRes = true;
+			}
+			clog(v);
+			clog(inRes);
+		});
 		//titleToTip();
 		//bind_nav_buttons();
 		//let_select();
@@ -364,6 +390,7 @@ function dateToStr(d, f){
 }
 function walkDays(d, w, f){
 	'use strict';
+	var nDat = new Date(d.getTime());
 	if('string' === typeof(d)){
 		d = strToDate(d);
 	}
@@ -375,11 +402,11 @@ function walkDays(d, w, f){
 	} else {
 		w = parseInt(w, 10);
 	}
-	d.setDate(d.getDate() + w);
+	nDat.setDate(d.getDate() + w);
 	if('undefined' !== typeof(f) && 'oDate' === f){
-		return d;
+		return nDat;
 	} else {
-		return dateToStr(d, f);
+		return dateToStr(nDat, f);
 	}
 }
 function dateKW(d){
@@ -396,6 +423,9 @@ function dateKW(d){
 	}
 	var foy = strToDate(d.getFullYear()+'-1-1');
 	var fofw = walkDays(foy, ((foy.getDay() === 0)? 6 : (foy.getDay() -1)) *(-1), 'oDate');
+	if(fow.getTime() === fofw.getTime()){
+		return dateKW(fow);
+	}
 	var fkw = (fofw.getDate() === 1 || fofw.getDate() >= 29)? 1 : 0;
 	var dbw = (fow.getTime() - fofw.getTime()) /1000 /60/60/24;
 	var wbw = dbw / 7;

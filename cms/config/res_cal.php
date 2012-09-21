@@ -1,4 +1,4 @@
-<?php # Tue, 18 Sep 2012 12:53:01 +0200
+<?php # Wed, 19 Sep 2012 23:06:58 +0200
 
 $res_cal = array (
 	'calendar' => 
@@ -10,7 +10,9 @@ $res_cal = array (
 				'name' => 'kalender_1',
 				'settings' => 
 				array (
-					0 => 'first_last_resday_half',
+					0 => 'kw_t3',
+					1 => 'with_headline',
+					2 => 'first_last_resday_half',
 				),
 				'form_settings' => 
 				array (
