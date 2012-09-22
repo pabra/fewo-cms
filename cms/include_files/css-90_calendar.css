@@ -9,7 +9,7 @@ div.res_cal div.is_we { font-weight:bold; }
 div.res_cal div.with_font { padding-top:2px; height:16px; font-size:0.9em; background-color:#abc; }
 /*div.res_cal div.res_half, div.res_cal div.row { background-color:#abc; }*/
 div.res_cal div.res_beg, div.res_cal div.res_end { background-color:transparent; }
-div.res_cal div.headline div.float { text-align:center; border:1px inset transparent; }
+div.res_cal div.headline div.float { text-align:center; border:1px inset transparent; overflow:visible; }
 
 .cal_nav.buttonset { margin:10px 0px; }
 
@@ -30,11 +30,9 @@ div.res_cal div.res_half { width:0px; height:0px; line-height:0px; position:abso
 div.res_cal div.res_beg, div.res_cal div.res_end { z-index:0; }
 html.ie6 div.res_cal div.res_half { border-color:#ddd; }
 div.res_cal div.res_half.half_beg { border-right-color:#D3883D !important; }
-div.res_cal div.res_half.helf_end { border-top-color:#D3883D !important; }
+div.res_cal div.res_half.half_end { border-top-color:#D3883D !important; }
 
 div.res_cal div.content.cal_selectable { cursor:pointer; }
 div.res_cal div.content.cal_select, div.res_cal div.content.cal_selectable:hover { border:1px inset lime; }
 div.res_cal div.content.cal_select_begin { border:1px inset green; }
 div.res_cal div.content.cal_select_end { border:1px inset green; }
-
-

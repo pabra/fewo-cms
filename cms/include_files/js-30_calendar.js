@@ -60,6 +60,7 @@ function js_res_cal(){
 			cal_idx = $(this).attr('class').match(/conf_idx:([a-zA-Z0-9]+)/)[1],
 			cal_type = ('|'+(oCal.attr('class').split(' ').join('|'))+'|').match(/\|t([0-9])\|/)[1],
 			monthNames = (-1 === $.inArray('short_month_names', reservations[cal_name].settings))? 'monthNames' : 'monthNamesShort',
+			resHalfDay = (-1 !== $.inArray('first_last_resday_half', reservations[cal_name].settings))? true : false,
 			monthNameClass = ('monthNamesShort' === monthNames)? 'month_short' : 'month_long',
 			year = 2012,
 			month = 1,
@@ -195,16 +196,21 @@ function js_res_cal(){
 				oCal.append( oMonth );
 			}
 		}
-		$('#js_res_cal').html(oCal);
-		reservations[cal_name].reserved = reservations[cal_name].reserved.split('|');
+		if('string' === typeof(reservations[cal_name].reserved)){
+			reservations[cal_name].reserved = reservations[cal_name].reserved.split('|').sort();
+		}
 		$.each(reservations[cal_name].reserved, function(k,v){
-			var inRes = false;
-			if(false === inRes && -1 !== v.indexOf('-10')){
-				inRes = true;
+			if(v.match(new RegExp('^'+(year+'').substr(2)+'-'))){
+				if(true === resHalfDay && -1 === $.inArray(walkDays(v, -1), reservations[cal_name].reserved)){
+					oCal.find('.d_'+v).addClass('res_beg').prepend( $('<div/>').addClass('res_half half_beg') );
+				} else if(true === resHalfDay && -1 === $.inArray(walkDays(v, +1), reservations[cal_name].reserved)){
+					oCal.find('.d_'+v).addClass('res_end').prepend( $('<div/>').addClass('res_half half_end') );
+				} else {
+					oCal.find('.d_'+v).addClass('res');
+				}
 			}
-			clog(v);
-			clog(inRes);
 		});
+		$('#js_res_cal').html(oCal);
 		//titleToTip();
 		//bind_nav_buttons();
 		//let_select();
@@ -390,13 +396,13 @@ function dateToStr(d, f){
 }
 function walkDays(d, w, f){
 	'use strict';
-	var nDat = new Date(d.getTime());
 	if('string' === typeof(d)){
 		d = strToDate(d);
 	}
 	if('function' !== typeof(d.getDate)){
 		return false;
 	}
+	var nDat = new Date(d.getTime());
 	if('undefined' === typeof(w)){
 		w = 1;
 	} else {
