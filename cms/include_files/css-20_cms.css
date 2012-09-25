@@ -55,7 +55,7 @@ form .mismatch label { color:maroon; }
 form .mismatch input, form .mismatch textarea, form .mismatch select { color:maroon; border-color:maroon; }
 .idx_nav li { margin:2px; position:relative; padding:4px 0; cursor:pointer; float:left; list-style:none; }
 .idx_nav span.ui-icon { width:16px; float:left; margin:0 4px; }
-input, textarea, select { border:1px solid #333; width:180px; border-radius:5px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#ccc 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
+input, textarea, select { border:1px solid #333; width:180px; border-radius:5px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#aaa 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
 input.w1, textarea.w1, select.w1 { width:47px; }
 input.w2, textarea.w2, select.w2 { width:121px; }
 input.w3, textarea.w3, select.w3 { width:84px; }
@@ -129,6 +129,3 @@ ul.menu a { font-size:12pt; }
 /*li.active { background-color:rgba(180,42,42,0.4); }*/
 /*li.has_active { background-color:rgba(125,42,42,0.4); }*/
 /*li.has_sub > a:after { content:"\2022"; }*/
-
-
-

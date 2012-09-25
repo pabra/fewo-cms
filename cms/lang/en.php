@@ -34,6 +34,7 @@ $lang = array(
 	'config_calendar_settings_with_headline' => 'show headline',
 	'config_calendar_settings_short_month_names' => 'short month names',
 	'config_calendar_settings_first_last_resday_half' => 'half-day reservation',
+	'config_calendar_settings_no_day_title' => 'no Tooltip on days',
 	'' => '',
 	'' => '',
 	# fileupload

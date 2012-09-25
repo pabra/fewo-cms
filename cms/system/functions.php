@@ -1632,8 +1632,8 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 			$year = date('Y');
 	}
 	$cal_conf = get_config_data('res_cal', 'calendar', $cal_conf_index);
-	#var_dump($cal_conf);
-	#die();
+	//~ var_dump($cal_conf);
+	//~ die();
 	if(null === $cal_conf)
 	{
 		return null;
@@ -1651,20 +1651,16 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 	$with_headline = (in_array('with_headline', $cal_conf['settings']))? true : false;
 	$month_name_length = (in_array('short_month_names', $cal_conf['settings']))? 'short' : 'long'; # long / short
 	$res_first_last_half = (in_array('first_last_resday_half', $cal_conf['settings']))? true : false;
-	$year_allowed_from = date('Y') -1;
-	$year_allowed_to = date('Y') +2;
-	$year = ($year < $year_allowed_from)? $year_allowed_from : $year;
-	$year = ($year > $year_allowed_to)? $year_allowed_to : $year;
 	$wd_arr = array('mo','tu','we','th','fr','sa','su');
 	$out = '';
 	if(false === $cal_only)
 	{
 		#$out .= '<a href="'.merge_href('self', array('y'=>$prev_y)).'">&lt;--</a> <a href="'.merge_href('self', array('y'=>date('Y'))).'">'.$year.'</a> <a href="'.merge_href('self', array('y'=>$next_y)).'">--&gt;</a><br/>'."\n";
-		$out .= '<div class="buttonset cal_nav" id="cal_idx_'.$cal_conf['conf_idx'].'">'
-			.'<span class="cal_button cal_button_prevy" title="'.lecho('cal_nav_prev', $lang).'">previous</span>'
-			.'<span class="cal_button cal_button_thisy" title="'.lecho('cal_nav_this', $lang).'">this</span>'
-			.'<span class="cal_button cal_button_nexty" title="'.lecho('cal_nav_next', $lang).'">next</span>'
-			.'</div>'."\n";
+		//~ $out .= '<div class="buttonset cal_nav" id="cal_idx_'.$cal_conf['conf_idx'].'">'
+			//~ .'<span class="cal_button cal_button_prevy" title="'.lecho('cal_nav_prev', $lang).'">previous</span>'
+			//~ .'<span class="cal_button cal_button_thisy" title="'.lecho('cal_nav_this', $lang).'">this</span>'
+			//~ .'<span class="cal_button cal_button_nexty" title="'.lecho('cal_nav_next', $lang).'">next</span>'
+			//~ .'</div>'."\n";
 	}
 	#$out .= '<div id="js_res_cal" class="res_cal conf_idx:'.$cal_conf['conf_idx'].'"></div>'."\n";
 	$out .= '<div id="res_cal_'.$cal_conf['name'].'" class="res_cal t'.$type.' conf_idx:'.$cal_conf['conf_idx'].'"></div>'."\n";
@@ -1811,7 +1807,7 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 	}
 	$js_reserved = (0 === count($reserved))? false : '\''.implode('\',\'', $reserved).'\'';
 	##$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']={halfDay:'.((in_array('first_last_resday_half', $cal_conf['settings']))? 'true' : 'false' ).',days:\''. implode('|', $reserved) .'\'.split(\'|\')};var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
-	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']='.json_encode($cal_conf).';var res_cal_year_from='.$year_allowed_from.',res_cal_year_to='.$year_allowed_to.',res_cal_current_year='.date('Y').';/*]]>*/</script>'."\n";
+	$out .= '<script type="text/javascript">/*<![CDATA[*/ if(\'undefined\'===typeof(reservations)){var reservations={};} reservations[\''.$cal_conf['name'].'\']='.json_encode($cal_conf).';var res_cal_current_year='.date('Y').';if(\'undefined\'===typeof(lang_obj)){var lang_obj={};} if(!lang_obj.'.$lang.'){lang_obj.'.$lang.'={};} lang_obj.'.$lang.'.cal_nav_prev='.json_encode(lecho('cal_nav_prev', $lang)).';lang_obj.'.$lang.'.cal_nav_this='.json_encode(lecho('cal_nav_this', $lang)).';lang_obj.'.$lang.'.cal_nav_next='.json_encode(lecho('cal_nav_next', $lang)).';/*]]>*/</script>'."\n";
 	if('admin&' !== substr($_SERVER['QUERY_STRING'], 0, 6))
 	{
 		if(in_array('show_form', $cal_conf['form_settings']))

@@ -1,59 +1,11 @@
-var cal_handler_enter = function(){
+/*global clog, docLang, reservations, titleToTip, lecho, res_cal_current_year*/
+var resCalHandlerEnter, resCalHandlerLeave, resCalHandlerClick;
+
+function js_res_cal(options){
 	'use strict';
-	//$(this).addClass('cal_select');
-	if(0!==select_begin && 0===select_end){
-		select_range(select_begin, id2int($(this).attr('id')), $(this).parents('.res_cal').first().attr('id').replace(/^res_cal_/, ''));
+	if('undefined' === typeof(options)){
+		options = {};
 	}
-},
-cal_handler_leave = function(){
-	'use strict';
-	//$(this).removeClass('cal_select');
-	if(0!==select_begin && 0===select_end){
-		$('div.res_cal div.cal_select').removeClass('cal_select');
-	}
-},
-cal_handler_click = function(){
-	'use strict';
-	var d_match = id2int($(this).attr('id')),
-		cal_name = $(this).parents('.res_cal').first().attr('id').replace(/^res_cal_/, ''),
-		d_arr = $(this).attr('id').match(/_d_(([0-9]{2})-([0-9]{2})-([0-9]{2}))$/),
-		d_date = new Date(('20'+d_arr[2]), (parseInt(d_arr[3], 10)-1), d_arr[4]);
-	if(0 === select_begin){
-		$(this).addClass('cal_select_begin');
-		select_begin = d_match;
-		if(1 === $('#reservation_from_'+cal_name).length){
-			$('#reservation_from_'+cal_name).datepicker('setDate', d_date);
-			$('#reservation_to_'+cal_name).val('');
-			//clog(d_arr);
-		}
-	} else if(0 === select_end){
-		$(this).addClass('cal_select_end');
-		select_end = d_match;
-		if(1 === $('#reservation_to_'+cal_name).length){
-			if(select_end < select_begin){
-				$('#reservation_to_'+cal_name).datepicker('setDate', $('#reservation_from_'+cal_name).datepicker('getDate') );
-				$('#reservation_from_'+cal_name).datepicker('setDate', d_date);
-			} else {
-				$('#reservation_to_'+cal_name).datepicker('setDate', d_date);
-			}
-			//clog(d_arr);
-			clog(select_begin);
-			clog(select_end);
-			select_begin=0;
-			select_end=0;
-			$('div.res_cal .cal_select').removeClass('cal_select cal_select_begin cal_select_end');
-		} else {
-			$('div.res_cal div.content')
-				.css({cursor:'default'})
-				.unbind('mouseenter', cal_handler_enter)
-				.unbind('mouseleave', cal_handler_leave)
-				.unbind('click', cal_handler_click);
-			$('.add_timespan_buttonset').show('slide',{direction:'up'},300);
-		}
-	}
-}, select_begin = 0, select_end = 0;
-function js_res_cal(){
-	'use strict';
 	$('.res_cal').each(function(k,v){
 		var oCal = $(this),
 			cal_name = $(this).attr('id').replace('res_cal_', ''),
@@ -61,18 +13,11 @@ function js_res_cal(){
 			cal_type = ('|'+(oCal.attr('class').split(' ').join('|'))+'|').match(/\|t([0-9])\|/)[1],
 			monthNames = (-1 === $.inArray('short_month_names', reservations[cal_name].settings))? 'monthNames' : 'monthNamesShort',
 			resHalfDay = (-1 !== $.inArray('first_last_resday_half', reservations[cal_name].settings))? true : false,
+			noDayTitle = (-1 !== $.inArray('no_day_title', reservations[cal_name].settings))? true : false,
 			monthNameClass = ('monthNamesShort' === monthNames)? 'month_short' : 'month_long',
-			year = 2012,
 			month = 1,
 			day = 1,
-			oMonth = !0,
-			oDay = !0,
-			oQdRow = !0,
-			oWeekRow = !0,
-			oDate = !0,
-			insertDays = !0,
-			i = !0,
-			tmp = !0,
+			year,oMonth,oDay,oQdRow,oWeekRow,oDate,insertDays,i,tmp,
 			regioDate = $.datepicker.regional[docLang],
 			regioMonth = regioDate[monthNames],
 			insertEmptyDay = function(c){
@@ -102,15 +47,24 @@ function js_res_cal(){
 					} else {
 						oDay.text( dateToStr(thisDay, 'd') );
 					}
-					oDay.attr({
-							title: $.datepicker.formatDate('DD, dd. MM yy', thisDay ),
-							id:cal_name+'_d_'+thisDayStr
-						})
+					oDay.attr({id:cal_name+'_d_'+thisDayStr})
 						.addClass('content d_'+thisDayStr);
+					if(false === noDayTitle){
+						oDay.attr({title: $.datepicker.formatDate('DD, dd. MM yy', thisDay, regioDate )});
+					}
 				}
 				//oDay.click(function(){ alert($(this).text()); });
 				return oDay;
 			};
+		if(options.cal && cal_name !== options.cal){
+			return;
+		}
+		year = (options.year)? parseInt(options.year, 10) : res_cal_current_year;
+		if(year === reservations[cal_name].showYear){
+			$('#res_nav_'+cal_name+' :button').button('enable'); 
+			return;
+		}
+		reservations[cal_name].showYear = year;
 		oCal.empty();
 		if('3' === cal_type){
 			for(month=1; month<=12; month++){
@@ -210,117 +164,165 @@ function js_res_cal(){
 				}
 			}
 		});
-		$('#js_res_cal').html(oCal);
-		//titleToTip();
-		//bind_nav_buttons();
-		//let_select();
-	});
-}
-function id2int(s){
-	'use strict';
-	return parseInt(s.replace(/^[a-zA-Z0-9_-]+_d_/, '').replace(/-/g, ''), 10);
-}
-function select_range(r_beg, r_end, cal_name){
-	'use strict';
-	var tmp, tmpStr;
-	if(r_end < r_beg){
-		tmp = r_beg;
-		r_beg = r_end;
-		r_end = tmp;
-	}
-	for(tmp = r_beg; tmp <= r_end; tmp++){
-		tmp = ((''+tmp).substr(4)==='32')? tmp+69 : tmp;
-		tmpStr = ''+tmp;
-		tmpStr = cal_name+'_d_'+tmpStr.substr(0,2)+'-'+tmpStr.substr(2,2)+'-'+tmpStr.substr(4,2);
-		$('#'+tmpStr).addClass('cal_select');
-	}
-}
-function let_select(){
-	'use strict';
-	select_begin = 0;
-	select_end = 0;
-	$('div.res_cal div.content')
-		.addClass('cal_selectable')
-		.bind('mouseenter', cal_handler_enter)
-		.bind('mouseleave', cal_handler_leave)
-		.bind('click', cal_handler_click);
-}
-function bind_nav_buttons(){
-	'use strict';
-	$('.cal_nav.buttonset').each(function(k,v){
-		var this_idx = $(this).attr('id').replace('cal_idx_', ''),
-			this_year = strToDate( $('.res_cal[class~="conf_idx:'+this_idx+'"] .content:first').attr('id').match(/_d_([0-9-]+)$/)[1] ).getFullYear(),
-			disable_prev = (this_year <= res_cal_year_from)? true : false,
-			disable_next = (this_year >= res_cal_year_to)? true : false,
-			button_prev = $(this).find('.cal_button_prevy'),
-			button_next = $(this).find('.cal_button_nexty'),
-			button_this = $(this).find('.cal_button_thisy');
-		//clog(this_year);
-		button_prev.prop({gotoYear: (this_year -1)});
-		button_next.prop({gotoYear: (this_year +1)});
-		button_this.prop({gotoYear: res_cal_current_year});
-		if(!$(this).hasClass('ui-buttonset')){
-			button_prev.button({
-				icons:{ primary: 'ui-icon-circle-triangle-w' },
-				text: false,
-				disabled: disable_prev
-			});
-			button_next.button({
-				icons:{ primary: 'ui-icon-circle-triangle-e' },
-				text: false,
-				disabled: disable_next
-			});
-			button_this.button({
-				icons:{ primary: 'ui-icon-circle-triangle-s' }/*,
-				label: this_year*/
-			});
-			//$(this).buttonset();
+		if(options.withNavBtn){
+			oCal.before( $('<span/>')
+				.addClass('buttonset resNavBtnSet')
+				.attr({id:'res_nav_'+cal_name})
+				.append( $('<button/>')
+					.addClass('prevYear')
+					.click(function(){ $('#res_nav_'+cal_name+' button').button('disable'); $('#ttBox').hide(); window.setTimeout(function(){ js_res_cal({year:reservations[cal_name].showYear -1, cal:cal_name}); },10); })
+					.button({icons:{ primary: 'ui-icon-circle-triangle-w' }, text:false, label:lecho('cal_nav_prev')})
+				)
+				.append( $('<button/>')
+					.addClass('thisYear')
+					.attr({title:lecho('cal_nav_this')})
+					.click(function(){ $('#res_nav_'+cal_name+' button').button('disable'); $('#ttBox').hide(); window.setTimeout(function(){ js_res_cal({year:res_cal_current_year, cal:cal_name}); },10); })
+					.button({label:year})
+				)
+				.append( $('<button/>')
+					.addClass('nextYear')
+					.click(function(){ $('#res_nav_'+cal_name+' button').button('disable'); $('#ttBox').hide(); window.setTimeout(function(){ js_res_cal({year:reservations[cal_name].showYear +1, cal:cal_name}); },10); })
+					.button({icons:{ primary: 'ui-icon-circle-triangle-e' }, text:false, label:lecho('cal_nav_next')})
+				));
+		} else {
+			$('#res_nav_'+cal_name+' .thisYear').button('option', {label:year});
+			$('#res_nav_'+cal_name+' button').button('enable');
+			resCalShowSelection({cal:cal_name,globalFromTo:true});
 		}
-		button_prev.button('option',{disabled:disable_prev});
-		button_next.button('option',{disabled:disable_next});
-		button_this.button('option',{disabled:false, label:this_year});
-		$(this).find('.cal_button').unbind('click').click(function(){
-			var gotoYear = $(this).prop('gotoYear'),
-				direction = (gotoYear < this_year)? {dOut:'right',dIn:'left'} : {dIn:'right',dOut:'left'};
-			if(gotoYear !== this_year && gotoYear >= res_cal_year_from && gotoYear <= res_cal_year_to){
-				//clog('goto: '+gotoYear);
-				$(this).parent().find('.cal_button').removeClass('ui-state-hover').button('option',{disabled:true});
-				disableToolTips('hide');
-				$.get('?res_cal:'+this_idx+':'+gotoYear+':'+docLang, function(data){
-					//data = $(data);
-					//data.find('.res_cal').css({display:'hidden'});
-					//clog(data);
-					$('.res_cal[class~="conf_idx:'+this_idx+'"]').replaceWith( data );
-					/*$('.res_cal[class~="conf_idx:'+this_idx+'"]')
-						.wrap('<div class="wrap" />')
-						.parent()
-						.toggle('blind',{direction:'horizontal'},500, function(){
-							//clog(this);
-							$(this).children().replaceWith(data);
-							$(this).toggle('blind',{direction:'horizontal'},500, function(){
-								//clog(this);
-								$(this).children().unwrap();
-								bind_nav_buttons();
-								titleToTip();
-								let_select();
-							});
-						});*/
-					/*$('.res_cal[class~="conf_idx:'+this_idx+'"]').toggle('slide',{direction:direction},300, function(){
-						$(this).children().replaceWith( $(data).children() );
-						//clog(this);
-						$(this).toggle('slide',{},300);
-					});*/
-					bind_nav_buttons();
-					titleToTip();
-					let_select();
-				});
-			}
-		});
+		titleToTip();
+		resCalLetSelect({cal:cal_name});
 	});
+}
+function resCalResInSel(opt){
+	'use strict';
+	var resHalfDay = (-1 !== $.inArray('first_last_resday_half', reservations[opt.cal].settings))? true : false;
+	if('undefined' === typeof(opt)){
+		opt = {};
+	}
+	if(!opt.cal){
+		return false;
+	}
+	if(false === reservations[opt.cal].sel1 instanceof(Date) || false === reservations[opt.cal].sel2 instanceof(Date)){
+		return false;
+	}
+}
+function resCalShowSelection(opt){
+	'use strict';
+	var tmp, tmpTo;
+	if('undefined' === typeof(opt)){
+		opt = {};
+	}
+	if(!opt.cal || ((!opt.from || !opt.to) && true !== opt.globalFromTo)){
+		return false;
+	}
+	if(true === opt.globalFromTo){
+		opt.from = (reservations[opt.cal].sel1)? reservations[opt.cal].sel1 : reservations[opt.cal].sel2;
+		opt.to   = (reservations[opt.cal].sel2)? reservations[opt.cal].sel2 : reservations[opt.cal].sel1;
+	}
+	if('string' === typeof(opt.from)){
+		opt.from = strToDate(opt.from);
+	}
+	if('string' === typeof(opt.to)){
+		opt.to = strToDate(opt.to);
+	}
+	if(false === opt.from instanceof(Date) || false === opt.to instanceof(Date)){
+		return false;
+	}
+	if(opt.from.getTime() > opt.to.getTime()){
+		tmp = opt.from;
+		opt.from = opt.to;
+		opt.to = tmp;
+	}
+	if(opt.clearFirst === true){
+		$('#res_cal_'+opt.cal+' .cal_select').removeClass('cal_select');
+	}
+	tmpTo = walkDays(opt.to);
+	for(tmp = dateToStr(opt.from); tmp !== tmpTo; tmp = walkDays(tmp)){
+		$('#'+opt.cal+'_d_'+tmp).addClass('cal_select');
+	}
+}
+function resCalLetSelect(options){
+	'use strict';
+	var enterTimeOut, leaveTimeOut;
+	if('undefined' === typeof(options)){
+		options = {};
+	}
+	var calSelector = (options.cal)? 'div#res_cal_'+options.cal+' div.content' : 'div.res_cal div.content';
+	resCalHandlerEnter = function(){
+		var self = $(this);
+		window.clearTimeout(enterTimeOut);
+		enterTimeOut = window.setTimeout(function(){
+			var dayMatch = self.attr('id').match(/^([a-zA-Z0-9_]+)_d_([0-9]{2}-[0-9]{2}-[0-9]{2})$/),
+				calName = dayMatch[1],
+				oDay = strToDate(dayMatch[2]);
+			resCalShowSelection({cal:calName, from:reservations[calName].sel1, to:oDay});
+		}, 50);
+	};
+	resCalHandlerLeave = function(){
+		var self = $(this);
+		window.clearTimeout(leaveTimeOut);
+		leaveTimeOut = window.setTimeout(function(){
+			var dayMatch = self.attr('id').match(/^([a-zA-Z0-9_]+)_d_([0-9]{2}-[0-9]{2}-[0-9]{2})$/),
+				calName = dayMatch[1];
+			$('div#res_cal_'+calName+' div.cal_select').removeClass('cal_select');
+		}, 50);
+	};
+	resCalHandlerClick = function(){
+		var self = $(this),
+			dayMatch = self.attr('id').match(/^([a-zA-Z0-9_]+)_d_([0-9]{2}-[0-9]{2}-[0-9]{2})$/),
+			calName = dayMatch[1],
+			oDay = strToDate(dayMatch[2]);
+		if(!reservations[calName].sel1 || (reservations[calName].sel1 && reservations[calName].sel2)){
+			reservations[calName].sel2 = false;
+			reservations[calName].sel1 = oDay;
+			$('#reservation_from_'+calName).datepicker('setDate', oDay);
+			$('#reservation_to_'+calName).datepicker('setDate', null);
+			$('div#res_cal_'+calName+' div.cal_select').removeClass('cal_select');
+			$('div#res_cal_'+calName+' div.content')
+				.bind('mouseenter', resCalHandlerEnter)
+				.bind('mouseleave', resCalHandlerLeave);
+		} else if(reservations[calName].sel1 && !reservations[calName].sel2){
+			if(oDay.getTime() < reservations[calName].sel1.getTime()){
+				reservations[calName].sel2 = reservations[calName].sel1;
+				$('#reservation_to_'+calName).datepicker('setDate', reservations[calName].sel1);
+				reservations[calName].sel1 = oDay;
+				$('#reservation_from_'+calName).datepicker('setDate', oDay);
+			} else {
+				reservations[calName].sel2 = oDay;
+				$('#reservation_to_'+calName).datepicker('setDate', oDay);
+			}
+			$('div#res_cal_'+calName+' div.content')
+				.unbind('mouseenter', resCalHandlerEnter)
+				.unbind('mouseleave', resCalHandlerLeave);
+			resCalShowSelection({cal:calName, globalFromTo:true, clearFirst:true});
+		}
+	};
+	$(calSelector)
+		.addClass('cal_selectable')
+		.bind('click', resCalHandlerClick);
+}
+function resFormDateSelected(self){
+	'use strict';
+	if('object' !== typeof(self) || false === self instanceof jQuery){
+		return false;
+	}
+	var selfMatch = self.attr('id').match(/reservation_(from|to)_([a-zA-Z0-9_-]+)/),
+		calName = selfMatch[2],
+		oDate = self.datepicker('getDate');
+	reservations[calName][((selfMatch[1] === 'from')? 'sel1' : 'sel2')] = oDate;
+	if(reservations[calName].sel1 && reservations[calName].sel2){
+		if(reservations[calName].sel1.getTime() > reservations[calName].sel2.getTime()){
+			$('#reservation_from_'+calName).datepicker('setDate', reservations[calName].sel2);
+			$('#reservation_to_'+calName).datepicker('setDate', reservations[calName].sel1);
+			reservations[calName].sel1 = $('#reservation_from_'+calName).datepicker('getDate');
+			reservations[calName].sel2 = $('#reservation_to_'+calName).datepicker('getDate');
+		}
+	}
+	resCalShowSelection({cal:calName, globalFromTo:true, clearFirst:true});
 }
 function strToDate(s){
 	'use strict';
-	var parsed = s.match(/([0-9]{1,4})([-.\/])([01]?[0-9])\2([0-9]{1,4})/),
+	var parsed = s.match(/([0-9]{1,4})([.\/-])([01]?[0-9])\2([0-9]{1,4})/),
 		nDate = false,
 		fullYear = function(y){
 			if(y < 40){
@@ -362,7 +364,7 @@ function strToDate(s){
 function dateToStr(d, f){
 	'use strict';
 	var i = 0, l, c, o = '', tmp='';
-	if('function' !== typeof(d.getDate)){
+	if(false === d instanceof(Date)){
 		return false;
 	}
 	if('undefined' === typeof(f)){
@@ -399,7 +401,7 @@ function walkDays(d, w, f){
 	if('string' === typeof(d)){
 		d = strToDate(d);
 	}
-	if('function' !== typeof(d.getDate)){
+	if(false === d instanceof(Date)){
 		return false;
 	}
 	var nDat = new Date(d.getTime());
@@ -415,12 +417,25 @@ function walkDays(d, w, f){
 		return dateToStr(nDat, f);
 	}
 }
+function daysBetween(a, b){
+	'use strict';
+	if('string' === typeof(a)){
+		a = strToDate(a);
+	}
+	if('string' === typeof(b)){
+		b = strToDate(b);
+	}
+	if(false === a instanceof(Date) || false === b instanceof(Date)){
+		return false;
+	}
+	return Math.round( Math.abs( a.getTime() - b.getTime() ) /86400000 );
+}
 function dateKW(d){
 	'use strict';
 	if('string' === typeof(d)){
 		d = strToDate(d);
 	}
-	if('function' !== typeof(d.getDate)){
+	if(false === d instanceof(Date)){
 		return false;
 	}
 	var fow = walkDays(d, ((d.getDay() === 0)? 6 : (d.getDay() -1)) *(-1), 'oDate');
@@ -429,32 +444,29 @@ function dateKW(d){
 	}
 	var foy = strToDate(d.getFullYear()+'-1-1');
 	var fofw = walkDays(foy, ((foy.getDay() === 0)? 6 : (foy.getDay() -1)) *(-1), 'oDate');
-	if(fow.getTime() === fofw.getTime()){
-		return dateKW(fow);
+	if(fow.getTime() === fofw.getTime() && d.getDay() !== 1){
+		return dateKW(new Date(fow.getTime()));
 	}
 	var fkw = (fofw.getDate() === 1 || fofw.getDate() >= 29)? 1 : 0;
 	var dbw = (fow.getTime() - fofw.getTime()) /1000 /60/60/24;
 	var wbw = dbw / 7;
 	return Math.round(wbw + fkw); 
 }
+
 $(function(){
 	'use strict';
 	if(0 < $('.res_cal').length){
-		//js_res_cal();
-		$('#content').prepend( $('<button/>').text('klick').click(function(){ js_res_cal(); }) );
-		//titleToTip();
-		//bind_nav_buttons();
-		//let_select();
+		js_res_cal({withNavBtn:true});
 	}
-	if(0 !== $('.res_form').length){
+	if(0 < $('.res_form').length){
 		$.datepicker.setDefaults( $.datepicker.regional[ "en-GB" ] );
 		if('de' === docLang){
 			$.datepicker.setDefaults( $.datepicker.regional.de );
 		}
 		$('.datepicker').datepicker({
-			onSelect:function(d,dObj){
-				var cal_name = $(this).parents('form.res_form').attr('id').replace(/^res_form_/, '');
-				clog(cal_name);
+			onSelect:function(){
+				$(this).datepicker('hide');
+				resFormDateSelected($(this));
 			}
 		});
 	}

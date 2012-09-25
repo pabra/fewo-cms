@@ -1,6 +1,6 @@
 // JS for CMS
 
-var locObj, docLang, noToolTips=false;
+var locObj, docLang, noToolTips=false, lang_obj={};
 /*window.log = function(){
 	log.history = log.history || [];   // store logs to an array for reference
 	log.history.push(arguments);
@@ -79,6 +79,7 @@ function check_email_address(email)
 	return true;
 }
 function disableToolTips(doWhat){
+	'use strict';
 	if('undefined' === typeof(doWhat)){
 		doWhat = 'disable';
 	}
@@ -87,6 +88,7 @@ function disableToolTips(doWhat){
 	ttB.fadeOut(150, function(){ ttB.empty().css({top:5, left:5}); });
 }
 function enableToolTips(){
+	'use strict';
 	noToolTips = false;
 }
 function titleToTip(){
@@ -194,6 +196,46 @@ function show_confirm(txt, title, callback){
 	}
 	txt = '<p><span class="ui-icon ui-icon-help" style="position:absolute;top:7px;left:0px;"></span>'+txt+'</p>';
 	show_info(txt, title, callback, false, buttons);
+}
+function lecho(t,l)
+{
+	'use strict';
+	var send_obj = [];
+	if('undefined' === typeof(l)){
+		if('undefined' === typeof(docLang)){
+			l = 'de';
+		} else {
+			l = docLang;
+		}
+	}
+	if('undefined' === typeof(lang_obj[l])){
+		lang_obj[l] = {};
+	}
+	if('object' === typeof(t)){
+		$.each(t, function(k, v){
+			if('undefined' === typeof(lang_obj[l][v])){
+				send_obj.push(v);
+			}
+		});
+		if(0 < send_obj.length){
+			$.ajax({url: 'ajax.php', data:{'do':'lecho', 'text':t, 'lang':l}, async:false, success:function(data){
+				//lang_obj[l][t] = data.txt;
+				$.each(data.txt, function(k, v){
+					lang_obj[l][k] = v;
+				});
+			}});
+		}
+		return lang_obj[l];
+	} else {
+		if('undefined' === typeof(lang_obj[l][t])){
+			$.ajax({url: 'ajax.php', data:{'do':'lecho', 'text':t, 'lang':l}, async:false, success:function(data){
+				lang_obj[l][t] = data.txt;
+			}});
+			return lang_obj[l][t];
+		} else {
+			return lang_obj[l][t];
+		}
+	}
 }
 
 $(function(){

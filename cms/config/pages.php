@@ -1,4 +1,4 @@
-<?php # Mon, 17 Sep 2012 00:11:10 +0200
+<?php # Sun, 23 Sep 2012 13:16:27 +0200
 
 $pages = array (
 	'pages' => 
@@ -102,7 +102,8 @@ $pages = array (
 				'lang' => 'pz28x',
 				'is_sub_of' => '_none_',
 				'content' => '<h1>Belegungsplan</h1>
-[[:res_cal:kalender_1:]]',
+<div>[[:res_cal:kalender_1:]]</div>
+<div>[[:res_cal:kalender_2:]]</div>',
 				'description' => '',
 				'keywords' => '',
 			),

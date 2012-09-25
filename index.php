@@ -43,7 +43,7 @@ if(true === $use_cache && false !== $req_page)
 	if(is_file($cache_file))
 	{
 		$cache_modified = filemtime($cache_file);
-		if(date('Y') === date('Y', $cache_modified)) # don't deliver cache prom past year
+		if(date('Y') === date('Y', $cache_modified)) # don't deliver cache prom last year
 		{
 			if(strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $cache_modified)
 			{
