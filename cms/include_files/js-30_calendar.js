@@ -1,4 +1,4 @@
-/*global clog, docLang, reservations, titleToTip, lecho, res_cal_current_year*/
+/*global clog, docLang, docName, reservations, titleToTip, lecho, res_cal_current_year*/
 var resCalHandlerEnter, resCalHandlerLeave, resCalHandlerClick;
 
 function js_res_cal(options){
@@ -195,16 +195,24 @@ function js_res_cal(options){
 }
 function resCalResInSel(opt){
 	'use strict';
-	var resHalfDay = (-1 !== $.inArray('first_last_resday_half', reservations[opt.cal].settings))? true : false;
 	if('undefined' === typeof(opt)){
 		opt = {};
 	}
 	if(!opt.cal){
 		return false;
 	}
+	var resHalfDay = (-1 !== $.inArray('first_last_resday_half', reservations[opt.cal].settings))? true : false;
+	var minResDays = (true === resHalfDay)? 3 : 2;
 	if(false === reservations[opt.cal].sel1 instanceof(Date) || false === reservations[opt.cal].sel2 instanceof(Date)){
 		return false;
 	}
+	if(daysBetween(reservations[opt.cal].sel1, reservations[opt.cal].sel2) +1 < minResDays){
+		reservations[opt.cal].sel2 = null;
+		$('#reservation_to_'+opt.cal).datepicker('setDate', null);
+		resCalShowSelection({cal:opt.cal, clearFirst:true, globalFromTo:true});
+		return 'less then '+minResDays+' days';
+	}
+	clog(daysBetween(reservations[opt.cal].sel1, reservations[opt.cal].sel2));
 }
 function resCalShowSelection(opt){
 	'use strict';
@@ -295,6 +303,9 @@ function resCalLetSelect(options){
 				.unbind('mouseenter', resCalHandlerEnter)
 				.unbind('mouseleave', resCalHandlerLeave);
 			resCalShowSelection({cal:calName, globalFromTo:true, clearFirst:true});
+			if('admin' !== docName){
+				resCalResInSel({cal:calName});
+			}
 		}
 	};
 	$(calSelector)
@@ -319,6 +330,7 @@ function resFormDateSelected(self){
 		}
 	}
 	resCalShowSelection({cal:calName, globalFromTo:true, clearFirst:true});
+	resCalResInSel({cal:calName});
 }
 function strToDate(s){
 	'use strict';
@@ -465,8 +477,16 @@ $(function(){
 		}
 		$('.datepicker').datepicker({
 			onSelect:function(){
-				$(this).datepicker('hide');
+				$(this).datepicker('hide').blur();
 				resFormDateSelected($(this));
+			},
+			beforeShow:function(){
+				var otherPicker = $(this).parent().find('[name=reservation_'+(($(this).attr('name').replace('reservation_', '')==='from')? 'to' : 'from')+']');
+				$(this).datepicker('option', {defaultDate:otherPicker.datepicker('getDate')});
+			},
+			beforeShowDay:function(d){
+				clog(d);
+				return [false, "warning", "ToolTip"];
 			}
 		});
 	}

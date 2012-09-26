@@ -46,9 +46,9 @@ $(function(){
 			reserved.sort();
 			send_res();
 		});
-		if('undefined' !== typeof(locObj.res_beg) 
-			&& 'undefined' !== typeof(locObj.res_end) 
-			&& 1 === $('span.add_timespan.mark_reserved').length){
+		if('undefined' !== typeof(locObj.res_beg) &&
+			'undefined' !== typeof(locObj.res_end) &&
+			1 === $('span.add_timespan.mark_reserved').length){
 		
 			select_range(id2int(locObj.res_beg), id2int(locObj.res_end));
 			$('span.add_timespan.mark_reserved').click();

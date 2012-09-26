@@ -1,6 +1,7 @@
+/*global console*/
 // JS for CMS
 
-var locObj, docLang, noToolTips=false, lang_obj={};
+var locObj, docLang, docName, noToolTips=false, lang_obj={};
 /*window.log = function(){
 	log.history = log.history || [];   // store logs to an array for reference
 	log.history.push(arguments);
@@ -242,6 +243,7 @@ $(function(){
 	'use strict';
 	docLang = $('html').attr('lang');
 	locObj = locationSeach2Obj();
+	docName = location.search.match(/^\??([^&]+)/)[1];
 	/*$('input[type=file]').bind('change', function() {
 		if('undefined' !== typeof(this.files)){
 			alert(this.files[0].size);
