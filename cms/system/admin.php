@@ -272,7 +272,7 @@ EOJS;
 			$admin_content .= '<input type="radio" '.$sel.' id="'.$k.'" name="cal_idx" value="'.$k.'" /><label for="'.$k.'">'.$v['name'].'</label>'."\n";
 			$i++;
 		}
-		$admin_content .= '</div><script type="text/javascript">/*<![CDATA[*/$(\'#cal_button_set\').buttonset().change(function(ev){ window.location = \'?admin&do='.$_GET['do'].'&cal_idx=\'+$(this).find(\':checked\').val(); });/*]]>*/</script>'."\n";
+		$admin_content .= '</div>'."\n";
 		if($_GET['cal_idx'] == 'null' || !$_GET['cal_idx'])
 		{
 			$admin_content .= edit_config('res_cal', array('calendar'), array(), array('name','type','settings','form_settings','legal_condition','include'));
@@ -280,13 +280,14 @@ EOJS;
 		else 
 		{
 			$admin_content .= reservation_calendar($_GET['cal_idx'], $admin_lang);
-			$admin_content .= '<div class="add_timespan_buttonset"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
-			$admin_content .= <<<EOJS
-<script type="text/javascript">/*<![CDATA[*/
-var reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
-let_select();
-/*]]>*/</script>
-EOJS;
+			//var_dump($calendars);
+			$admin_content .= '<div class="add_timespan_buttonset" id="selection_do_'.$calendars[$_GET['cal_idx']]['name'].'"><span class="add_timespan mark_reserved">'.lecho('cal_admin_add_timespan_reserved', $admin_lang).'</span> <span class="add_timespan mark_free">'.lecho('cal_admin_add_timespan_free', $admin_lang).'</span> <span class="add_timespan mark_unselect">'.lecho('cal_admin_add_timespan_unselect', $admin_lang).'</span></div>'."\n";
+			//$admin_content .= <<<EOJS
+//<script type="text/javascript">/*<![CDATA[*/
+//var reserved='{$calendars[$_GET['cal_idx']]['reserved']}'.split('|').sort(), cal_idx='{$_GET['cal_idx']}';
+//let_select();
+///*]]>*/</script>
+//EOJS;
 		}
 	}
 	elseif(!$_GET['do'])

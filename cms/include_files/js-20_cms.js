@@ -19,6 +19,16 @@ Object.size = function(obj){
 	}
 	return size;
 };
+Array.uniqueClean = function(arr){
+	'use strict';
+	var a=[], i, l=arr.length;
+	for(i=0; i<l; i++){
+		if((''+arr[i]).length >= 1 && -1 === a.indexOf(arr[i])){
+			a.push(arr[i]);
+		}
+	}
+	return a;
+};
 function clog(l){
 	'use strict';
 	if('undefined' !== typeof(console)){
@@ -254,6 +264,17 @@ $(function(){
 		if(false === check_email_address($(this).val())){
 			$(this).parents('.form_row').addClass('mismatch');
 		}
+	});
+	$('.input.captcha').each(function(){
+		var self = $(this);
+		$.ajax('ajax.php', {data:{'do':'captcha', what:'get'}, cache:false, success:function(data){
+			clog(data);
+			if(data.status === true){
+				clog(self);
+				self.append(data.txt[0], data.txt[2]);
+			}
+		}});
+		//clog($(this));
 	});
 	$('body').append('<div id="ttBox"></div><div id="dialog"></div>');
 	titleToTip();

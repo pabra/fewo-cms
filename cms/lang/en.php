@@ -108,6 +108,7 @@ $lang = array(
 	'cal_admin_add_timespan_reserved' => 'mark as reserved',
 	'cal_admin_add_timespan_free' => 'mark as free',
 	'cal_admin_add_timespan_unselect' => 'unselect',
+	'cal_admin_add_overlap_period' => 'Selected period is in conflict with another one. Please solve manually.',
 	'' => '',
 	'cal_nav_prev' => 'show previous year',
 	'cal_nav_next' => 'show next year',

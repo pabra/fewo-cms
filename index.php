@@ -6,6 +6,10 @@
 #die();
 error_reporting(E_ALL ^ E_NOTICE);
 setlocale(LC_ALL, 'de_DE.UTF-8');
+if(function_exists('date_default_timezone_set'))
+{
+	date_default_timezone_set('Europe/Berlin');
+}
 require_once('cms/config/cms.php');
 #$use_cache = true;
 #$use_cache = false;

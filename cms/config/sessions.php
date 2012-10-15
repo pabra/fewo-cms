@@ -1,4 +1,4 @@
-<?php # Wed, 26 Sep 2012 15:05:45 +0200
+<?php # Mon, 15 Oct 2012 23:05:21 +0200
 
 $sessions = array (
 	'keep_alive' => 
@@ -10,12 +10,25 @@ $sessions = array (
 	array (
 		'value' => 
 		array (
-			'qCNsX' => 
+			'KsoQy' => 
 			array (
-				'sess' => '73688c464124ad6b4b3d39488acd11c9',
-				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.11 (KHTML, like Gecko) Ubuntu/12.04 Chromium/20.0.1132.47 Chrome/20.0.1132.47 Safari/536.11',
+				'sess' => 'f3d1a6bf829cb360f0f72074e70d7e05',
+				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4',
 				'ip' => '192.168.1.20',
-				'time' => 'Wed, 26 Sep 2012 15:05:45 +0200',
+				'time' => 'Mon, 15 Oct 2012 19:14:07 +0200',
+				'user_index' => 'hOpQ5',
+				'user_name' => 'user_2',
+				'real_name' => 'Super User',
+				'email' => 'def@gh.ij',
+				'role' => 'superuser',
+				'use_role' => 'user',
+			),
+			'Hud0E' => 
+			array (
+				'sess' => '034fcfa3047af9e3cf4ccca665f4659a',
+				'ua' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4',
+				'ip' => '192.168.1.20',
+				'time' => 'Mon, 15 Oct 2012 23:05:21 +0200',
 				'user_index' => 'hOpQ5',
 				'user_name' => 'user_2',
 				'real_name' => 'Super User',
@@ -73,7 +86,8 @@ $sessions = array (
 		array (
 			'sess' => 
 			array (
-				'73688c464124ad6b4b3d39488acd11c9' => 'qCNsX',
+				'f3d1a6bf829cb360f0f72074e70d7e05' => 'KsoQy',
+				'034fcfa3047af9e3cf4ccca665f4659a' => 'Hud0E',
 			),
 		),
 	),

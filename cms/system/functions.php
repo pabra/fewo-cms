@@ -1838,10 +1838,12 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 				$out .= '<div class="form_row"><div class="label"><label for="msg_'.$conf_idx_str[1].'">'.lecho('cal_form_msg', $lang).'</label></div><div class="input"><textarea rows="10" cols="10" id="msg_'.$conf_idx_str[1].'" name="msg" ></textarea></div></div>'."\n";
 			if(in_array('need_captcha', $cal_conf['form_settings']))
 			{
-				$captcha = captcha();
-				$out .= '<div class="form_row"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input">'.$captcha[0].$captcha[2].'</div></div>'."\n";
-				$out .= '<div class="form_row"><div class="label"><label for="captcha_answer_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha_answer', $lang).'</label></div><div class="input"><input type="text" id="captcha_answer_'.$conf_idx_str[1].'" name="captcha_answer" /></div></div>'."\n";
+				//$captcha = captcha();
+				//$out .= '<div class="form_row"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input">'.$captcha[0].$captcha[2].'</div></div>'."\n";
+				$out .= '<div class="form_row"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input captcha"></div></div>'."\n";
+				$out .= '<div class="form_row"><div class="label"><label for="captcha_answer_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha_answer', $lang).'</label></div><div class="input"><input type="text" disabled="disabled" id="captcha_answer_'.$conf_idx_str[1].'" name="captcha_answer" /></div></div>'."\n";
 			}
+			$out .= '<input type="submit"/>';
 			$out .= '</form>'."\n";
 		}
 	}

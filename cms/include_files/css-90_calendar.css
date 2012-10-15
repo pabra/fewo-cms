@@ -35,5 +35,8 @@ div.res_cal div.content.cal_select, div.res_cal div.content.cal_selectable:hover
 div.res_cal div.content.cal_selectable:hover { text-decoration:overline underline; }
 div.res_cal div.content.cal_select_begin { border:1px inset green; }
 div.res_cal div.content.cal_select_end { border:1px inset green; }
+div.res_cal div.content.today { color:maroon; text-shadow:0px 0px 2px maroon; border-color:maroon; }
+
+.datepicker_reserved span { border:1px solid red !important; color:red !important; }
 
 .resNavBtnSet { margin:10px 0px 5px; display:block; }

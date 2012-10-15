@@ -2,6 +2,10 @@
 
 error_reporting(E_ALL ^ E_NOTICE);
 setlocale(LC_ALL, 'de_DE.UTF-8');
+if(function_exists('date_default_timezone_set'))
+{
+	date_default_timezone_set('Europe/Berlin');
+}
 require_once('cms/config/cms.php');
 require_once('cms/system/functions.php');
 $admin_lang = $cms['admin_language']['value'];
@@ -29,6 +33,14 @@ if($_GET['do'] == 'lecho' && $_GET['text'] && $_GET['lang'])
 		echo json_encode(array('status'=>true, 'txt'=> lecho($_GET['text'], $_GET['lang'])));
 	}
 	die();
+}
+elseif($_GET['do'] == 'captcha' && $_GET['what'] == 'get')
+{
+	die( json_encode(array('status'=>true, txt=> captcha() )) );
+}
+elseif($_POST['do'] == 'captcha' && $_POST['answer'] && $_POST['humanfilter'])
+{
+	die( json_encode( array('status'=> captcha(array('answer'=>$_POST['answer'], 'humanfilter'=>$_POST['humanfilter'])) ) ) );
 }
 if($_COOKIE['sess'])
 {
