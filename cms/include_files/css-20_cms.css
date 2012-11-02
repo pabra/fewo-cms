@@ -1,10 +1,12 @@
 /* default styles for CMS */
 body { background-color:#ddd; padding:100px; text-shadow:#ddd 1px 1px 1px; }
 div#dialog, div#ttBox { display:none; }
-div#ttBox { position:absolute; border:1px outset #777; border-radius:5px; max-width:300px; padding:5px; margin:0px; color:#ccc; text-shadow:#000 1px 1px 1px; background-color:#333; background-color:rgba(0,0,0,0.6); }
+div#ttBox { position:absolute; border:1px outset #777; border-radius:5px; max-width:300px; padding:5px; margin:0px; color:#ccc; text-shadow:#000 1px 1px 1px; background-color:#333; background-color:rgba(0,0,0,0.6); box-shadow:2px 2px 10px #333; }
 div#ttBox > img { border:1px inset #777; border-radius:5px; background-image:url(cms/include_files/images/loader.gif); background-repeat:no-repeat; background-position:center; }
-.even { background-color:#ccc; background-color:rgba(255,255,255,0.2); }
-.odd { background-color:#bbb; background-color:rgba(0,0,0,0.2); }
+.ui-dialog { box-shadow:2px 2px 10px #333; }
+.div2info_div { display:none; }
+.even { background-color:#ccc; background-color:rgba(70,70,100,0.2); }
+.odd { background-color:#bbb; background-color:rgba(170,170,200,0.2); }
 fieldset { width:508px; position:relative; margin:3px 0px 3px -1px; padding-bottom:6px; border: 1px solid #333; border-radius:10px; }
 legend { border:1px solid #333; border-radius:5px; padding:1px 5px; margin-left:20px; background-color:rgba(42,42,42,0.5);}
 div#login_form_wrap { width:350px; border:5px solid #333; border-radius:15px; padding:50px 5px; margin:0 auto; background-color:#EEE; background-color:rgba(255, 255, 255, 0.5); }
@@ -22,16 +24,19 @@ form.login .form_row div.input input { width:115px; }
 /*div.form_row { background-color:blue; }*/
 /*div.form_row div.label { background-color:maroon; }*/
 /*div.form_row div.input { background-color:lime; }*/
-div.form_row { position:relative; width:500px; border:1px solid transparent; margin:2px 1px; padding:3px 0px; border-radius:5px; }
+div.form { display:none; }
+div.form_row { position:relative; width:505px; border:1px solid transparent; margin:2px 1px; padding:3px 0px; border-radius:5px; }
 html.ie6 div.form_row { border-color:pink; filter:chroma(color=pink); }
 div.form_row:hover { background-color:rgba(0,0,0,0.1); }
 div.form_row div.label { position:relative; display:inline-block; width:285px; text-align:right; vertical-align:top; top:5px;  }
-div.form_row div.input { position:relative; display:inline-block; width:200px; }
+div.form_row div.input { position:relative; display:inline-block; width:214px;/*200*/ }
 html.ie6 div.form_row div.label, html.ie6 div.form_row div.input, html.ie7 div.form_row div.label, html.ie7 div.form_row div.input { display:inline; }
 div.form_row div.label label { margin:5px; }
 div.form_row div.input input, div.form_row div.input textarea, div.form_row div.input select, div.form_row div.input span.humanfilter_wrap { margin:0px 1px; }
 div.form_row div.input .mceLayout { margin-left:-285px; margin-top:25px; height:150px !important; width:476px !important; }
-div.form_row div.input textarea:focus { margin-left:-285px; height:150px; width:466px; }
+div.form_row div.input textarea:focus { margin-left:-285px; width:484px; }
+
+.must label { font-weight:bold; }
 
 /**/
 .no_hover:hover { background:none !important; }
@@ -55,25 +60,25 @@ form .mismatch label { color:maroon; }
 form .mismatch input, form .mismatch textarea, form .mismatch select { color:maroon; border-color:maroon; }
 .idx_nav li { margin:2px; position:relative; padding:4px 0; cursor:pointer; float:left; list-style:none; }
 .idx_nav span.ui-icon { width:16px; float:left; margin:0 4px; }
-input, textarea, select { border:1px solid #333; width:180px; border-radius:5px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#aaa 1px 1px 1px; /*background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;*/}
-input.w1, textarea.w1, select.w1 { width:47px; }
-input.w2, textarea.w2, select.w2 { width:121px; }
-input.w3, textarea.w3, select.w3 { width:84px; }
+input, textarea, select { border:1px solid #333; width:198px;/*180*/ border-radius:10px; padding:2px 4px; font-size:1.1em; background-color:#eee; background-color:rgba(255,255,255,0.2); outline-width:0px; color:#333; text-shadow:#aaa 1px 1px 1px; background-image:url(cms/include_files/images/ui-bg_glass_75_dadada_1x400.png); background-repeat:repeat-x; background-position:center;}
+input.w1, textarea.w1, select.w1 { width:58px; } /* 47 */
+input.w2, textarea.w2, select.w2 { width:128px; } /* 121 */
+input.w3, textarea.w3, select.w3 { width:93px; } /* 84 */
 /*form div.form_row input, form div.form_row textarea, form div.form_row select, form div.form_row span.humanfilter_wrap { position:absolute; right:14px; top:2px; }*/
-select { width:190px; }
+select { width:208px; } /* 190 */
 textarea { height:100px; vertical-align:baseline; }
 /*form div.more_row { height:15px; position:relative; }*/
 input[type=checkbox] { width:auto; }
 /*form div.more_row input { position:absolute; top:3px; right:166px; }*/
 /*form div.more_row label { width:145px; position:absolute; right:14px; top:0px; text-align:left; }*/
-input:hover, textarea:hover, select:hover { /*border-color:#333;*/ background-color:rgba(255,255,255,0.3); /*background-image:url(cms/include_files/images/ui-bg_glass_75_e6e6e6_1x400.png);*/ }
-input:focus, textarea:focus, select:focus { /*border-color:#000;*/ background-color:rgba(255,255,255,0.5); /*background-image:url(cms/include_files/images/ui-bg_glass_95_fef1ec_1x400.png);*/ }
+input:hover, textarea:hover, select:hover { /*border-color:#333;*/ background-color:rgba(255,255,255,0.3); box-shadow:0px 0px 3px #333; background-image:url(cms/include_files/images/ui-bg_glass_75_e6e6e6_1x400.png); }
+input:focus, textarea:focus, select:focus { /*border-color:#000;*/ background-color:rgba(255,255,255,0.5); box-shadow:0px 0px 7px #333; background-image:url(cms/include_files/images/ui-bg_glass_95_fef1ec_1x400.png); }
 input[type=file] { width:auto; }
 input[type=button] { border-color: #999 #333 #333 #999; }
 input[type=button]:active { margin:1px -1px; border-color:#333 #999 #999 #333;  background-color:rgba(255,255,255,0.5); }
-input[type=submit], input[type=reset] {padding:8px; background-color:#333; background-image:none; background-color:rgba(0,0,0,0.5); color:#ccc; border-color:#333; width:auto; text-shadow:#333 1px 1px 1px; }
-input[type=submit]:hover, input[type=reset]:hover { border-color:#333; background-color:#444; background-color:rgba(0,0,0,0.6); }
-input[type=submit]:active, input[type=reset]:active { border-color:#333; background-color:#666; background-color:rgba(0,0,0,0.7); }
+input[type=submit], input[type=reset] {padding:8px; margin:0px 2px 2px 0px; background-color:#333; background-image:none; background-color:rgba(0,0,0,0.5); color:#ccc; border-color:#333; width:auto; text-shadow:#333 1px 1px 1px; box-shadow: 2px 2px 7px #777; background-image:url(cms/include_files/images/head_bar_bg.png); background-repeat:repeat-x; background-position:0px -13px; }
+input[type=submit]:hover, input[type=reset]:hover { border-color:#333; background-color:#444; background-color:rgba(0,0,0,0.6); box-shadow: 2px 2px 7px #333; }
+input[type=submit]:active, input[type=reset]:active { margin:2px 0px 0px 2px; border-color:#333; background-color:#666; background-color:rgba(0,0,0,0.7); box-shadow: 0px 0px 10px #333;}
 input[disabled], textarea[disabled], select[disabled], input[disabled]:hover, textarea[disabled]:hover, select[disabled]:hover { background-image:none; background-color:#eee; color:#aaa; border-color:#aaa }
 /*input[type=submit]:active {color:maroon; background-color:rgba(33,33,33,0.5)}*/
 ul.menu, ul.menu ul { list-style-type:none; margin:0px; padding:0px; clear:both; }

@@ -112,21 +112,20 @@ function edit_config($file, $vars=array(), $indizes=array(), $keys=array(), $fil
 			}
 			else 
 			{
-				#$out .= '<fieldset><legend>'.lecho('legend_'.$k, $admin_lang).'</legend>'."\n";
 				$out .= gen_config_field($v, array('file'=>$file,'val'=>$k));
-				#$out .= '</fieldset>'."\n";
 			}
 		}
 	}
-	#$out .= '<div class="form_submit"><input type="submit" value="'.lecho('button_submit', $admin_lang).'"/> <input type="reset" value="'.lecho('button_reset', $admin_lang).'"/></div>'."\n".'</form>'."\n";
 	$out .= '<div class="form_submit"><input type="submit" accesskey="s" title="'.lecho('button_submit_title', $admin_lang).'" value="'.lecho('button_submit', $admin_lang).'"/></div>'."\n".'</form>'."\n";
-	#echo $out;
-	#die();
 	return $out;
 }
 function gen_config_field($v, $k)
 {
 	global $admin_lang, $glob_var;
+	//var_dump('$v');
+	//var_dump($v);
+	//var_dump('$k');
+	//var_dump($k);
 	$fid = "${k['file']}:${k['val']}";
 	$label = 'config_'.$k['val'];
 	if(isset($k['index']) && isset($k['key']))
@@ -135,6 +134,104 @@ function gen_config_field($v, $k)
 		$label .= '_'.$k['key'];
 		#var_dump($v);
 	}
+	$fa = array(
+		'type' => $v['type'],
+		'value' => $v['value'],
+		'help' => lecho('help_'.$label, $admin_lang),
+		'label' => lecho($label, $admin_lang),
+		'name' => $fid,
+		'set' => array(
+			'must' => $v['must'],
+			'match' => $v['match'],
+		),
+	);
+	if($v['type'] === 'select_one')
+	{
+		if(isset($v['options']['from_config']))
+		{
+			$conf_idx = explode(':', $v['options']['from_config']);
+			$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
+			unset($filter);
+			if(isset($v['options']['filter']))
+			{
+				$filter = explode('=', $v['options']['filter']);
+				if('$' == substr($filter[1], 0, 1))
+				{
+					$filter[1] = $glob_var[substr($filter[1], 1)];
+				}
+			}
+			$v['options'] = array();
+			if(isset($v['allow_none']))
+			{
+				$v['options']['_none_'] = '---';
+			}
+			foreach($conf_opts as $ok => $ov)
+			{
+				if(is_array($filter))
+				{
+					if($ov[$filter[0]] == $filter[1])
+					{
+						$v['options'][$ok] = $ov[$conf_idx[2]];
+					}
+				}
+				else 
+				{
+					$v['options'][$ok] = $ov[$conf_idx[2]];
+				}
+			}
+		}
+		elseif(isset($v['options']['from_file']))
+		{
+			$files = glob($v['options']['from_file']);
+			$filter = ($v['options']['filter'])? $v['options']['filter'] : false;
+			$v['options'] = array();
+			if(isset($v['allow_none']))
+			{
+				$v['options']['_none_'] = '---';
+			}
+			foreach($files as $fk => $fv)
+			{
+				$bn = basename($fv);
+				if(false === $filter || preg_match('/'.$filter.'/', $bn))
+				{
+					$v['options'][] = $bn;
+				}
+			}
+		}
+		$fa['options'] = $v['options'];
+	}
+	elseif($v['type'] === 'select_more')
+	{
+		if(isset($v['options']['from_config']))
+		{
+			$conf_idx = explode(':', $v['options']['from_config']);
+			$conf_opts = get_config_data($conf_idx[0], $conf_idx[1]);
+			#die(var_dump($conf_opts));
+			$v['options'] = array();
+			foreach($conf_opts as $ok => $ov)
+			{
+				$v['options'][$ok] = $ov[$conf_idx[2]];
+			}
+		}
+		elseif(isset($v['options']['from_file']))
+		{
+			$files = glob($v['options']['from_file']);
+			$filter = ($v['options']['filter'])? $v['options']['filter'] : false;
+			$v['options'] = array();
+			foreach($files as $fk => $fv)
+			{
+				$bn = basename($fv);
+				if(false === $filter || preg_match('/'.$filter.'/', $bn))
+				{
+					$v['options'][] = $bn;
+				}
+			}
+		}
+		$fa['options'] = $v['options'];
+	}
+	//var_dump($fa);
+	return gen_form_field($fa);
+	/*
 	$out = '<div class="form_row '.$v['type'].'"><div class="label">'."\n".'<label for="'.$fid.'">'.lecho($label, $admin_lang).'</label></div>'."\n".'<div class="input">';
 	$class = '';
 	$class .= ($v['must'])? ' must' : '';
@@ -271,7 +368,108 @@ function gen_config_field($v, $k)
 			$out .= '<input type="text" class="'.$class.'" '.$match.' name="'.$fid.'" id="'.$fid.'" value="'.htmlspecialchars($v['value']).'" />'."\n";
 	}
 	$out .= '</div>'."\n";
-	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'"></span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'"></span>'."\n".'</div>'."\n";
+	$out .= '<span class="ui-icon ui-icon-info" title="'.lecho('help_'.$label, $admin_lang).'">&nbsp;</span><span class="ui-icon ui-icon-arrowreturnthick-1-s" title="'.lecho('help_field_reset', $admin_lang).'">&nbsp;</span>'."\n".'</div>'."\n";
+	return $out;
+	*/
+}
+function gen_form_field($a=array(), $b=array(), $c=array())
+{
+	$out = '';
+	$a = gff_init($a);
+	$b = (0 !== count($b))? gff_init($b) : $b;
+	$c = (0 !== count($c))? gff_init($c) : $c;
+	//var_dump( $a );
+	//var_dump( $b );
+	//var_dump( $c );
+	$out .= '<div class="form_row '.$a['type'].'">';
+	$out .= '<div class="label">';
+	$out .= '<label for="'.htmlspecialchars($a['name']).'">'.htmlspecialchars($a['label']).'</label>';
+	$out .= '</div>';
+	$out .= '<div class="input">';
+	$out .= gff_input($a);
+	$out .= '</div>';
+	$out .= ('' === $a['help'])? '' : '<span class="ui-icon ui-icon-info" title="'.htmlspecialchars($a['help']).'">&nbsp;</span>';
+	$out .= '<span class="ui-icon ui-icon-arrowreturnthick-1-s" title="reset">&nbsp;</span>';
+	$out .= '</div>'."\n";
+	return $out;
+}
+function gff_init($a)
+{
+	$a['label'] = ($a['label'])? trim($a['label']) : 'Eingabe';
+	$a['type'] = ($a['type'])? $a['type'] : 'text';
+	$a['name'] = ($a['name'])? trim($a['name']) : preg_replace('/[^a-zA-Z0-9_]+/', '_', $a['label']);
+	$a['value'] = ($a['value'])? $a['value'] : '';
+	$a['help'] = ($a['help'])? trim($a['help']) : '';
+	$a['set'] = (is_array($a['set']))? $a['set'] : array();
+	return $a;
+}
+function gff_input($a)
+{
+	$class = '';
+	$class .= ($a['set']['must'])? ' must' : '';
+	$class .= ($a['set']['match'])? ' match match_'.rawurlencode($a['set']['match']) : '';
+	$class .= ($a['set']['notrim'])? ' notrim' : '';
+	$name = htmlspecialchars($a['name']);
+	$out = '';
+	switch($a['type'])
+	{
+		case 'select_one':
+			//var_dump($a);
+			$out .= '<select name="'.$name.'" id="'.$name.'">';
+			if(is_array($a['options']))
+			{
+				foreach($a['options'] as $k => $v)
+				{
+					$evenodd = ($evenodd == 'even')? 'odd' : 'even';
+					$sel = '';
+					if(is_numeric($k) && $v == $a['value'])
+						$sel = ' selected="selected"';
+					elseif(!is_numeric($k) && $k == $a['value'])
+						$sel = ' selected="selected"';
+					$out .= '<option class="'.$evenodd.'" value="'.$k.'"'.$sel.'>'.htmlspecialchars($v).'</option>'."\n";
+				}
+			}
+			$out .= '</select>'."\n";
+			break;
+		case 'select_more':
+			$val = '';
+			if(is_array($a['options']))
+			{
+				foreach($a['options'] as $k => $v)
+				{
+					$sel = '';
+					if(is_array($a['value']) && is_numeric($k) && in_array($v, $a['value']))
+						$sel = ' checked="checked"';
+					elseif(is_array($a['value']) && !is_numeric($k) && in_array($k, $a['value']))
+						$sel = ' checked="checked"';
+					$val .= ($sel)? ':'.$k : '';
+					$label_val = lecho($label.'_'.$v, $admin_lang);
+					if('[[' == substr($label_val, 0, 2))
+						$label_val = $v;
+					$out .= '<div class="more_row"><input type="checkbox" name="'.$name.'.'.$k.'" id="'.$name.'.'.$k.'"'.$sel.' value="'.$k.'"/><label class="each" for="'.$name.'.'.$k.'">'.htmlspecialchars($label_val).'</label></div>'."\n";
+				}
+			}
+			$out .= '<input type="text" class="hidden select_more_value'.$class.'" name="'.$name.'" id="'.$name.'" value="'.substr($val, 1).'" />'."\n";
+			break;
+		case 'include_code':
+			$out .= '<input type="text" readonly="readonly" class="include_code" name="'.$name.'" id="'.$name.'" value="" />'."\n";
+			break;
+		case 'password':
+			$out .= '<input type="password" class="'.$class.'" name="'.$name.'" id="'.$name.'" value="'.htmlspecialchars($a['value']).'" />'."\n";
+			break;
+		case 'email':
+			$out .= '<input type="text" class="email'.$class.'" name="'.$name.'" id="'.$name.'" value="'.htmlspecialchars($a['value']).'" />'."\n";
+			break;
+		case 'htmlarea':
+			$out .= '<textarea rows="10" cols="10" class="tinymce'.$class.'" name="'.$fid.'" id="'.$fid.'" >'.htmlspecialchars($a['value']).'</textarea>'."\n";
+			break;
+		case 'textarea':
+			$out .= '<textarea rows="10" cols="10" class="'.$class.'" name="'.$name.'" id="'.$name.'" >'.$a['value'].'</textarea>'."\n";
+			break;
+		case 'text':
+		default:
+			$out .= '<input type="text" class="'.$class.'" name="'.$name.'" id="'.$name.'" value="'.htmlspecialchars($a['value']).'" />'."\n";
+	}
 	return $out;
 }
 function merge_config($file, $values, $select_one_more_value='key')
@@ -1622,6 +1820,136 @@ function clear_cache($what='pages')
 	}
 	return array('status'=>$status, 'txt'=>$txt, 'count'=>$count);
 }
+function rgb2dec($c)
+{
+	$c = str_replace('#', '', $c);
+	$c = (strlen($c) !== 6)? substr($c, 0, 1).substr($c, 0, 1) . substr($c, 1, 1).substr($c, 1, 1) . substr($c, 2, 1).substr($c, 2, 1) : $c;
+	return array(
+		base_convert(substr($c, 0, 2), 16, 10),
+		base_convert(substr($c, 2, 2), 16, 10),
+		base_convert(substr($c, 4, 2), 16, 10),
+	);
+}
+function ri_text(Array $o) #<-- img, font, shadeC, textC, 
+{
+	$o['x'] = ($o['x'])? $o['x'] : 1;
+	$o['y'] = ($o['y'])? $o['y'] : 1;
+	$o['shadeX'] = ($o['shadeX'])? $o['shadeX'] : 1;
+	$o['shadeY'] = ($o['shadeY'])? $o['shadeY'] : 1;
+	$o['fontS'] = ($o['fontS'])? $o['fontS'] : 10;
+	$o['shade'] = ($o['shade'])? $o['shade'] : true;
+	$o['align'] = ($o['align'])? $o['align'] : 'left';
+	$o['text'] = ($o['text'])? $o['text'] : 'text';
+	if('left' !== $o['align'])
+	{
+		$box = imagettfbbox($o['fontS'], 0, $o['font'], $o['text']);
+		if('right' === $o['align'])
+			$o['x'] -= $box[2]-$box[0];
+		elseif('center' === $o['align'])
+			$o['x'] -= floor(($box[2]-$box[0])/2);
+	}
+	if(true === $o['shade'])
+	{
+		imagettftext($o['img'], $o['fontS'], 0, $o['x']+$o['shadeX'], $o['y']+$o['shadeY']+$o['fontS'], $o['shadeC'], $o['font'], $o['text']);
+	}
+	imagettftext($o['img'], $o['fontS'], 0, $o['x'], $o['y']+$o['fontS'], $o['fontC'], $o['font'], $o['text']);
+}
+function ri_box(Array $o) #<-- img, c
+{
+	$o['x'] = ($o['x'])? $o['x'] : 1;
+	$o['y'] = ($o['y'])? $o['y'] : 1;
+	$o['width'] = ($o['width'])? $o['width'] : 100;
+	$o['height'] = ($o['height'])? $o['height'] : 20;
+	imagerectangle($o['img'], $o['x'], $o['y'], $o['x']+$o['width'], $o['y']+$o['height'], $o['c']);
+}
+function reservation_image($opt = array())
+{
+	$opt['monthShort'] = ($opt['monthShort'])? $opt['monthShort'] : true;
+	$opt['widthAllPadding'] = ($opt['widthPadding'])? $opt['widthPadding'] : 10;
+	$opt['heightAllPadding'] = ($opt['heightPadding'])? $opt['heightPadding'] : 10;
+	$opt['heightDayMargin'] = ($opt['heightDayMargin'])? $opt['heightDayMargin'] : 1;
+	$opt['widthDayMargin'] = ($opt['widthDayMargin'])? $opt['widthDayMargin'] : 1;
+	$opt['widthMonth'] = ($opt['widthMonth'])? $opt['widthMonth'] : (($opt['monthShort'])? 30 : 100);
+	$opt['widthWeek'] = ($opt['widthWeek'])? $opt['widthWeek'] : 20;
+	$opt['widthDay'] = ($opt['widthDay'])? $opt['widthDay'] : 20;
+	$opt['heightDay'] = ($opt['heightDay'])? $opt['heightDay'] : 20;
+	$opt['heightHead'] = ($opt['heightHead'])? $opt['heightHead'] : 20;
+	$opt['calType'] = ($opt['calType'])? $opt['calType'] : 1;
+	$opt['calWithHead'] = ($opt['calWithHead'])? $opt['calWithHead'] : true;
+	$opt['textShade'] = ($opt['textShade'])? $opt['textShade'] : true;
+	$opt['bgcol'] = ($opt['bgcol'])? $opt['bgcol'] : '#eee';
+	$opt['mType'] = ($opt['mType'])? $opt['mType'] : 'png'; // png || gif || jpeg
+	$opt['textAlign'] = ($opt['textAlign'])? $opt['textAlign'] : 'left';
+	$opt['font'] = ($opt['font'])? $opt['font'] : 'font_DejaVuSansMono.ttf';#'font_UbuntuMono-R.ttf';
+	$opt['fontSize'] = ($opt['fontSize'])? $opt['fontSize'] : 12;
+	$opt['fontColor'] = ($opt['fontColor'])? $opt['fontColor'] : '#333';
+	$opt['fontColorShade'] = ($opt['fontColorShade'])? $opt['fontColorShade'] : '#999';
+	$opt['font'] = 'cms/include_files/'.$opt['font'];
+	if(1 === $opt['calType'])
+		$img = imagecreate(2 * $opt['widthAllPadding'] + $opt['widthMonth'] + 31 * $opt['widthDay'], 2 * $opt['heightAllPadding'] + $opt['heightHead'] + 12 * $opt['heightDay']);
+	elseif(2 === $opt['calType'])
+		$img = imagecreate(2 * $opt['widthAllPadding'] + $opt['widthMonth'] + 37 * $opt['widthDay'], 2 * $opt['heightAllPadding'] + $opt['heightHead'] + 12 * $opt['heightDay']);
+	elseif(3 === $opt['calType'])
+		$img = imagecreate(300, 200);
+	//imageantialias($img, true);
+	$bgcol = rgb2dec($opt['bgcol']);
+	$bgcol = imagecolorallocate($img, $bgcol[0], $bgcol[1], $bgcol[2]);
+	imagefill($img, 1, 1, $bgcol);
+	$fontcol = rgb2dec($opt['fontColor']);
+	$fontcol = imagecolorallocate($img, $fontcol[0], $fontcol[1], $fontcol[2]);
+	if($opt['textShade'])
+	{
+		$fontcolshade = rgb2dec($opt['fontColorShade']);
+		$fontcolshade = imagecolorallocate($img, $fontcolshade[0], $fontcolshade[1], $fontcolshade[2]);
+		//imagettftext($img, $opt['fontSize'], 0, 1, 15, $fontcolshade, $opt['font'], 'huhu');
+	}
+	//imagettftext($img, $opt['fontSize'], 0, 0, 14, $fontcol, $opt['font'], 'huhu');
+	//ri_text(array('img'=>$img, 'font'=>$opt['font'], 'shade'=>$opt['textShade'], 'shadeC'=>$fontcolshade, 'fontC'=>$fontcol, 'fontS'=>$opt['fontSize'], 'align'=>$opt['textAlign'], 'x'=>400, 'y'=>100, 'text'=>'huhu huha'));
+	//ri_text(array('img'=>$img, 'font'=>$opt['font'], 'shade'=>$opt['textShade'], 'shadeC'=>$fontcolshade, 'fontC'=>$fontcol, 'fontS'=>$opt['fontSize'], 'align'=>$opt['textAlign'], 'x'=>400, 'y'=>120, 'text'=>'hallO'));
+	//ri_text(array('img'=>$img, 'font'=>$opt['font'], 'shade'=>$opt['textShade'], 'shadeC'=>$fontcolshade, 'fontC'=>$fontcol, 'fontS'=>$opt['fontSize'], 'align'=>$opt['textAlign'], 'x'=>400, 'y'=>140, 'text'=>'ein etwas längerer Text'));
+	$x = ('right' === $opt['textAlign'])? $opt['widthAllPadding'] + $opt['widthMonth'] : $opt['widthAllPadding'];
+	for($i=0; $i<12; $i++)
+	{
+		$y = $opt['heightAllPadding']+(($opt['calWithHead'])? $opt['heightHead']+$opt['heightDayMargin'] : 0) + $i*$opt['heightDay'];
+		ri_text(array('img'=>$img, 'font'=>$opt['font'], 'shade'=>$opt['textShade'], 'shadeC'=>$fontcolshade, 'fontC'=>$fontcol, 'fontS'=>$opt['fontSize'], 'align'=>$opt['textAlign'], 'x'=>$x, 'y'=>$y, 'text'=>lecho('cal_month_'.(($opt['monthShort'])? 'short' : 'long').'_'.($i+1), 'de')));
+		ri_box(array('img'=>$img));
+	}
+	imageline($img, 100, 100, 300, 200, $fontcol);
+	//imagearc($img, 200, 100, 75, 75, 180, 270, $fontcol);
+	imagearc($img, 200, 100, 150, 150, 270, 180, $fontcol);
+	imagerectangle($img, 100, 0, 300, 200, $fontcol);
+	imgarc($img, 400, 100, 150, 150, 180, 270, $fontcol, 9 /*w*/, 1 /*aa*/);
+	imagerectangle($img, 300, 0, 500, 200, $fontcol);
+	ob_start();
+		if('gif' === $opt['mType'])
+			imagegif($img, null);
+		elseif('jpeg' === $pot['mType'])
+			imagejpeg($img, null, 88);
+		else
+			imagepng($img, null, 9, PNG_ALL_FILTERS);
+		imagedestroy($img);
+		$img_data = ob_get_contents();
+	ob_end_clean();
+	$img_data_b64 = base64_encode($img_data);
+	$out = '<img src="data:image/'.$opt['mType'].';base64,'.$img_data_b64.'"/><br/>'."\n";
+	return $out;
+}
+function imgarc($img, $cx, $cy, $width, $height, $start, $end, $color, $bold, $aa)
+{
+	$red   = imagecolorallocate($img, 150, 50, 50);
+	$green = imagecolorallocate($img, 50, 150, 50);
+	$blue  = imagecolorallocate($img, 50, 50, 150);
+	for(round($x=$cx-($width/2)-$bold-$aa); $x <= round($cx+($width/2)+$bold+$aa); $x++)
+	{
+		for(round($y=$cy-($height/2)-$bold-$aa); $y <= round($cy+($height/2)+$bold+$aa); $y++)
+		{
+			//imagesetpixel($img, $x, $y, $color);
+			$diff = hypot($x - $cx, $y - $cy);
+			if(abs( abs($diff) - ($width/2) ) / $bold < 0.5)
+				imagesetpixel($img, $x, $y, $color);
+		}
+	}
+}
 function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_only=false)
 {
 	if(false === $year || !$year)
@@ -1813,26 +2141,28 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 		if(in_array('show_form', $cal_conf['form_settings']))
 		{
 			preg_match('/=([a-zA-Z0-9_]+)]/', $cal_conf_index, $conf_idx_str);
-			$out .= '<form class="res_form" id="res_form_'.$cal_conf['name'].'" method="post" action="">'."\n";
-			$out .= '<div class="form_row"><div class="label"><label for="reservation_from_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_from', $lang).'</label>/<label for="reservation_to_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_to', $lang).'</label></div><div class="input"><input type="text" class="w3 datepicker" id="reservation_from_'.$conf_idx_str[1].'" name="reservation_from" /><input type="text" class="w3 datepicker" id="reservation_to_'.$conf_idx_str[1].'" name="reservation_to" /></div></div>'."\n";
-			$out .= '<div class="form_row"><div class="label"><label for="name_'.$conf_idx_str[1].'">'.lecho('cal_form_name', $lang).'</label></div><div class="input"><input type="text" id="name_'.$conf_idx_str[1].'" name="name" /></div></div>'."\n";
+			$out .= '<div class="res_form form ajaxSubmit" id="res_form_'.$cal_conf['name'].'" method="post" action="">'."\n";
+			$out .= '<div class="form_row"><div class="label">&nbsp;</div><div class="input">* = '.lecho('field_required', $lang).'</div></div>'."\n";
+			$out .= '<div class="form_row must"><div class="label"><label for="reservation_from_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_from', $lang).'*</label>/<label for="reservation_to_'.$conf_idx_str[1].'">'.lecho('cal_form_reservation_to', $lang).'*</label></div><div class="input"><input type="text" class="w3 datepicker" id="reservation_from_'.$conf_idx_str[1].'" name="reservation_from" /><input type="text" class="w3 datepicker" id="reservation_to_'.$conf_idx_str[1].'" name="reservation_to" /></div></div>'."\n";
+			//$out .= '<div class="form_row must"><div class="label"><label for="name_'.$conf_idx_str[1].'">'.lecho('cal_form_name', $lang).'*</label></div><div class="input"><input type="text" id="name_'.$conf_idx_str[1].'" name="name" /></div></div>'."\n";
+			$out .= gen_config_field(array('value'=>'name','must'=>1), array('file'=>'kalender_1','val'=>'name'));
 			if(in_array('need_address', $cal_conf['form_settings']))
 			{
-				$out .= '<div class="form_row"><div class="label"><label for="street_'.$conf_idx_str[1].'">'.lecho('cal_form_street', $lang).'</label>/<label for="strnum_'.$conf_idx_str[1].'">'.lecho('cal_form_strnum', $lang).'</label></div><div class="input"><input type="text" class="w2" id="street_'.$conf_idx_str[1].'" name="street" /><input type="text" class="w1" id="strnum_'.$conf_idx_str[1].'" name="strnum" /></div></div>'."\n";
-				$out .= '<div class="form_row"><div class="label"><label for="zip_'.$conf_idx_str[1].'">'.lecho('cal_form_zip', $lang).'</label>/<label for="city_'.$conf_idx_str[1].'">'.lecho('cal_form_city', $lang).'</label></div><div class="input"><input type="text" class="w1" id="zip_'.$conf_idx_str[1].'" name="zip" /><input type="text" class="w2" id="city_'.$conf_idx_str[1].'" name="city" /></div></div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="street_'.$conf_idx_str[1].'">'.lecho('cal_form_street', $lang).'*</label>/<label for="strnum_'.$conf_idx_str[1].'">'.lecho('cal_form_strnum', $lang).'*</label></div><div class="input"><input type="text" class="w2" id="street_'.$conf_idx_str[1].'" name="street" /><input type="text" class="w1" id="strnum_'.$conf_idx_str[1].'" name="strnum" /></div></div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="zip_'.$conf_idx_str[1].'">'.lecho('cal_form_zip', $lang).'*</label>/<label for="city_'.$conf_idx_str[1].'">'.lecho('cal_form_city', $lang).'*</label></div><div class="input"><input type="text" class="w1" id="zip_'.$conf_idx_str[1].'" name="zip" /><input type="text" class="w2" id="city_'.$conf_idx_str[1].'" name="city" /></div></div>'."\n";
 			}
 			if(in_array('need_country', $cal_conf['form_settings']))
-				$out .= '<div class="form_row"><div class="label"><label for="country_'.$conf_idx_str[1].'">'.lecho('cal_form_country', $lang).'</label></div><div class="input"><input type="text" id="country_'.$conf_idx_str[1].'" name="country" /></div></div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="country_'.$conf_idx_str[1].'">'.lecho('cal_form_country', $lang).'*</label></div><div class="input"><input type="text" id="country_'.$conf_idx_str[1].'" name="country" /></div></div>'."\n";
 			if(in_array('need_email', $cal_conf['form_settings']))
-				$out .= '<div class="form_row"><div class="label"><label for="email_'.$conf_idx_str[1].'">'.lecho('cal_form_email', $lang).'</label></div><div class="input"><input type="text" class="email" id="email_'.$conf_idx_str[1].'" name="email" /></div></div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="email_'.$conf_idx_str[1].'">'.lecho('cal_form_email', $lang).'*</label></div><div class="input"><input type="text" class="email" id="email_'.$conf_idx_str[1].'" name="email" /></div></div>'."\n";
 			if(in_array('need_phone', $cal_conf['form_settings']))
-				$out .= '<div class="form_row"><div class="label"><label for="phone_'.$conf_idx_str[1].'">'.lecho('cal_form_phone', $lang).'</label></div><div class="input"><input type="text" id="phone_'.$conf_idx_str[1].'" name="phone" /></div></div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="phone_'.$conf_idx_str[1].'">'.lecho('cal_form_phone', $lang).'*</label></div><div class="input"><input type="text" id="phone_'.$conf_idx_str[1].'" name="phone" /></div></div>'."\n";
 			if(in_array('need_legal_accept', $cal_conf['form_settings']))
 			{
 				$legal_txt_name = get_config_data('textblock', 'textblock', $cal_conf['legal_condition'], 'name');
-				$out .= '<div class="form_row"><div class="label"><label for="legal_'.$conf_idx_str[1].'">'.lecho('cal_form_legal', $lang).'</label></div><div class="input"><input type="checkbox" id="legal_'.$conf_idx_str[1].'" name="legal" /><br/>'.lecho('cal_form_legal_t1', $lang).'<a id="legal_link_'.$cal_conf['name'].'" href="#">'.lecho('cal_form_legal_t2', $lang).'</a>.</div></div>'."\n";
-				$out .= '<script type="text/javascript">/*<![CDATA[*/$(\'#legal_link_'.$cal_conf['name'].'\').click(function(ev){ev.preventDefault();show_info($(\'#legal_text_'.$cal_conf['name'].'\').html(), \''.lecho('cal_form_legal', $lang).'\');})/*]]>*/</script>'."\n";
-				$out .= '<div id="legal_text_'.$cal_conf['name'].'" style="display:none;">'.get_textblock($legal_txt_name, $lang).'</div>'."\n";
+				$out .= '<div class="form_row must"><div class="label"><label for="legal_'.$conf_idx_str[1].'">'.lecho('cal_form_legal', $lang).'*</label></div><div class="input"><input type="checkbox" id="legal_'.$conf_idx_str[1].'" name="legal" /><br/>'.lecho('cal_form_legal_t1', $lang).'<a id="link_legal_'.$cal_conf['name'].'" class="div2info" href="#">'.lecho('cal_form_legal_t2', $lang).'</a>.</div></div>'."\n";
+				//$out .= '<script type="text/javascript">/*<![CDATA[*/$(\'#legal_link_'.$cal_conf['name'].'\').click(function(ev){ev.preventDefault();show_info($(\'#legal_text_'.$cal_conf['name'].'\').html(), \''.lecho('cal_form_legal', $lang).'\');})/*]]>*/</script>'."\n";
+				$out .= '<div id="div_legal_'.$cal_conf['name'].'" class="div2info_div" title="'.lecho('cal_form_legal', $lang).'">'.get_textblock($legal_txt_name, $lang).'</div>'."\n";
 			}
 			if(in_array('allow_msg', $cal_conf['form_settings']))
 				$out .= '<div class="form_row"><div class="label"><label for="msg_'.$conf_idx_str[1].'">'.lecho('cal_form_msg', $lang).'</label></div><div class="input"><textarea rows="10" cols="10" id="msg_'.$conf_idx_str[1].'" name="msg" ></textarea></div></div>'."\n";
@@ -1840,12 +2170,52 @@ function reservation_calendar($cal_conf_index, $lang='de', $year=false, $cal_onl
 			{
 				//$captcha = captcha();
 				//$out .= '<div class="form_row"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input">'.$captcha[0].$captcha[2].'</div></div>'."\n";
-				$out .= '<div class="form_row"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input captcha"></div></div>'."\n";
-				$out .= '<div class="form_row"><div class="label"><label for="captcha_answer_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha_answer', $lang).'</label></div><div class="input"><input type="text" disabled="disabled" id="captcha_answer_'.$conf_idx_str[1].'" name="captcha_answer" /></div></div>'."\n";
+				$out .= '<div class="form_row captcha"><div class="label"><label for="captcha_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha', $lang).'</label></div><div class="input captcha"></div></div>'."\n";
+				$out .= '<div class="form_row captcha must"><div class="label"><label for="captcha_answer_'.$conf_idx_str[1].'">'.lecho('cal_form_captcha_answer', $lang).'*</label></div><div class="input"><input type="text" id="captcha_answer_'.$conf_idx_str[1].'" name="captcha_answer" /></div></div>'."\n";
 			}
 			$out .= '<input type="submit"/>';
-			$out .= '</form>'."\n";
+			$out .= '</div>'."\n";
 		}
+		$out .= "<br/>\n";
+		$out .= '<div class="form ajaxSubmit">'."\n";
+		$out .= gen_form_field();
+		$ff = array(
+			'label' => 'bitte eingeben',
+			'type' => 'text',
+			'name' => 'Feld1',
+			//'value' => 'default',
+			'help' => 'hier ist bitte ein <b>Wert</b> einzutragen.',
+			'set'=>array('must'=>'1'),
+		);
+		$out .= gen_form_field($ff);
+		$ff = array(
+			'label' => 'post an',
+			'type' => 'email',
+			'name' => 'email',
+			'value' => 'e@mail.de',
+			'help' => '',
+		);
+		$out .= gen_form_field($ff);
+		$ff = array(
+			'label' => 'bitte auswählen',
+			'type' => 'select_one',
+			'name' => 'choice',
+			'value' => 'zweites',
+			'help' => 'Such dir was raus.',
+			'options' => array('_none_'=>'---','erstes','zweites','drittes'),
+		);
+		$out .= gen_form_field($ff);
+		$ff = array(
+			'label' => 'bitte mehr auswählen',
+			'type' => 'select_more',
+			'name' => 'choice_more',
+			'help' => 'Such dir mehr raus.',
+			'value' => array('eins','drei'),
+			'options' => array('eins','zwei','drei'),
+		);
+		$out .= gen_form_field($ff);
+		$out .= '<input type="submit"/>'."\n";
+		$out .= '</div>'."\n";
 	}
 	return $out;
 }
@@ -1944,7 +2314,7 @@ function gen_captcha_styles()
 	}
 	elseif('php' == $do_it_with)
 	{
-		$font = 'cms/include_files/UbuntuMono-R.ttf';
+		$font = 'cms/include_files/font_UbuntuMono-R.ttf';
 		$im = @imagecreate((strlen($str)*10), 20) # imagecreatetruecolor
 			or die('Cannot Initialize new GD image stream');
 		$bg_color = str_replace('#', '', $bg_color);

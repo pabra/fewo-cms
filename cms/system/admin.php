@@ -301,6 +301,7 @@ EOJS;
 		#$admin_content .= 'admin content<br/>'."\n";
 		#$admin_content .= gen_captcha_styles();
 		#$admin_content .= get_textblock('agb_de', $admin_lang);
+		$admin_content .= reservation_image();
 		$captcha = captcha();
 		$target = merge_href();
 		$admin_content .= <<<EOT

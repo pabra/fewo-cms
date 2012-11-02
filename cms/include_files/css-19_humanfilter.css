@@ -1,4 +1,4 @@
-.humanfilter_wrap { display:inline-block; border:1px solid #333; border-radius:5px; padding:2px; background-color:#EEE; }
+.humanfilter_wrap { display:inline-block; border:1px solid #333; border-radius:10px; padding:0px 8px; background-color:#EEE; }
 .humanfilter { width:10px; height:20px; display:inline-block; background-repeat:no-repeat; background-image:url('cms/include_files/images/humanfilter.png'); }
 .humanfilter.bD1 { background-position:0px 0px; }
 .humanfilter.fZr { background-position:-10px 0px; }

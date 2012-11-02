@@ -331,12 +331,12 @@ function resCalLetSelect(options){
 		} else if(reservations[calName].sel1 && !reservations[calName].sel2){
 			if(oDay.getTime() < reservations[calName].sel1.getTime()){
 				reservations[calName].sel2 = reservations[calName].sel1;
-				$('#reservation_to_'+calName).datepicker('setDate', reservations[calName].sel1);
+				$('#reservation_to_'+calName).datepicker('setDate', reservations[calName].sel1).change();
 				reservations[calName].sel1 = oDay;
 				$('#reservation_from_'+calName).datepicker('setDate', oDay);
 			} else {
 				reservations[calName].sel2 = oDay;
-				$('#reservation_to_'+calName).datepicker('setDate', oDay);
+				$('#reservation_to_'+calName).datepicker('setDate', oDay).change();
 			}
 			$('div#res_cal_'+calName+' div.content')
 				.unbind('mouseenter', resCalHandlerEnter)
@@ -519,7 +519,7 @@ $(function(){
 		}
 		$('.datepicker').datepicker({
 			onSelect:function(){
-				$(this).datepicker('hide').blur();
+				$(this).datepicker('hide').change().blur();
 				resFormDateSelected($(this));
 			},
 			beforeShow:function(){
